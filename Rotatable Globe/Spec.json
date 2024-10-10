@@ -1,0 +1,734 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl). Data from U.N. Department of Economic and Social Affairs, via https://apnews.com/projects/china-migration-thailand-mexico-japan-map/. Original visualization by Caleb Diehl.",
+    "width": 900,
+    "height": 600,
+    "autosize": "none",
+    "padding": {"top": 100, "bottom": 0},
+    "background": "",
+    "signals": [
+      {
+        "name": "hover",
+        "value": null,
+        "on": [
+          {
+            "events": "@points:mouseover,@links:mouseover",
+            "update": "{'id':datum.destination_country}"
+          },
+          {"events": "@points:mouseout,@links:mouseout", "update": "null"}
+        ]
+      },
+      {
+        "name": "sensitivity",
+        "value": "0.2",
+        "description": "Makes the rotation smoother"
+      },
+      {"name": "tx", "update": "width / 2"},
+      {"name": "ty", "update": "height/2"},
+      {"name": "scale", "value": 355},
+      {
+        "name": "angles",
+        "value": [0, 0],
+        "on": [{"events": "pointerdown", "update": "[rotateX, rotateY]"}]
+      },
+      {
+        "name": "cloned",
+        "value": null,
+        "on": [{"events": "pointerdown", "update": "copy('projection')"}]
+      },
+      {
+        "name": "start",
+        "value": null,
+        "on": [{"events": "pointerdown", "update": "xy()"}]
+      },
+      {
+        "name": "drag",
+        "value": null,
+        "on": [
+          {
+            "events": "[pointerdown, window:pointerup] > window:pointermove",
+            "update": "xy()"
+          }
+        ]
+      },
+      {
+        "name": "delta",
+        "value": null,
+        "on": [
+          {
+            "events": {"signal": "drag"},
+            "update": "[drag[0] - start[0] , drag[1] - start[1]]"
+          }
+        ]
+      },
+      {
+        "name": "globeRotationAngleX",
+        "description": "Smoothly rotates the globe to the target position",
+        "init": "-110",
+        "on": [
+          {
+            "events": "timer{1}",
+            "update": "(dragging ? globeRotationAngleX : (abs(globeRotationAngleX - rotateX) < 10 ? rotateX : (globeRotationAngleX < rotateX ? globeRotationAngleX + 10 : globeRotationAngleX - 10)))"
+          },
+          {
+            "events": {"signal": "delta"},
+            "update": "(angles[0] + delta[0] * sensitivity) % 360"
+          }
+        ]
+      },
+      {
+        "name": "rotateX",
+        "value": -110,
+        "on": [
+          {
+            "events": {"signal": "delta"},
+            "update": "(angles[0] + delta[0] * sensitivity) % 360"
+          },
+          {
+            "events": [
+              {"type": "click", "markname": "buttonUSpos"},
+              {"type": "click", "markname": "bottonUStext"}
+            ],
+            "update": "105"
+          },
+          {
+            "events": [
+              {"type": "click", "markname": "buttonAUpos"},
+              {"type": "click", "markname": "bottonAUtext"}
+            ],
+            "update": "-130"
+          },
+          {
+            "events": [
+              {"type": "click", "markname": "buttonJPpos"},
+              {"type": "click", "markname": "bottonJPtext"}
+            ],
+            "update": "-137"
+          },
+          {
+            "events": [
+              {"type": "click", "markname": "buttonEverywhere"},
+              {"type": "click", "markname": "textEverywhere"}
+            ],
+            "update": "-110"
+          }
+        ]
+      },
+      {
+        "name": "globeRotationAngleY",
+        "description": "Smoothly rotates the globe to the target position",
+        "init": "-20",
+        "on": [
+          {
+            "events": "timer{1}",
+            "update": "(dragging ? globeRotationAngleX : (abs(globeRotationAngleY - rotateY) < 10 ? rotateY : (globeRotationAngleY < rotateY ? globeRotationAngleY + 10 : globeRotationAngleY - 10)))"
+          },
+          {
+            "events": {"signal": "delta"},
+            "update": "(angles[1] - delta[1] * sensitivity) % 360"
+          }
+        ]
+      },
+      {
+        "name": "rotateY",
+        "value": -20,
+        "on": [
+          {
+            "events": {"signal": "delta"},
+            "update": "(angles[1] - delta[1] * sensitivity) % 360"
+          },
+          {
+            "events": [
+              {"type": "click", "markname": "buttonUSpos"},
+              {"type": "click", "markname": "bottonUStext"}
+            ],
+            "update": "-25"
+          },
+          {
+            "events": [
+              {"type": "click", "markname": "buttonAUpos"},
+              {"type": "click", "markname": "bottonAUtext"}
+            ],
+            "update": "34"
+          },
+          {
+            "events": [
+              {"type": "click", "markname": "buttonJPpos"},
+              {"type": "click", "markname": "bottonJPtext"}
+            ],
+            "update": "-21"
+          },
+          {
+            "events": [
+              {"type": "click", "markname": "buttonEverywhere"},
+              {"type": "click", "markname": "textEverywhere"}
+            ],
+            "update": "-20"
+          }
+        ]
+      },
+      {
+        "name": "dragging",
+        "description": "this is when user dragging the globe, that stops the animation",
+        "value": false,
+        "on": [
+          {
+            "events": {"type": "mousedown", "markname": "globe"},
+            "update": "true"
+          },
+          {"events": {"type": "mouseup", "markname": "globe"}, "update": "false"}
+        ]
+      },
+      {
+        "name": "clickedCountry",
+        "value": "null",
+        "on": [
+          {
+            "events": [
+              {"type": "click", "markname": "buttonUSpos"},
+              {"type": "click", "markname": "bottonUStext"}
+            ],
+            "update": "'United States'"
+          },
+          {
+            "events": [
+              {"type": "click", "markname": "buttonAUpos"},
+              {"type": "click", "markname": "bottonAUtext"}
+            ],
+            "update": "'Australia'"
+          },
+          {
+            "events": [
+              {"type": "click", "markname": "buttonJPpos"},
+              {"type": "click", "markname": "bottonJPtext"}
+            ],
+            "update": "'Japan'"
+          },
+          {
+            "events": [
+              {"type": "click", "markname": "buttonEverywhere"},
+              {"type": "click", "markname": "textEverywhere"}
+            ],
+            "update": "'null'"
+          }
+        ]
+      }
+    ],
+    "projections": [
+      {
+        "name": "projection",
+        "type": "orthographic",
+        "scale": {"signal": "scale"},
+        "rotate": [
+          {"signal": "globeRotationAngleX"},
+          {"signal": "globeRotationAngleY"},
+          0
+        ],
+        "translate": [{"signal": "tx"}, {"signal": "ty"}]
+      }
+    ],
+    "data": [
+      {"name": "sphere", "values": [{"type": "Sphere"}]},
+      {
+        "name": "world-map",
+        "url":"https://vega.github.io/vega/data/world-110m.json",
+        "format": {"type": "topojson", "feature": "countries"}
+      },
+      {
+        "name": "dataset",
+        "url": "https://raw.githubusercontent.com/Flynnxx1/Deneb-Vega-Showcase/refs/heads/main/Rotatable%20Globe/destination.csv",
+        "format": {"type": "csv", "parse": "auto", "delimiter": ","}
+      },
+      {
+        "name": "dataset-location",
+        "source": "dataset",
+        "transform": [
+          {
+            "type": "formula",
+            "expr": "{'type': 'Point', 'coordinates': [datum['coordinates.0'], datum['coordinates.1']],'size':datum.migrants}",
+            "as": "geometry"
+          },
+          {
+            "type": "collect",
+            "sort": {"field": "geometry.size", "order": "descending"}
+          }
+        ]
+      },
+      {
+        "name": "dataset-country-name",
+        "source": "dataset-location",
+        "transform": [
+          {
+            "type": "geopoint",
+            "projection": "projection",
+            "fields": ["geometry.coordinates[0]", "geometry.coordinates[1]"],
+            "as": ["x", "y"]
+          },
+          {
+            "type": "formula",
+            "expr": "abs(datum.geometry.coordinates[0] - rotateX) > 90 ? true : false",
+            "as": "visibleX"
+          },
+          {
+            "type": "formula",
+            "expr": "abs(datum.geometry.coordinates[1] - rotateY) < 90 ? true : false",
+            "as": "visibleY"
+          }
+        ]
+      },
+      {
+        "name": "dataset-link",
+        "source": "dataset",
+        "transform": [
+          {
+            "type": "formula",
+            "expr": "['104.1954', '35.8617']",
+            "as": "china_start_point"
+          },
+          {
+            "type": "formula",
+            "expr": "[datum['coordinates.0'], datum['coordinates.1']]",
+            "as": "country_end_point"
+          },
+          {
+            "type": "formula",
+            "expr": "[datum.china_start_point, datum.country_end_point]",
+            "as": "lineGeometry"
+          },
+          {
+            "type": "formula",
+            "expr": "{'type': 'LineString', 'coordinates': datum.lineGeometry,'destination_country':datum.destination_country}",
+            "as": "lineFeature"
+          },
+          {
+            "type": "lookup",
+            "from": "dataset-location",
+            "key": "destination_country",
+            "fields": ["china_start_point"],
+            "as": ["source"],
+            "default": "104.1954,35.8617"
+          },
+          {
+            "type": "lookup",
+            "from": "dataset-location",
+            "key": "destination_country",
+            "fields": ["destination_country"],
+            "as": ["target"]
+          }
+        ]
+      }
+    ],
+    "scales": [
+      {"name": "size", "type": "sqrt", "domain": [0, 25000], "range": [0, 7]},
+      {"name": "linkWidth", "type": "sqrt", "domain": [0, 30000], "range": [0, 5]}
+    ],
+    "marks": [
+      {
+        "type": "shape",
+        "from": {"data": "sphere"},
+        "encode": {
+          "update": {
+            "fill": {"value": "white"},
+            "stroke": {"value": "#818589"},
+            "strokeWidth": {"value": 0.5},
+            "opacity": {"value": 1}
+          }
+        },
+        "transform": [{"type": "geoshape", "projection": "projection"}]
+      },
+      {
+        "type": "shape",
+        "name": "globe",
+        "from": {"data": "world-map"},
+        "encode": {
+          "update": {
+            "fill": [
+              {"test": "datum.id == '156'", "value": "#f0c7c0"},
+              {"value": "#EEEEEE"}
+            ],
+            "stroke": {"value": "white"},
+            "strokeWidth": {"value": 1}
+          }
+        },
+        "transform": [{"type": "geoshape", "projection": "projection"}]
+      },
+      {
+        "zindex": 2,
+        "name": "points",
+        "type": "shape",
+        "from": {"data": "dataset-location"},
+        "encode": {
+          "update": {
+            "tooltip": {
+              "signal": "{'Destination': datum.destination_country,  'Migrants': format(datum.migrants,',.0f'), ' ':'Net change from 2010 to 2020'}"
+            },
+            "opacity": [
+              {
+                "test": "hover && hover.id == datum.destination_country",
+                "value": 1
+              },
+              {
+                "test": "clickedCountry  == datum.destination_country",
+                "value": 1
+              },
+              {"test": "clickedCountry== 'null'", "value": 0.8},
+              {"value": 0.5}
+            ],
+            "fill": [
+              {
+                "test": "clickedCountry == datum.destination_country",
+                "value": "red"
+              },
+              {"test": "clickedCountry == 'null'", "value": "red"},
+              {"value": "grey"}
+            ],
+            "stroke": [
+              {
+                "test": "hover &&hover.id == datum.destination_country",
+                "value": "black"
+              },
+              {"value": "white"}
+            ]
+          }
+        },
+        "transform": [
+          {
+            "type": "geoshape",
+            "projection": "projection",
+            "field": "datum.geometry",
+            "pointRadius": {"expr": "scale('size', datum.size)"}
+          }
+        ]
+      },
+      {
+        "zindex": 3,
+        "name": "country-text",
+        "type": "text",
+        "from": {"data": "dataset-country-name"},
+        "encode": {
+          "enter": {
+            "text": {"field": "destination_country"},
+            "align": {"value": "center"},
+            "baseline": {"value": "bottom"},
+            "fontSize": {"value": 12}
+          },
+          "update": {
+            "x": {"field": "x"},
+            "y": {"field": "y", "offset": -22},
+            "fill": [
+              {
+                "test": "clickedCountry == datum.destination_country",
+                "value": "red"
+              },
+              {"test": "clickedCountry == 'null'", "value": "red"},
+              {"value": "grey"}
+            ],
+            "opacity": [
+              {
+                "test": "(datum.destination_country == 'South Korea' || datum.destination_country == 'Hong Kong' || datum.destination_country == 'Thailand' || datum.destination_country == 'Australia' || datum.destination_country == 'United States') && datum.visibleX && datum.visibleY",
+                "value": 1
+              },
+              {"value": 0}
+            ]
+          }
+        }
+      },
+      {
+        "zindex": 2,
+        "name": "country-text-background",
+        "type": "rect",
+        "from": {"data": "country-text"},
+        "encode": {
+          "update": {
+            "x": {"field": "bounds.x1"},
+            "x2": {"field": "bounds.x2"},
+            "y": {"field": "bounds.y1"},
+            "y2": {"field": "bounds.y2"},
+            "fillOpacity": {"signal": "datum.opacity/1.5"},
+            "fill": {"value": "white"}
+          }
+        }
+      },
+      {
+        "name": "links",
+        "type": "shape",
+        "from": {"data": "dataset-link"},
+        "encode": {
+          "enter": {
+            "stroke": {"value": "red"},
+            "strokeWidth": {"scale": "linkWidth", "field": "migrants"}
+          },
+          "update": {
+            "strokeOpacity": [
+              {
+                "test": "hover && hover.id == datum.lineFeature.destination_country",
+                "value": 1
+              },
+              {
+                "test": "clickedCountry== datum.lineFeature.destination_country",
+                "value": 1
+              },
+              {"test": "clickedCountry== 'null'", "value": 0.1},
+              {"value": 0.05}
+            ]
+          }
+        },
+        "transform": [
+          {
+            "type": "geoshape",
+            "projection": "projection",
+            "field": "datum.lineFeature"
+          }
+        ]
+      },
+      {
+        "zindex": 3,
+        "type": "group",
+        "encode": {
+          "enter": {
+            "x": {"value": 240},
+            "y": {"value": -50},
+            "width": {"value": 300},
+            "height": {"value": 30}
+          }
+        },
+        "marks": [
+          {
+            "name": "buttonUSpos",
+            "type": "rect",
+            "encode": {
+              "enter": {
+                "x": {"value": 5},
+                "y": {"value": 0},
+                "width": {"value": 100},
+                "height": {"value": 30},
+                "cursor": {"value": "pointer"}
+              },
+              "update": {
+                "fill": {
+                  "signal": "clickedCountry  == 'United States'? 'lightgrey':''"
+                }
+              }
+            }
+          },
+          {
+            "name": "underline_US",
+            "type": "rect",
+            "encode": {
+              "enter": {
+                "x": {"value": 5},
+                "y": {"value": 28},
+                "y2": {"value": 30},
+                "width": {"value": 90},
+                "fill": {"value": "lightgrey"},
+                "height": {"value": 30},
+                "cursor": {"value": "pointer"}
+              }
+            }
+          },
+          {
+            "name": "bottonUStext",
+            "type": "text",
+            "encode": {
+              "enter": {
+                "x": {"value": 20},
+                "y": {"value": 20},
+                "text": {"value": "United States"},
+                "fill": {"value": "black"},
+                "cursor": {"value": "pointer"}
+              },
+              "update": {
+                "fontWeight": {
+                  "signal": "clickedCountry  == 'United States'? 'bold':'normal'"
+                }
+              },
+              "hover": {"fontWeight": {"value": "bold"}}
+            }
+          },
+          {
+            "name": "buttonAUpos",
+            "type": "rect",
+            "encode": {
+              "enter": {
+                "x": {"value": 105},
+                "y": {"value": 0},
+                "width": {"value": 100},
+                "height": {"value": 30},
+                "cursor": {"value": "pointer"}
+              },
+              "update": {
+                "fill": {
+                  "signal": "clickedCountry  == 'Australia'? 'lightgrey':''"
+                }
+              }
+            }
+          },
+          {
+            "name": "underline_AU",
+            "type": "rect",
+            "encode": {
+              "enter": {
+                "x": {"value": 105},
+                "y": {"value": 28},
+                "y2": {"value": 30},
+                "width": {"value": 90},
+                "fill": {"value": "lightgrey"},
+                "height": {"value": 30},
+                "cursor": {"value": "pointer"}
+              }
+            }
+          },
+          {
+            "name": "bottonAUtext",
+            "type": "text",
+            "encode": {
+              "enter": {
+                "x": {"value": 120},
+                "y": {"value": 20},
+                "text": {"value": "Australia"},
+                "fill": {"value": "black"},
+                "cursor": {"value": "pointer"}
+              },
+              "update": {
+                "fontWeight": {
+                  "signal": "clickedCountry  == 'Australia'? 'bold':'normal'"
+                }
+              },
+              "hover": {"fontWeight": {"value": "bold"}}
+            }
+          },
+          {
+            "name": "buttonJPpos",
+            "type": "rect",
+            "encode": {
+              "enter": {
+                "x": {"value": 205},
+                "y": {"value": 0},
+                "width": {"value": 100},
+                "height": {"value": 30},
+                "fill": {"value": "lightgrey"},
+                "cursor": {"value": "pointer"}
+              },
+              "update": {
+                "fill": {"signal": "clickedCountry  == 'Japan'? 'lightgrey':''"}
+              }
+            }
+          },
+          {
+            "name": "underline_JP",
+            "type": "rect",
+            "encode": {
+              "enter": {
+                "x": {"value": 205},
+                "y": {"value": 28},
+                "y2": {"value": 30},
+                "width": {"value": 90},
+                "fill": {"value": "lightgrey"},
+                "height": {"value": 30},
+                "cursor": {"value": "pointer"}
+              }
+            }
+          },
+          {
+            "name": "bottonJPtext",
+            "type": "text",
+            "encode": {
+              "enter": {
+                "x": {"value": 220},
+                "y": {"value": 20},
+                "text": {"value": "Japan"},
+                "fill": {"value": "black"},
+                "cursor": {"value": "pointer"}
+              },
+              "update": {
+                "fontWeight": {
+                  "signal": "clickedCountry  == 'Japan'? 'bold':'normal'"
+                }
+              },
+              "hover": {"fontWeight": {"value": "bold"}}
+            }
+          },
+          {
+            "name": "buttonEverywhere",
+            "type": "rect",
+            "encode": {
+              "enter": {
+                "x": {"value": 305},
+                "y": {"value": 0},
+                "width": {"value": 100},
+                "height": {"value": 30},
+                "fill": {"value": "lightgrey"},
+                "cursor": {"value": "pointer"}
+              },
+              "update": {
+                "fill": {"signal": "clickedCountry  == 'null'? 'lightgrey':''"}
+              }
+            }
+          },
+          {
+            "name": "underline_Everywhere",
+            "type": "rect",
+            "encode": {
+              "enter": {
+                "x": {"value": 305},
+                "y": {"value": 28},
+                "y2": {"value": 30},
+                "width": {"value": 100},
+                "height": {"value": 30},
+                "fill": {"value": "lightgrey"},
+                "cursor": {"value": "pointer"}
+              }
+            }
+          },
+          {
+            "name": "textEverywhere",
+            "type": "text",
+            "encode": {
+              "enter": {
+                "x": {"value": 320},
+                "y": {"value": 20},
+                "text": {"value": "Everywhere"},
+                "fill": {"value": "black"},
+                "cursor": {"value": "pointer"}
+              },
+              "update": {
+                "fontWeight": {
+                  "signal": "clickedCountry  == 'null'? 'bold':'normal'"
+                }
+              },
+              "hover": {"fontWeight": {"value": "bold"}}
+            }
+          }
+        ]
+      },
+      {
+        "zindex": 2,
+        "name": "buttons backgroud cover",
+        "type": "rect",
+        "encode": {
+          "enter": {
+            "x": {"value": 250},
+            "y": {"value": -60},
+            "width": {"value": 400},
+            "height": {"value": 40},
+            "fill": {
+              "value": {
+                "x1": 1,
+                "y1": 1,
+                "x2": 1,
+                "y2": 0,
+                "gradient": "linear",
+                "stops": [
+                  {"offset": 0, "color": "white"},
+                  {"offset": 0.3, "color": "white"},
+                  {"offset": 0.5, "color": "white"},
+                  {"offset": 0.7, "color": "white"},
+                  {"offset": 1, "color": "white"}
+                ]
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
