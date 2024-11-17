@@ -21,4 +21,4 @@ Data from CNN election results.
 
 [Open in Vega Editor](https://tinyurl.com/VegaUSElectionMap2024)
 
-![US Election Map 2024](US%20Election%20Map%202024/US%20Election%20Map%202024.png)
+![US Election Map 2024](US%20Election%20Map%202024/US%20Election%20Map%202024.gif)
