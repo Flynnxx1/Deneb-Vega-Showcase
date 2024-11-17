@@ -1,0 +1,577 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl). Data from CNN election results.",
+  "width": 960,
+  "height": 500,
+  "padding": 20,
+  "background": "white",
+  "autosize": "none",
+  "signals": [
+    {
+      "name": "state",
+      "description": "state under cursor",
+      "value": null,
+      "on": [
+        {
+          "events": "@shapeMapStates:click, @selectedState:click",
+          "update": "state === datum.id ? null : datum.id",
+          "force": true
+        }
+      ]
+    },
+    {
+      "name": "signal_map_scale",
+      "value": 1000,
+      "on": [
+        {
+          "events": {"type": "wheel", "consume": true},
+          "update": "round(clamp(signal_map_scale * pow(1.0005, -event.deltaY * pow(16, event.deltaMode)), 1000, 4000))"
+        }
+      ]
+    },
+    {
+      "name": "hoverState",
+      "description": "hover over state",
+      "value": null,
+      "on": [
+        {
+          "events": "@shapeMapStates:mouseover",
+          "update": " datum.id ",
+          "force": true
+        },
+        {"events": "@shapeMapStates:mouseout", "update": "null", "force": true}
+      ]
+    },
+    {
+      "name": "hoverCounty",
+      "description": "hover over county the selected state",
+      "value": null,
+      "on": [
+        {
+          "events": "@selectedState:mouseover",
+          "update": " datum.id ",
+          "force": true
+        },
+        {
+          "events": "@selectedState:mouseout,@selectedState:click",
+          "update": "null",
+          "force": true
+        }
+      ]
+    },
+    {
+      "name": "mousePositionXY",
+      "description": "Mouse [x,y] position over the map",
+      "value": [null, null],
+      "on": [
+        {
+          "events": "@shapeMapStates:pointermove,@selectedState:pointermove",
+          "update": "xy()"
+        },
+        {
+          "events": "@shapeMapStates:pointerout,@selectedState:pointerout",
+          "update": "[null, null]",
+          "force": true
+        }
+      ]
+    },
+    {
+      "name": "tooltipPosition",
+      "description": "Checks if the bottom and right edge of the tooltip (mousePositionXY[1] + height or width of the tooltip) exceeds the chart height. 220 is the group marks size",
+      "update": "[mousePositionXY[0] + 220 > width ? width - 440 : mousePositionXY[0], mousePositionXY[1] + 100 > height ? height - 140 : mousePositionXY[1]]"
+    },
+    {
+      "name": "signal_translate_xy",
+      "value": [500, 220],
+      "update": "[clamp(signal_translate_last_xy[0] + signal_mouse_delta_xy[0], -300, 1200), clamp(signal_translate_last_xy[1] + signal_mouse_delta_xy[1], -200, 800)]"
+    },
+    {
+      "name": "signal_translate_last_xy",
+      "value": [500, 220],
+      "on": [
+        {"events": [{"type": "mousedown"}], "update": "signal_translate_xy"}
+      ]
+    },
+    {
+      "name": "signal_mouse_start_xy",
+      "value": [0, 0],
+      "on": [{"events": [{"type": "mousedown"}], "update": "xy()"}]
+    },
+    {
+      "name": "signal_mouse_drag_xy",
+      "value": [0, 0],
+      "on": [
+        {
+          "events": [
+            {
+              "type": "mousemove",
+              "between": [{"type": "mousedown"}, {"type": "mouseup"}]
+            }
+          ],
+          "update": "xy()"
+        }
+      ]
+    },
+    {
+      "name": "signal_mouse_delta_xy",
+      "value": [0, 0],
+      "update": "event && event.type === 'mousemove' ? [signal_mouse_drag_xy[0] - signal_mouse_start_xy[0], signal_mouse_drag_xy[1] - signal_mouse_start_xy[1]] : [0, 0]"
+    },
+    {
+      "name": "redtick",
+      "value": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAApCAYAAABDV7v1AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAXzSURBVFhH1ZhpaBNbFMf/Wdo0bWPX1/XV1q4+BXdwKeKC2xdRBBE/qLhTUVRcwC+CIoIKLqAiuCuCK64oCqIi4hdFEarPYl9rbUu32Nc1iUnad86dmTRNs8yki7wfDEnOTGb+95xz7zl3dN0E/gf0W6i7uRn2r19hKy2F6+dPdLW2Sif0ehgSEhCRloboceMQmZMDfVSUdC4MwhLqrK9Hy+PHaHnwAO1v38JFv13yOV90dBhNJkSOGIFhs2YhfvFiWGbPhs5olC5QiSahzh8/0HDyJJquXIGjrk7YWIhyBIIfwEcXHXo6YiZNQsrmzUhasQI68rwaVAttPHMGNfv2CYF8a3W3949b/rRMm4asw4cRW1wsWwITUqirsRHfS0rQdOdOvwX6woINkZH488ABpO7aJRkDEFSovawM/yxbhraPH6Eto9TD6cBH+saNGH7qFCk3CLsvAYU6vn1D2YIFsJWXw/9fBw4WwN5NpZzNuXjRr1i/kXRZrShfuhSdQyCS4YnIz6m/ehXVu3cLmy99hZKDv69fP6jh9ocitvboUVjZqz70Edp4+jSsd+8OqUgFZZmr2r5dFBFveuXor6oqfJkwAb8o9AM5u7XC+ZpEhSGPHKbQS0/DsWOw/2aRDKdA8717aH/1SjIQHk3O2lpYKZkHUyQvQ+wtPoIu3gRfw1VQwaPrXxqBYxC9yQ82U70ffvAg0rduhT46OqhY9mrLkydw0MrD9Ai9f1/+NvBwwxI7ZgwKX7xA2p49yDp+HBl79woPB4InlbOjQ4hlhFBnTQ06370bFG+yJy3jxyP/0SNEZmdLRiJmyhQhJhRtNDhGaLN9/gwn9ZJq/qgF4UkSWfDwISKzsiSjDOdfqDxlPbZPn9DtdPYIDRYGb/g6FhBqQvA1lokThciIzEzJyMgFxXr7dsiqJ8JP3ZqroUEOfXV1yNExLNJcVIQcas0yd+6EnjoffwMUImk9LqDGuo/IDRtQd+5cSJEKXe3tooMTQt20fQgVdh6IMS4O+eQJbskyjxxB7s2bMJjNvcQKkdQYC09mZEhGRvakFpGsSUSQ9Enzx8W3Dw4LjUhORtTo0ZKBiF+0CHk3bsBAS42SEsM43OxJX5Hr1qHu/HlRmjXPBdInhOrIK6HgC+0VFWiiTt+buIULkXf9OnQREbCMHYt89mR6unyW6OpC5dq1qLtwQbUnveFBsT4h1JiYqCpHxUO3bIH10iXZIMFii54+RT7V5j4iyZP11A2F40nWpKfe1Ei7WSHUlJ8v50Bw+EHdbjcqyENW8pA3Ftph8k7TA11XuWaNEBmOJxXEljs1VdJnHjWKtuF6VV7lP3STpyrIU02Uc35RRF6+HF5OynDe8/sAQ3y8JDRq5EiYcnPVhZ8Qf6IJUkGzuOnsWWHzwB5fvRr1tKXub0/LemImT6aR6qRn6mNjYZkxw++aGAjhJRJbSeuiqDIOh1jvKlatQgN1YQPReLO4uHnzxHdP49z67BnK5s8PK+HFyGnZcre0wEbFoz85qcBOM1OU/6ItkcFikTzKWGbORAzVZS6NWuCB8U06SkthHyCRDAtNpF0pi2Q8QnVUDlO2bZN/aYdv5LlZP+EIRVFx+YPmgEKveycuX4646dNFhfmdcFRTadvs3Sf0eQHR+eED/i4uhttmGzAPaYFFxtHzC58/h85kkoxEHy3RlKfDT5wQ33uNYAjgvDSlpSGHiom3SMav05IpNzLI9VonVn9gkfyiN5eWNlNhoWT0ImB0Mw8dQvqmTSJfB9uz7BAWmXftGixz5khGH4KmIb9dy6JNGAvVUgy0wI7gcBdS1xW/ZIlk9EPQ144KzbduoYo6entVlVgnw63d3vDA+UiYOxfZ5BBTQYGwB0KVUIZfUNTu3y9aPCeVSw5F0HD4QYkMf/IeP23HDqSUlNCNQt9JtVAFG5W0RtpO8HsAB1UiMQnkwx/e4jgavKrwu/uklSthTEoiizo0C1XgTVfH+/doe/kS7W/eoP31a3Tb7fLZHriXjKUJEjt1qijTZq+tjHqA/wASakF2hpjygQAAAABJRU5ErkJggg=="
+    },
+    {
+      "name": "bluetick",
+      "value": "data:image/png;base64,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"
+    },
+    {
+      "name": "flip",
+      "value": "data:image/png;base64,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"
+    }
+  ],
+  "projections": [
+    {
+      "name": "projection",
+      "type": "albersUsa",
+      "scale": {"signal": "signal_map_scale"},
+      "translate": {"signal": "signal_translate_xy"}
+    }
+  ],
+  "data": [
+    {
+      "name": "electionResult-counties",
+      "url": "https://raw.githubusercontent.com/Flynnxx1/Deneb-Vega-Showcase/refs/heads/main/US%20Election%20Map%202024/2024-PG-allcounties.csv",
+      "format": {"type": "csv"},
+      "transform": [
+        {
+          "type": "formula",
+          "as": "CountyFipsCode",
+          "expr": "toNumber(replace(datum.CountyFipsCode, '\"', ''))"
+        }
+      ]
+    },
+    {
+      "name": "electionResult-states",
+      "source": ["electionResult-counties"],
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": ["StateId", "StateCode"],
+          "fields": ["trump", "harris", "totalVotes", "stateName"],
+          "ops": ["sum", "sum", "sum", "max"],
+          "as": ["trump", "harris", "totalVotes", "stateName"]
+        },
+        {
+          "type": "formula",
+          "as": "StateColor",
+          "expr": "datum.trump > datum.harris ? 'red':'blue'"
+        }
+      ]
+    },
+    {
+      "name": "states-json",
+      "url": "data/us-10m.json",
+      "format": {"type": "topojson", "feature": "states"}
+    },
+    {
+      "name": "dataset-states",
+      "source": ["states-json"],
+      "transform": [
+        {
+          "type": "lookup",
+          "from": "electionResult-states",
+          "key": "StateId",
+          "fields": ["id"],
+          "values": [
+            "StateColor",
+            "StateCode",
+            "stateName",
+            "trump",
+            "harris",
+            "totalVotes"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "invert('projection', geoCentroid('projection', datum))",
+          "as": "centroidState"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.StateColor == 'red'? 'Donald Trump': 'Kamala Harris'",
+          "as": "fullName"
+        },
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": ["centroidState[0]", "centroidState[1]"],
+          "as": ["x", "y"]
+        }
+      ]
+    },
+    {
+      "name": "counties-json",
+      "url": "data/us-10m.json",
+      "format": {"type": "topojson", "feature": "counties"}
+    },
+    {
+      "name": "dataset-counties",
+      "source": ["counties-json"],
+      "transform": [
+        {"type": "formula", "expr": "floor(datum.id / 1000)", "as": "stateId"},
+        {
+          "type": "lookup",
+          "from": "electionResult-counties",
+          "key": "CountyFipsCode",
+          "fields": ["id"],
+          "values": ["Winner", "trump", "harris", "CountyName", "totalVotes"]
+        },
+        {
+          "type": "formula",
+          "expr": "datum.Winner == 'trump'? 'Donald Trump': 'Kamala Harris'",
+          "as": "fullName"
+        },
+        {"type": "filter", "expr": "datum.Winner != null"},
+        {
+          "type": "formula",
+          "as": "StateColor",
+          "expr": "datum.Winner == 'trump'? 'red': datum.Winner == 'harris'? 'blue':'white'"
+        },
+        {
+          "type": "formula",
+          "as": "StateColorRange",
+          "expr": "datum.trump > 1.5 * datum.harris ? 1 : datum.harris > 1.5 * datum.trump ? -1 : (datum.trump - datum.harris) / max(datum.trump, datum.harris)"
+        },
+        {"type": "filter", "expr": "datum.Winner != null"},
+        {"type": "collect", "sort": {"field": "stateId", "order": "ascending"}}
+      ]
+    },
+    {
+      "name": "data-selected-state",
+      "source": "dataset-counties",
+      "transform": [{"type": "filter", "expr": "datum.stateId==state"}]
+    },
+    {
+      "name": "data-hovered-state",
+      "source": "dataset-states",
+      "transform": [{"type": "filter", "expr": "datum.id==hoverState"}]
+    },
+    {
+      "name": "data-hovered-county",
+      "source": "dataset-counties",
+      "transform": [{"type": "filter", "expr": "datum.id==hoverCounty"}]
+    }
+  ],
+  "scales": [
+    {
+      "name": "colorScale",
+      "type": "linear",
+      "domain": [-1, 0, 1],
+      "range": ["#41A7F2", "#f0f0f0", "#CC0000"]
+    }
+  ],
+  "legends": [],
+  "marks": [
+    {
+      "name": "shapeMapStates",
+      "interactive": true,
+      "type": "shape",
+      "from": {"data": "dataset-states"},
+      "encode": {
+        "update": {
+          "stroke": {"value": "white"},
+          "fill": {
+            "signal": "datum.StateColor=='blue'? '#41A7F2':datum.StateColor=='red'? '#CC0000' :'yellow' "
+          },
+          "cursor": {"value": "pointer"}
+        }
+      },
+      "transform": [{"type": "geoshape", "projection": "projection"}]
+    },
+    {
+      "name": "State-code-text-stroke-white",
+      "interactive": false,
+      "type": "text",
+      "from": {"data": "dataset-states"},
+      "encode": {
+        "update": {
+          "text": {"field": "StateCode"},
+          "fontWeight": {"value": "bold"},
+          "fill": {"value": "none"},
+          "stroke": {"value": "white"},
+          "x": {"field": "x"},
+          "y": {"field": "y"}
+        }
+      }
+    },
+    {
+      "name": "State-code-text-fill",
+      "interactive": false,
+      "type": "text",
+      "from": {"data": "dataset-states"},
+      "encode": {
+        "update": {
+          "text": {"field": "StateCode"},
+          "fontWeight": {"value": "bold"},
+          "fill": {"value": "black"},
+          "stroke": {"value": "none"},
+          "x": {"field": "x"},
+          "y": {"field": "y"}
+        }
+      }
+    },
+    {
+      "name": "selectedState",
+      "type": "shape",
+      "from": {"data": "data-selected-state"},
+      "encode": {
+        "enter": {
+          "fill": {"signal": "scale('colorScale', datum.StateColorRange)"},
+          "stroke": {"value": "white"},
+          "cursor": {"value": "pointer"}
+        }
+      },
+      "transform": [{"type": "geoshape", "projection": "projection"}]
+    },
+    {
+      "name": "StateTooltipGroup",
+      "type": "group",
+      "zindex": 1,
+      "encode": {
+        "enter": {
+          "clip": {"signal": "true"},
+          "cornerRadius": {"signal": "10"},
+          "stroke": {"value": "grey"},
+          "fill": {"value": "white"},
+          "fillOpacity": {"value": 1}
+        },
+        "update": {
+          "x": {"signal": "tooltipPosition[0]"},
+          "y": {"signal": "tooltipPosition[1]"},
+          "width": {"signal": "mousePositionXY[0]==null ? 0 : 220"},
+          "height": {"signal": "mousePositionXY[0]==null ? 0 : 100"}
+        }
+      },
+      "marks": [
+        {
+          "type": "text",
+          "from": {"data": "data-hovered-state"},
+          "encode": {
+            "enter": {
+              "fontSize": {"value": 10},
+              "fontWeight": {"value": "bold"},
+              "align": {"value": "left"},
+              "fill": {"value": "black"},
+              "lineBreak": {"value": "/"}
+            },
+            "update": {
+              "text": {
+                "signal": "'‎ ‎ ‎ ‎ ‎ ‎ ‎'+datum.stateName + '/' +'‎' + '/' +'‎ ‎ ‎ .‎ ‎ ' + datum.fullName + ': ' + format(datum.fullName =='Donald Trump' ? datum.trump : datum.harris, ',') + ' ('+format(datum.fullName == 'Donald Trump' ? datum.trump / datum.totalVotes : datum.harris / datum.totalVotes, '0.1%')+  ')'+ '/' +'‎' + '/' +'‎ ‎ ‎ ‎ ‎ ‎ ' + (datum.fullName == 'Kamala Harris' ? 'Donald Trump':'Kamala Harris')  + ': '+ format(datum.fullName =='Kamala Harris' ? datum.trump : datum.harris, ',') + ' ('+format(datum.fullName == 'Kamala Harris' ? datum.trump / datum.totalVotes : datum.harris / datum.totalVotes, '0.1%')+  ')'"
+              },
+              "x": {"signal": "40"},
+              "y": {"signal": "100/4"}
+            }
+          }
+        },
+        {
+          "type": "image",
+          "from": {"data": "data-hovered-state"},
+          "encode": {
+            "enter": {
+              "url": {
+                "signal": "datum.fullName == 'Donald Trump' ? redtick:bluetick"
+              }
+            },
+            "update": {
+              "x": {"signal": "40"},
+              "y": {"signal": "37"},
+              "opacity": {"value": 1},
+              "width": {"value": 15},
+              "height": {"value": 15}
+            }
+          }
+        },
+        {
+          "type": "image",
+          "from": {"data": "data-hovered-state"},
+          "encode": {
+            "enter": {
+              "url": {
+                "signal": "(datum.StateCode === 'NV' || datum.StateCode === 'AZ' || datum.StateCode === 'GA'|| datum.StateCode === 'WI' || datum.StateCode === 'MI'|| datum.StateCode === 'PA') ? flip : ''"
+              }
+            },
+            "update": {
+              "x": {"signal": "40"},
+              "y": {"signal": "15"},
+              "opacity": {"value": 1},
+              "width": {"value": 15},
+              "height": {"value": 15}
+            }
+          }
+        },
+        {
+          "type": "text",
+          "from": {"data": "data-hovered-county"},
+          "encode": {
+            "enter": {
+              "fontSize": {"value": 10},
+              "fontWeight": {"value": "bold"},
+              "align": {"value": "left"},
+              "fill": {"value": "black"},
+              "lineBreak": {"value": "/"}
+            },
+            "update": {
+              "text": {
+                "signal": "'‎'+datum.CountyName + '/' +'‎' + '/' +'‎ ‎ ‎ .‎ ‎ ' +  (datum.fullName == 'Donald Trump'? 'Donald Trump': 'Kamala Harris') + ': ' + format(datum.fullName =='Donald Trump' ? datum.trump : datum.harris, ',') + ' ('+format(datum.fullName == 'Donald Trump' ? datum.trump / datum.totalVotes : datum.harris / datum.totalVotes, '0.1%')+  ')'+ '/' +'‎' + '/' +'‎ ‎ ‎ ‎ ‎ ‎ ' + (datum.fullName == 'Kamala Harris' ? 'Donald Trump':'Kamala Harris')  + ': '+ format(datum.fullName =='Kamala Harris' ? datum.trump : datum.harris, ',') + ' ('+format(datum.fullName == 'Kamala Harris' ? datum.trump / datum.totalVotes : datum.harris / datum.totalVotes, '0.1%')+  ')'"
+              },
+              "x": {"signal": "40"},
+              "y": {"signal": "100/4"}
+            }
+          }
+        },
+        {
+          "type": "image",
+          "from": {"data": "data-hovered-county"},
+          "encode": {
+            "enter": {
+              "url": {
+                "signal": "datum.fullName == 'Donald Trump' ? redtick:bluetick"
+              }
+            },
+            "update": {
+              "x": {"signal": "40"},
+              "y": {"signal": "37"},
+              "opacity": {"value": 1},
+              "width": {"value": 15},
+              "height": {"value": 15}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "LegendGroup",
+      "type": "group",
+      "zindex": 1,
+      "encode": {
+        "enter": {
+          "clip": {"signal": "true"},
+          "fill": {"value": "white"},
+          "fillOpacity": {"value": 0.5}
+        },
+        "update": {
+          "x": {"value": 10},
+          "y": {"signal": "height-50"},
+          "width": {"signal": "150"},
+          "height": {"signal": "60"}
+        }
+      },
+      "marks": [
+        {
+          "type": "text",
+          "encode": {
+            "enter": {
+              "fontSize": {"value": 10},
+              "align": {"value": "left"},
+              "fill": {"value": "black"},
+              "lineBreak": {"value": "/"}
+            },
+            "update": {
+              "text": {"signal": "'Harris'+'/'+'‎ '+'/'+'Trump'"},
+              "x": {"signal": "5"},
+              "y": {"signal": "15"}
+            }
+          }
+        },
+        {
+          "type": "rect",
+          "name": "light blue",
+          "encode": {
+            "enter": {
+              "width": {"signal": "25"},
+              "height": {"signal": "8"},
+              "fill": {"value": "#BDDBF1"}
+            },
+            "update": {"x": {"signal": "40"}, "y": {"signal": "8"}}
+          }
+        },
+        {
+          "type": "rect",
+          "name": "blue",
+          "encode": {
+            "enter": {
+              "width": {"signal": "25"},
+              "height": {"signal": "8"},
+              "fill": {"value": "#41A7F2"}
+            },
+            "update": {"x": {"signal": "65"}, "y": {"signal": "8"}}
+          }
+        },
+        {
+          "type": "rect",
+          "name": "stripblue",
+          "encode": {
+            "enter": {
+              "width": {"signal": "25"},
+              "height": {"signal": "8"},
+              "fill": {"value": "transparent"}
+            },
+            "update": {"x": {"signal": "90"}, "y": {"signal": "8"}}
+          }
+        },
+        {
+          "type": "rect",
+          "name": "light red",
+          "encode": {
+            "enter": {
+              "width": {"signal": "25"},
+              "height": {"signal": "8"},
+              "fill": {"value": "#EDDFDF"}
+            },
+            "update": {"x": {"signal": "40"}, "y": {"signal": "32"}}
+          }
+        },
+        {
+          "type": "rect",
+          "name": "red",
+          "encode": {
+            "enter": {
+              "width": {"signal": "25"},
+              "height": {"signal": "8"},
+              "fill": {"value": "#CC0000"}
+            },
+            "update": {"x": {"signal": "65"}, "y": {"signal": "32"}}
+          }
+        },
+        {
+          "type": "rect",
+          "name": "stripred",
+          "encode": {
+            "enter": {
+              "width": {"signal": "25"},
+              "height": {"signal": "8"},
+              "fill": {"value": "transparent"}
+            },
+            "update": {"x": {"signal": "90"}, "y": {"signal": "32"}}
+          }
+        },
+        {
+          "type": "text",
+          "encode": {
+            "enter": {
+              "fontSize": {"value": 10},
+              "align": {"value": "left"},
+              "fill": {"value": "black"}
+            },
+            "update": {
+              "text": {"signal": "'Lead'+'‎ ‎ ‎'+'Win'+'‎ ‎ ‎'+''"},
+              "x": {"signal": "40"},
+              "y": {"signal": "52"}
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
