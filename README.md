@@ -6,6 +6,7 @@ Documenting my journey into learning [Vega](https://vega.github.io/vega/) and us
 
 1. [Rotatable Globe](#rotatable-globe)
 2. [US Election Map 2024](#us-election-map-2024)
+3. [Cycling Distance Map Netherlands](#cycling-distance-map-netherlands)
 
 
 ## Rotatable Globe
@@ -22,3 +23,11 @@ Data from CNN election results.
 [Open in Vega Editor](https://tinyurl.com/VegaUSElectionMap2024)
 
 ![US Election Map 2024](US%20Election%20Map%202024/US%20Election%20Map%202024.gif)
+
+## Cycling Distance Map Netherlands
+How far is school by bike? Interactive map showing the average cycling distance to the nearest secondary school (_middelbare school_) in the Netherlands.
+Data from CBS, DUO and Fietsersbond.
+
+[Open in Vega Editor](https://tinyurl.com/VegaCyclingDistance)
+
+![Netherlands Cycling Distance Map](NL%20Map%20Cycling%20Distance/NL%20Map%20Cycling%20Distance.png)

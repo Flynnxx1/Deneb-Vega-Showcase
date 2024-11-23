@@ -1,0 +1,259 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl). Data by CBS, DUO and Fietsersbond.",
+    "width": 900,
+    "height": 700,
+    "padding": 20,
+      "title": {
+      "text": "How far is school by bike?",
+      "anchor": "start",
+      "fontSize": 26,
+      "fontWeight": "bold",
+      "dx":{"signal": "barStart"},
+      "dy":70
+    
+    },
+    "background": "white",
+    "autosize": "none",
+    "signals": [
+      {"name": "barStart", "update": "width/1.6"},
+      {
+        "name": "hover",
+        "value": null,
+        "on": [
+          {
+            "events": "@shapeMap:mouseover, @bar:mouseover",
+            "update": "datum.distance ",
+            "force": true
+          },
+          {
+            "events": "@shapeMap:mouseout, @bar:mouseout",
+            "update": "null",
+            "force": true
+          }
+        ]
+      }, {
+        "name": "hoverStroke",
+        "value": null,
+        "on": [
+          {
+            "events": "@shapeMap:mouseover",
+            "update": "datum.id",
+            "force": true
+          },
+          {
+            "events": "@shapeMap:mouseout",
+            "update": "null",
+            "force": true
+          }
+        ]
+      }
+    ],
+    "projections": [
+      {
+        "name": "projection",
+        "type": "mercator",
+        "scale": 7500,
+        "translate": [-160, 160],
+        "center": [2, 53]
+      }
+    ],
+    "data": [
+      {
+        "name": "cycling-data",
+        "url": "https://raw.githubusercontent.com/Flynnxx1/Deneb-Vega-Showcase/refs/heads/main/NL%20Map%20Cycling%20Distance/cycling_nl.csv",
+        "format": {"type": "csv"},
+        "transform": []
+      },
+      {
+        "name": "nl-json",
+        "url": "https://raw.githubusercontent.com/Flynnxx1/Deneb-Vega-Showcase/refs/heads/main/NL%20Map%20Cycling%20Distance/gemeente_2021.topojson",
+        "format": {"type": "topojson", "feature": "gemeente_2021"}
+      },
+      {
+        "name": "dataset-map",
+        "source": ["nl-json"],
+        "transform": [
+          {
+            "type": "lookup",
+            "from": "cycling-data",
+            "key": "statcode",
+            "fields": ["id"],
+            "values": ["distance"]
+          }
+        ]
+      },
+      {
+        "name": "dataset-bar",
+        "source": "cycling-data",
+        "transform": [
+          {"type": "aggregate", "groupby": ["distance"], "as": ["total"]},
+          {
+            "type": "formula",
+            "expr": "luminance(scale('colorBar', datum.distance)) > 0.5 ? '#000' : '#fff'",
+            "as": "fontColor"
+          }
+        ]
+      }
+    ],
+    "scales": [
+      {
+        "name": "colorMap",
+        "type": "ordinal",
+        "domain": [
+          "Less than 2km",
+          "2 to 3km",
+          "3 to 4km",
+          "4 to 5km",
+          "5km or more"
+        ],
+        "range": {"scheme": "lightgreyteal"},
+        "reverse": true
+      },
+      {
+        "name": "colorBar",
+        "type": "ordinal",
+        "domain": [
+          "Less than 2km",
+          "2 to 3km",
+          "3 to 4km",
+          "4 to 5km",
+          "5km or more"
+        ],
+        "range": {"scheme": "lightgreyteal"},
+        "reverse": true
+      },
+      {
+        "name": "yscale",
+        "type": "band",
+        "range": [{"signal": "height/1.1"}, {"signal": "height/2"}],
+        "padding": 0.5,
+        "domain": [
+          "Less than 2km",
+          "2 to 3km",
+          "3 to 4km",
+          "4 to 5km",
+          "5km or more"
+        ],
+        "reverse": true
+      },
+      {
+        "name": "xscale",
+        "type": "linear",
+        "range": [{"signal": "barStart"}, {"signal": "width"}],
+        "domain": {"data": "dataset-bar", "field": "total"},
+        "zero": true,
+        "nice": true
+      }
+    ],
+    "axes": [
+      {
+        "orient": "bottom",
+        "scale": "xscale",
+        "domain": false,
+        "ticks": false,
+        "labels": false
+      },
+      {
+        "orient": "left",
+        "scale": "yscale",
+        "domain": false,
+        "ticks": false,
+        "labels": false
+      }
+    ],
+    "marks": [
+      {
+        "name": "shapeMap",
+        "interactive": true,
+        "type": "shape",
+        "from": {"data": "dataset-map"},
+        "encode": {
+          "update": {
+            "stroke": {"signal": "datum.id==hoverStroke? 'black':'white'"},
+            "fill": {
+              "signal": "datum.distance == null ? scale('colorMap', datum.distance):datum.distance == hover ? '#FFA500': scale('colorMap', datum.distance) "
+            },
+            "cursor": {"value": "pointer"},"tooltip":{"signal":"'Region: '+ datum.properties.statnaam + ': '+ datum.distance"}
+          }
+        },
+        "transform": [{"type": "geoshape", "projection": "projection"}]
+      },
+      {
+        "name": "bar",
+        "interactive": true,
+        "type": "rect",
+        "from": {"data": "dataset-bar"},
+        "encode": {
+          "update": {
+            "x": {"scale": "xscale", "field": "total"},
+            "x2": {"scale": "xscale", "value": 0},
+            "y": {"scale": "yscale", "field": "distance"},
+            "height": {"value": 25},
+            "fill": {
+              "signal": "datum.distance == null ? scale('colorBar', datum.distance):datum.distance == hover ? '#FFA500': scale('colorBar', datum.distance) "
+            },
+            "cursor": {"value": "pointer"}
+          }
+        }
+      },
+      {
+        "name": "bar-text-label",
+        "interactive": false,
+        "type": "text",
+        "from": {"data": "bar"},
+        "encode": {
+          "enter": {
+            "text": {"field": "datum.total"},
+            "fill": {"field": "datum.fontColor"},
+            "align": {"value": "right"},
+             "fontSize": {"value": 12},
+            "x": {"field": "x2", "offset": -5},
+            "y": {"field": "y", "offset": {"field": "height", "mult": 0.8}}
+          }
+        }
+      },
+      {
+        "name": "bar-text-axis",
+        "interactive": false,
+        "type": "text",
+        "from": {"data": "bar"},
+        "encode": {
+          "enter": {
+            "text": {"field": "datum.distance"},
+            "fill": {"field": "datum.fontColor"},
+             "fontSize": {"value": 12},
+            "x": {"field": "x", "offset": 2},
+            "y": {"field": "y", "offset": {"field": "height", "mult": 0.8}}
+          }
+        }
+      },
+      {
+        "name": "subtitle-text",
+        "interactive": false,
+        "type": "text",
+   
+        "encode": {
+          "enter": {"lineBreak":{"value": "/"},
+            "text": {"value": "This map shows the average cycling distance to / the nearest secondary school in the Netherlands.  /In 2021, the average distance was 2.3 kilometres. / On average 4.3 secondary schools were located / within 3 kilometres' cycling distance. / The cycling distance to a secondary school was / shortest for residents of Schiermonnikoog at 0.4 / kilometres. / Residents of Noord-Beveland had to cycle an / average of 11.5 kilometres to the nearest / secondary school. "},
+            "x": {"signal": "width/1.6"},
+            "y": {"value": 100},
+                 "fontSize": {"value": 16},"lineHeight": {"value": 24}
+          }
+        }
+      }, {
+        "name": "source-text",
+        "interactive": false,
+        "type": "text",
+   
+        "encode": {
+          "enter": {
+            "text": {"value": "Source: CBS, DUO, Fietsersbond"},
+            "y": {"signal": "height","offset":-40},
+            "x":{"signal": "barStart"},
+                 "fontSize": {"value": 12},"lineHeight": {"value": 24}
+          }
+        }
+      }
+    ]
+  }
