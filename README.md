@@ -35,4 +35,6 @@ Data from CBS, DUO and Fietsersbond.
 # KPI Cards
 KPI cards inspired by Andy Kriebel.
 
-![KPI Cards](KPI%20Cards/KPI%20Cards.gif)
+[Open in Power BI](https://tinyurl.com/kpicards)
+
+![KPI Cards](KPI%20Cards/KPI%20Cards.png)
