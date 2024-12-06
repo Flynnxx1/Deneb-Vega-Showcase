@@ -31,3 +31,8 @@ Data from CBS, DUO and Fietsersbond.
 [Open in Vega Editor](https://tinyurl.com/VegaCyclingDistance)
 
 ![Netherlands Cycling Distance Map](NL%20Map%20Cycling%20Distance/NL%20Map%20Cycling%20Distance.png)
+
+# KPI Cards
+KPI cards inspired by Andy Kriebel.
+
+![KPI Cards](KPI%20Cards/KPI%20Cards.gif)
