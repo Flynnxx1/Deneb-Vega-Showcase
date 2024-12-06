@@ -37,4 +37,4 @@ KPI cards inspired by Andy Kriebel.
 
 [Open in Power BI](https://tinyurl.com/kpicards)
 
-![KPI Cards](KPI%20Cards/KPI%20Cards.png)
+![KPI Cards](KPI%20Cards/KPI%20Cards.PNG)
