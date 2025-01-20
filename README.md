@@ -7,6 +7,7 @@ Documenting my journey into learning [Vega](https://vega.github.io/vega/) and us
 2. [US Election Map 2024](#us-election-map-2024)
 3. [Cycling Distance Map Netherlands](#cycling-distance-map-netherlands)
 4. [KPI Cards](#kpi-cards)
+5. [WOW 2025-W3 Voronoi](#wow-025-w3-voronoi)
 
 
 ## Rotatable Globe
@@ -32,9 +33,18 @@ Data from CBS, DUO and Fietsersbond.
 
 ![Netherlands Cycling Distance Map](NL%20Map%20Cycling%20Distance/NL%20Map%20Cycling%20Distance.png)
 
-# KPI Cards
+## KPI Cards
 KPI cards inspired by Andy Kriebel.
 
 [Open in Power BI](https://tinyurl.com/kpicards)
 
 ![KPI Cards](KPI%20Cards/KPI%20Cards.PNG)
+
+## WOW 2025-W3 Voronoi
+Workout Wednesday 2025 Week 3 challenge: Can you build a Voronoi?
+
+[View the challenge](https://workout-wednesday.com/2024-week-52-power-bi-can-you-build-a-voronoi/)
+
+[Open my submission, in Power BI](https://tinyurl.com/WOW2025W3)
+
+![2025-W3 Voronoi](WOW/2025-W3%20Voronoi/2025-W3%20Voronoi.gif) 
