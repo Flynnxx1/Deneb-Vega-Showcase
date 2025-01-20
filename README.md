@@ -7,7 +7,7 @@ Documenting my journey into learning [Vega](https://vega.github.io/vega/) and us
 2. [US Election Map 2024](#us-election-map-2024)
 3. [Cycling Distance Map Netherlands](#cycling-distance-map-netherlands)
 4. [KPI Cards](#kpi-cards)
-5. [WOW 2025-W3 Voronoi](#wow-025-w3-voronoi)
+5. [WOW 2025-W3 Voronoi](#wow-2025-w3-voronoi)
 
 
 ## Rotatable Globe
