@@ -2,11 +2,11 @@
 
 Documenting my journey into learning [Vega](https://vega.github.io/vega/) and using [Deneb](https://deneb-viz.github.io/) for Power BI.
 
-**Maps**
 
 1. [Rotatable Globe](#rotatable-globe)
 2. [US Election Map 2024](#us-election-map-2024)
 3. [Cycling Distance Map Netherlands](#cycling-distance-map-netherlands)
+4. [KPI Cards](#kpi-cards)
 
 
 ## Rotatable Globe
