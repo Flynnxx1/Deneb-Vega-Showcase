@@ -48,14 +48,14 @@ Workout Wednesday 2025 Week 3 challenge: Can you build a Voronoi?
 
 [Open my submission, in Power BI](https://tinyurl.com/WOW2025W3)
 
-[2025-W3 Voronoi](WOW/2025-W3%20Voronoi/2025-W3%20Voronoi.gif) 
+![2025-W3 Voronoi](WOW/2025-W3%20Voronoi/2025-W3%20Voronoi.gif) 
 
 ## Love Songs
 No matter where your heart stands this Valentine's Day
 
 [Open in Power BI](https://tinyurl.com/5n8bxeaj)
 
-[Love Songs](Love%20Songs/Love%20Songs.gif) 
+![Love Songs](Love%20Songs/Love%20Songs.gif) 
 
 
 
