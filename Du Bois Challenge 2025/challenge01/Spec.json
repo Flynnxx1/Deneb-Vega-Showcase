@@ -1,0 +1,94 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "Du Bois Challenge 2025 01 Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl)",
+    "width": 800,
+    "height": 1300,
+    "padding": 40,
+    "background": "#EADDCE",
+    "title": {
+      "text": ["VALUE OF LAND OWNED BY GEORGIA BLACK AMERICANS."],
+      "fontSize": 30,
+      "color": "#3D3C35",
+      "font": "Source Sans Pro"
+    },
+    "signals": [
+      {
+        "name": "gradientColor",
+        "update": "{gradient: 'linear', x1: 0, y1: 0, x2: 0, y2: 1,  stops: [{offset: 0.1, color: '#D3C4B2'}, {offset: 0.6, color: '#ab977e'}, {offset: 1, color: '#8f7453'}]}"
+      }
+    ],
+    "data": [
+      {
+        "name": "table",
+        "values": [
+          {"LandValue": 1263902, "Year": 1875, "index": 1},
+          {"LandValue": 1522173, "Year": 1880, "index": 2},
+          {"LandValue": 2362889, "Year": 1885, "index": 3},
+          {"LandValue": 3485176, "Year": 1890, "index": 4},
+          {"LandValue": 4158960, "Year": 1895, "index": 5},
+          {"LandValue": 4220120, "Year": 1899, "index": 6}
+        ]
+      }
+    ],
+    "scales": [
+      {
+        "name": "y",
+        "type": "point",
+        "domain": {"data": "table", "field": "Year"},
+        "range": [50, {"signal": "height-200"}]
+      },
+      {
+        "name": "size",
+        "type": "linear",
+        "domain": {"data": "table", "field": "LandValue"},
+        "range": [0.2, 0.5]
+      }
+    ],
+    "marks": [
+      {
+        "name": "sacks",
+        "type": "symbol",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {
+            "shape": {
+              "value": "M 287.398 66.404 l 8.737 -8.737 C 325.259 30.873 314.192 -1.164 296.718 13.981 L 277.496 16.311 c -53.006 -19.222 -20.97 3.495 -10.485 53.006 z m -2.33 4.078 l -17.474 3.494 C 203.524 167.173 24.698 58.249 4.311 326.192 c 2.913 52.423 5.239 123.488 164.839 125.235 l 282.504 2.33 c 57.206 -10.246 113.006 -25.049 123.491 -129.313 c -17.475 -285.416 -217.849 -154.358 -281.34 -235.905 z"
+            },
+            "size": {"field": "LandValue", "scale": "size"},
+            "y": {"field": "Year", "scale": "y"},
+            "x": {"signal": "width/2.3"},
+            "fill": {"signal": "gradientColor"},
+            "stroke": {"value": "black"},
+            "strokeWidth": {"value": 0.4}
+          }
+        }
+      },
+      {
+        "type": "text",
+        "from": {"data": "sacks"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "'$'+format(datum.datum.LandValue,',.0f')"},
+            "align":{"value": "center"},
+            "x": {"signal": "(datum.bounds.x1+datum.bounds.x2)/2", "offset": 0},
+            "y": {"signal": "(datum.bounds.y1+datum.bounds.y2)/2", "offset": 20},
+            "fontSize": {"value": 22}
+          }
+        }
+      },
+      {
+        "type": "text",
+        "from": {"data": "sacks"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "datum.datum.Year"},
+              "align":{"value": "center"},
+            "x": {"signal": "(datum.bounds.x1+datum.bounds.x2)/2"},
+            "y": {"signal": "datum.bounds.y2", "offset": 25},
+            "fill":{"value":"#544e46"},
+            "fontSize": {"value": 22}
+          }
+        }
+      }
+    ]
+  }

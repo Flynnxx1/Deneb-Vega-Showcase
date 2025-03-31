@@ -1,0 +1,284 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "Du Bois Challenge 2025 09 Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl)",
+    "autosize": "fit",
+    "width": 800,
+    "height": 1000,
+    "padding": 40,
+    "background": "#EADDCE",
+    "title": {
+      "text": ["OCCUPATIONS OF BLACK AND WHITE AMERICANS", "IN GEORGIA."],
+      "fontSize": 30,
+      "color": "#3D3C35",
+      "font": "Source Sans Pro"
+    },
+    "signals": [
+      {"name": "startAngle", "value": -0.9},
+      {"name": "endAngle", "value": 0.9},
+      {
+        "name": "hover",
+        "value": null,
+        "on": [
+          {"events": "arc:pointerover", "update": "datum.Occupation"},
+          {"events": "arc:pointerout", "update": "null"}
+        ]
+      }
+    ],
+    "data": [
+      {
+        "name": "table",
+        "values": [
+          {
+            "Group": "African American",
+            "Occupation": "Agriculture, Fisheries and Mining",
+            "Percentage": 62
+          },
+          {
+            "Group": "African American",
+            "Occupation": "Manufacturing and Mechanical Industries",
+            "Percentage": 5
+          },
+          {
+            "Group": "African American",
+            "Occupation": "Domestic and Personal Service",
+            "Percentage": 28
+          },
+          {
+            "Group": "African American",
+            "Occupation": "Professions",
+            "Percentage": 0.5
+          },
+          {
+            "Group": "African American",
+            "Occupation": "Trade and Transportation",
+            "Percentage": 4.5
+          },
+          {
+            "Group": "Whites",
+            "Occupation": "Agriculture, Fisheries and Mining",
+            "Percentage": 64
+          },
+          {
+            "Group": "Whites",
+            "Occupation": "Manufacturing and Mechanical Industries",
+            "Percentage": 13.5
+          },
+          {
+            "Group": "Whites",
+            "Occupation": "Domestic and Personal Service",
+            "Percentage": 5.5
+          },
+          {"Group": "Whites", "Occupation": "Professions", "Percentage": 4},
+          {
+            "Group": "Whites",
+            "Occupation": "Trade and Transportation",
+            "Percentage": 13
+          }
+        ],
+        "transform": [
+          {
+            "type": "formula",
+            "expr": "datum.Group == 'African American' ?startAngle : startAngle+3.14",
+            "as": "start"
+          },
+          {
+            "type": "formula",
+            "expr": "datum.Group == 'African American' ? endAngle : endAngle+3.14",
+            "as": "end"
+          },
+          {"type": "extent", "field": "start", "signal": "startExtent"},
+          {"type": "extent", "field": "end", "signal": "endExtent"}
+        ]
+      },
+      {
+        "name": "Whites",
+        "source": "table",
+        "transform": [
+          {"type": "filter", "expr": "datum.Group == 'Whites'"},
+          {
+            "type": "collect",
+            "sort": {"field": "Percentage", "order": "descending"}
+          },
+          {
+            "type": "pie",
+            "field": "Percentage",
+            "startAngle": {"signal": "startExtent[1]"},
+            "endAngle": {"signal": "endExtent[1]"}
+          }
+        ]
+      },
+      {
+        "name": "Blacks",
+        "source": "table",
+        "transform": [
+          {"type": "filter", "expr": "datum.Group == 'African American'"},
+          {
+            "type": "collect",
+            "sort": {"field": "Percentage", "order": "descending"}
+          },
+          {
+            "type": "pie",
+            "field": "Percentage",
+            "startAngle": {"signal": "startExtent[0]"},
+            "endAngle": {"signal": "endExtent[0]"}
+          }
+        ]
+      }
+    ],
+    "scales": [
+      {
+        "name": "color",
+        "type": "ordinal",
+        "domain": {
+          "data": "table",
+          "field": "Occupation",
+          "sort": {"op": "min", "field": "Occupation"}
+        },
+        "range": ["#D7374A", "#FFC600", "#7B8BBA", "#B29984", "#D3C4B2"]
+      }
+    ],
+    "legends": [
+      {
+        "fill": "color",
+        "symbolType": "circle",
+        "orient": "none",
+        "legendX": 50,
+        "legendY": 380,
+        "rowPadding": 30,
+        "columnPadding": 350,
+        "columns": 2,
+        "labelFontSize": 12.5,
+        "symbolSize": 850,
+        "labelLimit": 1000,
+        "labelAlign": "center",
+        "labelOffset": {
+          "signal": "datum.value == 'Professions' || datum.value == 'Trade and Transportation'? -90: 90"
+        },
+        "encode": {
+          "labels": {
+            "update": {
+              "text": {
+                "signal": "datum.value == 'Agriculture, Fisheries and Mining' ? [upper('Agriculture, Fisheries'),upper('and Mining')] : split(upper(replace(datum.value, 'and', 'and/')),'/')"
+              },
+              "y": {"value": 10}
+            }
+          }
+        }
+      }
+    ],
+    "marks": [
+      {
+        "name": "arcWhites",
+        "type": "arc",
+        "from": {"data": "Whites"},
+        "encode": {
+          "enter": {
+            "fill": {"scale": "color", "field": "Occupation"},
+            "x": {"signal": "width / 2"},
+            "y": {"signal": "height / 2"}
+          },
+          "update": {
+            "startAngle": {"field": "startAngle"},
+            "endAngle": {"field": "endAngle"},
+            "outerRadius": {"signal": "width / 2"},
+            "tooltip": {"signal": "datum"},
+            "stroke": {"value": "black"},
+            "strokeWidth": {"value": 0.3},
+            "opacity": [
+              {"test": "datum.Occupation == hover", "value": 1},
+              {"test": "hover", "value": 0.2},
+              {"value": 1}
+            ]
+          }
+        }
+      },
+      {"interactive":false,
+        "name": "textWhitesPercentage",
+        "type": "text",
+        "from": {"data": "Whites"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "datum.Percentage + '%'"},
+            "x": {"signal": "width / 2"},
+            "y": {"signal": "height / 2"},
+            "fontSize": {"value": 18},
+            "radius": {"signal": "width / 2.3"},
+            "theta": {"signal": "(datum.startAngle + datum.endAngle)/2"}
+          },"update":{
+            "opacity": [
+              {"test": "datum.Occupation == hover", "value": 1},
+              {"test": "hover", "value": 0.2},
+              {"value": 1}
+            ]}
+        }
+      },
+      {
+        "name": "textWhites",
+        "type": "text",
+        "encode": {
+          "enter": {
+            "text": {"value": "WHITES."},
+            "x": {"signal": "width / 2"},
+            "y": {"signal": "height-50"},
+            "fontSize": {"value": 20}
+          }
+        }
+      },
+      {
+        "type": "arc",
+        "from": {"data": "Blacks"},
+        "encode": {
+          "enter": {
+            "fill": {"scale": "color", "field": "Occupation"},
+            "x": {"signal": "width / 2"},
+            "y": {"signal": "height / 2"}
+          },
+          "update": {
+            "startAngle": {"field": "startAngle"},
+            "endAngle": {"field": "endAngle"},
+            "outerRadius": {"signal": "width / 2"},
+            "stroke": {"value": "black"},
+            "strokeWidth": {"value": 0.3},
+            "tooltip": {"signal": "datum"},
+            "opacity": [
+              {"test": "datum.Occupation == hover", "value": 1},
+              {"test": "hover", "value": 0.2},
+              {"value": 1}
+            ]
+          }
+        }
+      },
+      {"interactive":false,
+        "name": "textBlacksPercent",
+        "type": "text",
+        "from": {"data": "Blacks"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "datum.Percentage + '%'"},
+            "x": {"signal": "width / 2"},
+            "y": {"signal": "height / 2"},
+            "radius": {"signal": "width / 2.3"},
+            "fontSize": {"value": 18},
+            "theta": {"signal": "(datum.startAngle + datum.endAngle)/2"}
+          },"update":{
+            "opacity": [
+              {"test": "datum.Occupation == hover", "value": 1},
+              {"test": "hover", "value": 0.2},
+              {"value": 1}
+            ]}
+        }
+      },
+      {
+        "name": "textBlacks",
+        "type": "text",
+        "encode": {
+          "enter": {
+            "text": {"value": "BLACKS."},
+            "x": {"signal": "width / 2"},
+            "y": {"signal": "60"},
+            "fontSize": {"value": 20}
+          }
+        }
+      }
+    ]
+  }

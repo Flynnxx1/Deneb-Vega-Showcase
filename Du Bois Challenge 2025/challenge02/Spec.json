@@ -1,0 +1,120 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "Du Bois Challenge 2025 02 Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl)",
+    "width": 800,
+    "height": 1000,
+    "padding": 40,
+    "background": "#EADDCE",
+    "title": {
+      "text": ["ACRES OF LAND OWNED BY BLACK AMERICANS", "IN GEORGIA."],
+      "fontSize": 30,
+      "color": "#3D3C35",
+     "font": "Source Sans Pro"
+    },
+    "signals": [
+      {
+        "name": "hover",
+        "value": null,
+        "on": [
+          {"events": "rect:pointerover", "update": "datum.Date"},
+          {"events": "rect:pointerout", "update": "null"}
+        ]
+      }
+    ],
+    "data": [
+      {
+        "name": "table",
+        "url": "https://raw.githubusercontent.com/ajstarks/dubois-data-portraits/refs/heads/master/challenge/2025/challenge02/data.csv",
+        "format": {"type": "csv", "parse": "auto", "delimiter": ","},
+        "transform": [{"type": "extent", "field": "Date", "signal": "extent"}]
+      }
+    ],
+    "scales": [
+      {
+        "name": "x",
+        "type": "linear",
+        "domain": {"data": "table", "field": "Land"},
+        "range": [10, {"signal": "width-10"}]
+      },
+      {
+        "name": "y",
+        "type": "band",
+        "domain": {"data": "table", "field": "Date"},
+        "range": [20, {"signal": "height-10"}],
+        "paddingInner": 0.3
+      }
+    ],
+    "axes": [
+      {
+        "orient": "left",
+        "scale": "y",
+        "domain": false,
+        "ticks": false,
+        "labelFontSize": 20,
+  
+        "labelFont":  "Source Sans Pro",
+        "encode": {
+          "labels": {
+            "update": {
+              "opacity": [
+                {"test": "datum.value === hover", "value": 1},
+                {"test": "hover", "value": 0.2}
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "marks": [
+      {
+        "name": "bars",
+        "from": {"data": "table"},
+        "type": "rect",
+        "encode": {
+          "enter": {
+            "x": {"field": "Land", "scale": "x"},
+            "x2": {"value": 0, "scale": "x"},
+            "height": {"value": 25},
+            "y": {"field": "Date", "scale": "y"},
+            "fill": {"value": "#F04059"},
+            "opacity": {"value": 0.8},
+            "stroke": {"value": "#4E1D1F"}
+          },
+          "update": {
+            "opacity": [
+              {"test": "datum.Date === hover", "value": 1},
+              {"test": "hover", "value": 0.5}
+            ]
+          }
+        }
+      },
+      {
+        "interactive": false,
+        "from": {"data": "bars"},
+        "type": "text",
+        "encode": {
+          "enter": {
+            "text": {"signal": "format(datum.datum.Land,',.0f')"},
+            "x": {"signal": "(datum.x+datum.x2)/2"},
+            "y": {"field": "y", "offset": 20},
+            "fill": {"value": "#382626"},
+            "fontSize": {"value": 20},
+            "font": {"value":  "Source Sans Pro"},
+            "fontWeight": {"value": "bold"},
+            "align": {"value": "center"},
+            "tooltip": {"signal": "datum"}
+          },
+          "update": {
+            "opacity": [
+              {
+                "test": "datum.datum.Date == extent[0] || datum.datum.Date == extent[1]",
+                "value": 1
+              },
+              {"test": "datum.datum.Date == hover", "value": 1},
+              {"value": 0}
+            ]
+          }
+        }
+      }
+    ]
+  }

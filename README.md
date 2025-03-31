@@ -9,6 +9,7 @@ Documenting my journey into learning [Vega](https://vega.github.io/vega/) and us
 4. [KPI Cards](#kpi-cards)
 5. [WOW 2025-W3 Voronoi](#wow-2025-w3-voronoi)
 6. [Love Songs](#Love-Songs)
+7. [Du Bois Challenge 2025](#du-bois-challenge-2025)
 
 
 ## Rotatable Globe
@@ -57,5 +58,16 @@ No matter where your heart stands this Valentine's Day
 
 ![Love Songs](Love%20Songs/Love%20Songs.gif) 
 
+## Du Bois Challenge 2025
+The goal of this challenge is to celebrate the data viz legacy of W.E.B Du Bois—a Black American civil rights activist, sociologist and writer—by recreating the visualizations from the 1900 Paris Exposition using modern tools.
 
+This challenge was organized by the Data Visualization Society.
+There are 10 different visualizations.
 
+[View the original challenge](https://www.datavisualizationsociety.org/news/2025/2/3/2025-du-bois-visualization-challenge) 
+
+[Explore my submissions in Vega](Du%20Bois%20Challenge%202025/README.md)
+
+[Open in Power BI](https://tinyurl.com/VegaDB25)
+
+[![Du Bois Challenge 2025](Du%20Bois%20Challenge%202025/Du%20Bois%20Challenge%202025.png)](Du%20Bois%20Challenge%202025/README.md)

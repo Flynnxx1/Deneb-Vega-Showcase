@@ -1,0 +1,298 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "Du Bois Challenge 2025 05 Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl)",
+    "width": 800,
+    "height": 1000,
+    "padding": 40,
+    "background": "#EADDCE",
+    "title": {
+      "text": ["ASSESSED VALUATION OF ALL TAXABLE PROPERTY","OWNED BY GEORGIA BLACK AMERICANS."],
+      "fontSize": 30,
+      "color": "#3D3C35",
+      "font": "Source Sans Pro"
+    },
+    "signals": [],
+    "data": [
+      {
+        "name": "table",
+        "values": [
+          {"Year": 1875, "Valuation": 5393885},
+          {"Year": 1880, "Valuation": 5764293},
+          {"Year": 1885, "Valuation": 8153390},
+          {"Year": 1890, "Valuation": 12322003},
+          {"Year": 1895, "Valuation": 12941230},
+          {"Year": 1899, "Valuation": 13447423}
+        ],
+        "transform": [
+          {
+            "type": "window",
+            "sort": {"field": "Year", "order": "ascending"},
+            "ops": ["lag"],
+            "fields": ["Valuation"],
+            "as": ["Prev_Valuation"]
+          },
+          {
+            "type": "formula",
+            "expr": "datum.Prev_Valuation == null ? 0 : datum.Valuation - datum.Prev_Valuation",
+            "as": "Yearly Difference"
+          },
+          {"type": "collect", "sort": {"field": "Year", "order": "descending"}}
+        ]
+      }
+    ],
+    "scales": [
+      {
+        "name": "radiusScale",
+        "type": "linear",
+        "domain": {"data": "table", "field": "Valuation"},
+        "range": [0, 370]
+      },
+      {
+        "name": "color",
+        "type": "ordinal",
+        "domain": {"data": "table", "field": "Year"},
+        "reverse": true,
+        "range": [
+          "#141414",
+          "#D7C0A8",
+          "#1D3672",
+          "#F1B100",
+          "#D7C0A8",
+          "#D72E48"
+        ]
+      }
+    ],
+    "axes": [],
+    "marks": [
+      {"zindex":0,
+        "name": "arcMark",
+        "type": "arc",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {"x": {"signal": "width / 2"}, "y": {"signal": "height / 2"}},
+          "update": {
+            "startAngle": [{"value": 6.29}],
+            "endAngle": {"value": 0},
+            "innerRadius": {"value": 0},
+            "outerRadius": {"scale": "radiusScale", "field": "Valuation"},
+            "fill": {"field": "Year", "scale": "color"}
+          }
+        }
+      },
+      {
+        "type": "text",
+        "from": {"data": "arcMark"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "datum.datum.Year"},
+            "align": {"value": "center"},
+            "baseline": {"value": "middle"}
+          },
+          "update": {
+            "x": {"signal": "(datum.bounds.x2+datum.bounds.x1)/2"},
+            "y": {
+              "signal": "datum.datum.Year == 1875 || datum.datum.Year == 1890 || datum.datum.Year == 1885? (datum.bounds.y2-25):(datum.bounds.y2-5)"
+            },
+            "fontSize": {
+              "signal": "datum.datum.Year == 1875 || datum.datum.Year == 1890 || datum.datum.Year == 1885? 18:13"
+            },
+            "fill": {
+              "signal": "datum.datum.Year == 1880 || datum.datum.Year == 1890 || datum.datum.Year == 1895 || datum.datum.Year == 1899? 'black':'white'"
+            }
+          }
+        }
+      },
+      {
+        "type": "text",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "'$' + format(datum.Valuation,',')"},
+            "align": {"value": "center"},
+            "baseline": {"value": "middle"},
+            "fontSize": {"value": 18},
+            "fill": {"value": "white"},
+            "x": {"signal": "width / 2"},
+            "y": {"signal": "height/2"},
+            "opacity": {"signal": "datum.Year == 1875? 1:0"}
+          }
+        }
+      },
+      {"zindex":1,
+        "type": "text",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "'$' + format(datum.Valuation,',')"},
+            "align": {"value": "center"},
+            "baseline": {"value": "middle"},
+            "fontSize": {"value": 12},
+            "fill": {"value": "black"},
+            "x": {"value": 305},
+            "y": {"value": 580},
+            "angle": {"value": -40.5},
+            "opacity": {"signal": "datum.Year == 1880? 1:0"}
+          }
+        }
+      },   {"zindex":1,
+        "type": "text",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "'$' + format(datum.Valuation,',')"},
+            "align": {"value": "center"},
+            "baseline": {"value": "middle"},
+            "fontSize": {"value": 14},
+            "fill": {"value": "white"},
+          "x": {"value": 495},
+            "y": {"value": 595},
+            "angle": {"value": 45.5},
+            "opacity": {"signal": "datum.Year == 1885? 1:0"}
+          }
+        }
+      },  {"zindex":1,
+        "type": "text",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "'$' + format(datum.Valuation,',')"},
+            "align": {"value": "center"},
+            "baseline": {"value": "middle"},
+            "fontSize": {"value": 18},
+            "fill": {"value": "black"},
+               "x": {"value": 630},
+            "y": {"value": 505},
+            "angle": {"value": 0.5},
+            "opacity": {"signal": "datum.Year == 1890? 1:0"}
+          }
+        }
+      }, {"zindex":1,
+        "type": "text",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "'$' + format(datum.Valuation,',')"},
+            "align": {"value": "center"},
+            "baseline": {"value": "middle"},
+            "fontSize": {"value": 18},
+            "fill": {"value": "black"},
+            "x": {"value": 580},
+            "y": {"value": 280},
+            "angle": {"value": -50.5},
+            "opacity": {"signal": "datum.Year == 1895? 1:0"}
+          }
+        }
+      }, {"zindex":1,
+        "type": "text",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "'$' + format(datum.Valuation,',')"},
+            "align": {"value": "center"},
+            "baseline": {"value": "middle"},
+            "fontSize": {"value": 18},
+            "fill": {"value": "black"},
+            "x": {"value": 200},
+            "y": {"value": 280},
+            "angle": {"value": 45.5},
+            "opacity": {"signal": "datum.Year == 1899? 1:0"}
+          }
+        }
+      },
+      {
+        "type": "symbol",
+        "encode": {
+          "enter": {
+            "fill": {"value": "#D72E48"},
+            "stroke": {"value": ""},
+            "x": {"value": 110},
+            "y": {"value": 250},
+            "angle": {"value": -42.5}
+          },
+          "update": {
+            "size": {"value": 270},
+            "strokeWidth": {"value": 1},
+            "shape": {
+              "value": "M 0.036 2.009 L 5.082 37.764 L 10.962 1.952 C 6.039 1.428 5.012 1.428 0.036 2.009"
+            }
+          }
+        }
+      },
+      {
+        "type": "symbol",
+        "encode": {
+          "enter": {
+            "fill": {"value": "#D7C0A8"},
+            "stroke": {"value": ""},
+            "x": {"value": 590},
+            "y": {"value": 200},
+            "angle": {"value": 37.5}
+          },
+          "update": {
+            "size": {"value": 250},
+            "strokeWidth": {"value": 1},
+            "shape": {
+              "value": "M 0.036 2.009 L 4.984 35.943 L 10.004 1.993 C 6.039 1.428 5.012 1.428 0.036 2.009"
+            }
+          }
+        }
+      },
+      {
+        "type": "symbol",
+        "encode": {
+          "enter": {
+            "fill": {"value": "#F1B100"},
+            "stroke": {"value": ""},
+            "x": {"value": 670},
+            "y": {"value": 470},
+            "angle": {"value": 90.5}
+          },
+          "update": {
+            "size": {"value": 170},
+            "strokeWidth": {"value": 1},
+            "shape": {
+              "value": "M 0.877 2.038 L 5.019 30.132 L 9.926 1.922 C 6.039 1.428 5.012 1.428 0.935 1.864"
+            }
+          }
+        }
+      },
+      {
+        "type": "symbol",
+        "encode": {
+          "enter": {
+            "fill": {"value": "#1D3672"},
+            "stroke": {"value": ""},
+            "x": {"value": 580},
+            "y": {"value": 630},
+            "angle": {"value": 135.5}
+          },
+          "update": {
+            "size": {"value": 200},
+            "strokeWidth": {"value": 1},
+            "shape": {
+              "value": "M 0.036 2.009 L 5.019 19.993 L 9.699 1.972 C 5.07 1.425 5.012 1.428 0.036 2.009"
+            }
+          }
+        }
+      },
+      {
+        "type": "symbol",
+        "encode": {
+          "enter": {
+            "fill": {"value": "#D7C0A8"},
+            "stroke": {"value": ""},
+            "x": {"value": 290},
+            "y": {"value": 620},
+            "angle": {"value": 230.5}
+          },
+          "update": {
+            "size": {"value": 80},
+            "strokeWidth": {"value": 1},
+            "shape": {
+              "value": "M 0.036 2.009 L 5.019 19.993 L 9.699 1.972 C 5.07 1.425 5.012 1.428 0.036 2.009"
+            }
+          }
+        }
+      }
+    ]
+  }

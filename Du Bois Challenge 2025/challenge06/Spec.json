@@ -1,0 +1,339 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "Du Bois Challenge 2025 06 Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl)",
+    "width": 800,
+    "height": 1000,
+    "padding": 40,
+    "background": "#EADDCE",
+    "title": {
+      "text": ["BLACK AMERICAN PROPERTY IN TWO CITIES", "OF GEORGIA."],
+      "fontSize": 30,
+      "color": "#3D3C35",
+      "font": "Source Sans Pro"
+    },
+    "signals": [],
+    "data": [
+      {
+        "name": "table",
+        "values": [
+          {"City": "Savannah", "Year": 1880, "Owners": 699, "Property": 194392},
+          {"City": "Savannah", "Year": 1890, "Owners": 1387, "Property": 550145},
+          {"City": "Savannah", "Year": 1898, "Owners": 2157, "Property": 872737},
+          {"City": "Atlanta", "Year": 1880, "Owners": 639, "Property": 227955},
+          {"City": "Atlanta", "Year": 1890, "Owners": 1120, "Property": 768256},
+          {"City": "Atlanta", "Year": 1898, "Owners": 1112, "Property": 1308995}
+        ],
+        "transform": []
+      },
+      {
+        "name": "linksOwner",
+        "values": [
+          {"yearSource": 1880},
+          {"yearSource": 1890},
+          {"yearSource": 1898}
+        ],
+        "transform": [
+          {
+            "type": "lookup",
+            "from": "table",
+            "key": "Year",
+            "fields": ["yearSource"],
+            "as": ["source"]
+          },
+          {
+            "type": "formula",
+            "expr": "scale('yOwner', datum.source.Year)+30",
+            "as": "sourceY"
+          },
+          {"type": "formula", "expr": "110", "as": "sourceX"},
+          {"type": "formula", "expr": "377.4", "as": "targetY"},
+          {"type": "formula", "expr": "75", "as": "targetX"},
+          {
+            "type": "linkpath",
+            "orient": "horizontal",
+            "sourceX": "sourceX",
+            "sourceY": "sourceY",
+            "targetX": "targetX",
+            "targetY": "targetY",
+            "shape": "diagonal",
+            "as": "linkpath"
+          }
+        ]
+      },
+      {
+        "name": "linksProperty",
+        "values": [
+          {"yearSource": 1880},
+          {"yearSource": 1890},
+          {"yearSource": 1898}
+        ],
+        "transform": [
+          {
+            "type": "lookup",
+            "from": "table",
+            "key": "Year",
+            "fields": ["yearSource"],
+            "as": ["source"]
+          },
+          {
+            "type": "formula",
+            "expr": "scale('xProperty', datum.source.Year)+30",
+            "as": "sourceX"
+          },
+          {"type": "formula", "expr": "875", "as": "sourceY"},
+          {"type": "formula", "expr": "910", "as": "targetY"},
+          {"type": "formula", "expr": "452", "as": "targetX"},
+          {
+            "type": "linkpath",
+            "orient": "vertical",
+            "sourceX": "sourceX",
+            "sourceY": "sourceY",
+            "targetX": "targetX",
+            "targetY": "targetY",
+            "shape": "diagonal",
+            "as": "linkpath"
+          }
+        ]
+      }
+    ],
+    "scales": [
+      {
+        "name": "yOwner",
+        "type": "band",
+        "domain": {"data": "table", "field": "Year"},
+        "range": [-150, {"signal": "height-100"}],
+        "padding": 0.8
+      },
+      {
+        "name": "xOwner",
+        "type": "linear",
+        "domain": {"data": "table", "field": "Owners"},
+        "range": [150, {"signal": "width-50"}]
+      },
+      {
+        "name": "xProperty",
+        "type": "band",
+        "domain": {"data": "table", "field": "Year"},
+        "range": [50, {"signal": "width+50"}],
+        "padding": 0.74
+      },
+      {
+        "name": "yProperty",
+        "type": "linear",
+        "domain": {"data": "table", "field": "Property"},
+        "range": [{"signal": "height-150"}, 100]
+      },
+      {
+        "name": "color",
+        "type": "ordinal",
+        "domain": {"data": "table", "field": "City"},
+        "range": ["#EFAD00", "#8591B1"]
+      }
+    ],
+    "legends": [
+      {
+        "fill": "color",
+        "symbolStrokeColor": "black",
+        "symbolStrokeWidth": 0.5,
+        "labelFontSize": 18,
+        "labelOffset": 80,
+        "symbolType": "M 0.007 0.263 H 14.442 V 4.208 H 0.007 Z",
+        "orient": "none",
+        "legendX": 130,
+        "legendY": 950,
+        "columns": 2,
+        "columnPadding": 240,
+        "encode": {
+          "labels": {
+            "update": {
+              "y": {"value": 22},
+              "x": {"signal": "datum.value == 'Atlanta'? -65:85"},
+              "text":{"signal": "datum.value == 'Atlanta'? 'Atlanta =':'= Savannah'"}
+            }
+          }
+        }
+      }
+    ],
+    "marks": [
+      {
+        "zindex": 1,
+        "name": "onwerGroup",
+        "type": "group",
+        "from": {"facet": {"data": "table", "name": "facet", "groupby": "Year"}},
+        "encode": {"enter": {"y": {"scale": "yOwner", "field": "Year"}}},
+        "signals": [{"name": "height", "update": "bandwidth('yOwner')"}],
+        "scales": [
+          {
+            "name": "pos",
+            "type": "band",
+            "range": "height",
+            "domain": {"data": "facet", "field": "City"}
+          }
+        ],
+        "marks": [
+          {
+            "name": "bars",
+            "from": {"data": "facet"},
+            "type": "rect",
+            "encode": {
+              "enter": {
+                "y": {"scale": "pos", "field": "City"},
+                "height": {"value": 25},
+                "x": {"scale": "xOwner", "field": "Owners"},
+                "x2": {"scale": "xOwner", "value": 0},
+                "fill": {"scale": "color", "field": "City"},
+                "stroke": {"value": "black"},
+                "strokeWidth": {"value": 0.5},
+                "tooltip": {"signal": "datum"}
+              }
+            }
+          },
+          {"interactive":false,
+            "type": "text",
+            "from": {"data": "bars"},
+            "encode": {
+              "enter": {
+                "x": {"signal": "(datum.x+datum.x2)/2"},
+                "y": {"field": "y", "offset": {"field": "height", "mult": 0.5}},
+                "fontSize": {"value": 16},
+                "fill": [{"value": "black"}],
+                "align": {"value": "center"},
+                "baseline": {"value": "middle"},
+                "text": {"signal": "format(datum.datum.Owners,',')"}
+              }
+            }
+          },
+          {
+            "type": "text",
+            "from": {"data": "bars"},
+            "encode": {
+              "enter": {
+                "y": {"signal": "datum.y", "offset": 30},
+                "x": {"field": "x", "offset": -40},
+                "fontSize": {"value": 16},
+                "fill": [{"value": "black"}],
+                "baseline": {"value": "middle"},
+                "text": {"signal": "datum.datum.Year"},
+                "opacity": {"signal": "datum.datum.City == 'Savannah' ? 1:0 "}
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "encode": {
+          "enter": {
+            "y": {"value": 382},
+            "x": {"value": 0},
+            "fontSize": {"value": 16},
+            "fill": [{"value": "black"}],
+            "text": {"value": "OWNERS."}
+          }
+        }
+      },
+      {
+        "type": "path",
+        "from": {"data": "linksOwner"},
+        "encode": {
+          "enter": {
+            "path": {"field": "linkpath"},
+            "stroke": {"value": "black"},
+            "strokeWidth": {"value": 0.5}
+          }
+        }
+      },
+      {
+        "zindex": 0,
+        "name": "proertyGroup",
+        "type": "group",
+        "from": {"facet": {"data": "table", "name": "facet", "groupby": "Year"}},
+        "encode": {"enter": {"x": {"scale": "xProperty", "field": "Year"}}},
+        "signals": [{"name": "width", "update": "bandwidth('xProperty')"}],
+        "scales": [
+          {
+            "name": "pos",
+            "type": "band",
+            "range": "width",
+            "domain": {"data": "facet", "field": "City"}
+          }
+        ],
+        "marks": [
+          {
+            "name": "bars",
+            "from": {"data": "facet"},
+            "type": "rect",
+            "encode": {
+              "enter": {
+                "x": {"scale": "pos", "field": "City"},
+                "width": {"value": 25},
+                "y": {"scale": "yProperty", "field": "Property"},
+                "y2": {"scale": "yProperty", "value": 0},
+                "fill": {"scale": "color", "field": "City"},
+                "stroke": {"value": "black"},
+                "strokeWidth": {"value": 0.5},
+                "tooltip": {"signal": "datum"}
+              }
+            }
+          },
+          {"interactive":false,
+            "type": "text",
+            "from": {"data": "bars"},
+            "encode": {
+              "enter": {
+                "y": {
+                  "signal": "(datum.y+datum.y2)/2",
+                  "offset": {"signal": "datum.datum.Year == 1890? -77:15"}
+                },
+                "x": {"field": "x", "offset": {"field": "width", "mult": 0.5}},
+                "fontSize": {"value": 16},
+                "fill": [{"value": "black"}],
+                "angle": {"value": -90},
+                "baseline": {"value": "middle"},
+                "text": {"signal": "'$'+format(datum.datum.Property,',')"}
+              }
+            }
+          },
+          {
+            "type": "text",
+            "from": {"data": "bars"},
+            "encode": {
+              "enter": {
+                "y": {"signal": "datum.y2", "offset": 15},
+                "x": {"field": "x", "offset": 10},
+                "fontSize": {"value": 16},
+                "fill": [{"value": "black"}],
+                "baseline": {"value": "middle"},
+                "text": {"signal": "datum.datum.Year"},
+                "opacity": {"signal": "datum.datum.City == 'Savannah' ? 1:0 "}
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "path",
+        "from": {"data": "linksProperty"},
+        "encode": {
+          "enter": {
+            "path": {"field": "linkpath"},
+            "stroke": {"value": "black"},
+            "strokeWidth": {"value": 0.5}
+          }
+        }
+      },
+      {
+        "type": "text",
+        "encode": {
+          "enter": {
+            "y": {"value": 930},
+            "x": {"value": 452},
+            "align": {"value": "center"},
+            "fontSize": {"value": 16},
+            "fill": [{"value": "black"}],
+            "text": {"value": "PROPERTY."}
+          }
+        }
+      }
+    ]
+  }

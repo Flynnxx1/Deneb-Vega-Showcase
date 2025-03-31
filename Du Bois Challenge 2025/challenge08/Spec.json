@@ -1,0 +1,306 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "Du Bois Challenge 2025 08 Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl)",
+    "autosize": "fit",
+    "width": 800,
+    "height": 1000,
+    "padding": 40,
+    "background": "#EADDCE",
+    "title": {
+      "text": ["OCCUPATIONS OF GEORGIA BLACK AMERICANS."],
+      "fontSize": 30,
+      "color": "#3D3C35",
+      "font": "Anton",
+      "subtitle": "MALES OVER 10.",
+      "subtitleFontSize": 20,
+      "subtitleColor": "#808080"
+    },
+    "signals": [
+      {
+        "name": "hover",
+        "value": null,
+        "on": [
+          {"events": "rect:pointerover", "update": "datum.Occupation"},
+          {"events": "rect:pointerout", "update": "null"}
+        ]
+      }
+    ],
+    "data": [
+      {
+        "name": "table",
+        "values": [
+          {"Occupation": "AGRICULTURAL/LABORERS", "Count": 98400, "index": 1},
+          {"Occupation": "FARMERS AND /PLANTERS", "Count": 63012, "index": 2},
+          {"Occupation": "LABORERS", "Count": 29723, "index": 3},
+          {"Occupation": "STEAM RAILWAY /EMPLOYEES", "Count": 7440, "index": 4},
+          {"Occupation": "SERVANTS", "Count": 7000, "index": 5},
+          {"Occupation": "DRAYMEN, HACKMEN", "Count": 4390, "index": 6},
+          {"Occupation": "CARPENTERS AND /JOINERS", "Count": 3781, "index": 7},
+          {
+            "Occupation": "SAW AND PLANING /MILL EMPLOYEES",
+            "Count": 2471,
+            "index": 8
+          },
+          {"Occupation": "MESSENGERS", "Count": 1970, "index": 9},
+          {"Occupation": "WOOD CHOPPERS", "Count": 1399, "index": 10},
+          {
+            "Occupation": "BLACKSMITHS /AND/ WHEELWRIGHTS",
+            "Count": 1328,
+            "index": 11
+          },
+          {"Occupation": "CLERGYMEN", "Count": 1277, "index": 21},
+          {"Occupation": "MASONS", "Count": 1243, "index": 13},
+          {"Occupation": "BRICK-MAKERS AND /POTTERS", "Count": 1243, "index": 14},
+          {"Occupation": "BARBERS", "Count": 899, "index": 15},
+          {"Occupation": "MERCHANTS", "Count": 837, "index": 16},
+          {
+            "Occupation": "PAINTERS, GLAZERS /AND VARNISHERS",
+            "Count": 676,
+            "index": 17
+          },
+          {"Occupation": "BOOT AND SHOE/ MAKERS", "Count": 632, "index": 18},
+          {"Occupation": "PROFESSORS AND /TEACHERS", "Count": 620, "index": 19},
+          {"Occupation": "LIVERY STABLE/ KEEPERS", "Count": 620, "index": 20},
+          {"Occupation": "ENGINEERS", "Count": 520, "index": 21},
+          {"Occupation": "GARDENERS AND/ FLORISTS", "Count": 519, "index": 22}
+        ]
+      },
+      {
+        "name": "groupped",
+        "source": "table",
+        "transform": [
+          {"type": "filter", "expr": "datum.index  >=8"},
+          {
+            "type": "joinaggregate",
+            "groupby": [],
+            "fields": ["Count"],
+            "ops": ["sum"],
+            "as": ["Count"]
+          },
+          {
+            "type": "aggregate",
+            "groupby": [],
+            "fields": ["Occupation"],
+            "ops": ["values"],
+            "as": ["Array"]
+          },
+          {
+            "type": "formula",
+            "expr": "pluck(datum.Array,'Occupation')",
+            "as": "Occupation"
+          },
+          {
+            "type": "formula",
+            "expr": "peek(pluck(datum.Array,'Count'))",
+            "as": "Count"
+          }
+        ]
+      },
+      {
+        "name": "groupped2",
+        "source": "table",
+        "transform": [
+          {"type": "filter", "expr": "datum.index  >=8"},
+          {
+            "type": "joinaggregate",
+            "groupby": [],
+            "fields": ["Count"],
+            "ops": ["sum"],
+            "as": ["Count"]
+          },
+          {
+            "type": "aggregate",
+            "groupby": [],
+            "fields": ["Occupation"],
+            "ops": ["values"],
+            "as": ["Array"]
+          },
+          {
+            "type": "formula",
+            "expr": "pluck(datum.Array,'Occupation')",
+            "as": "Occupation"
+          },
+          {
+            "type": "formula",
+            "expr": "peek(pluck(datum.Array,'Count'))",
+            "as": "Count"
+          }
+        ]
+      },
+      {
+        "name": "links",
+        "values": [
+          {"OccupationSource": "SAW AND PLANING /MILL EMPLOYEES"},
+          {"OccupationSource": "GARDENERS AND/ FLORISTS"}
+        ],
+        "transform": [
+          {
+            "type": "lookup",
+            "from": "table",
+            "key": "Occupation",
+            "fields": ["OccupationSource"],
+            "as": ["source"]
+          },
+          {
+            "type": "formula",
+            "expr": "datum.OccupationSource == 'SAW AND PLANING /MILL EMPLOYEES'? scale('y', datum.source.Occupation)-15:scale('y', datum.source.Occupation)+15",
+            "as": "sourceY"
+          },
+          {"type": "formula", "expr": "20", "as": "sourceX"},
+          {"type": "formula", "expr": "610", "as": "targetY"},
+          {"type": "formula", "expr": "75", "as": "targetX"},
+          {
+            "type": "linkpath",
+            "orient": "horizontal",
+            "sourceX": "sourceX",
+            "sourceY": "sourceY",
+            "targetX": "targetX",
+            "targetY": "targetY",
+            "shape": "diagonal",
+            "as": "linkpath"
+          }
+        ]
+      }
+    ],
+    "scales": [
+      {
+        "name": "x",
+        "type": "linear",
+        "domain": {"data": "table", "field": "Count"},
+        "range": [0, {"signal": "width-80"}],
+        "zero": true
+      },
+      {
+        "name": "y",
+        "type": "band",
+        "paddingInner": 1,
+        "domain": {"data": "table", "field": "Occupation"},
+        "range": [20, {"signal": "height"}]
+      }
+    ],
+    "axes": [
+      {
+        "orient": "left",
+        "scale": "y",
+        "ticks": false,
+        "domain": false,
+        "offset": 80,
+        "labelFontSize": 14,
+        "labelColor": "#808080",
+        "encode": {
+          "labels": {
+            "update": {
+              "lineBreak": {"value": "/"},
+              "opacity": [
+                {"test": "hover && datum.value === hover", "value": 1},
+                {
+                  "test": "hover && indexof(hover,datum.value)>= 0",
+                  "value": 1
+                },
+                {"test": "hover", "value": 0.2},
+                {"value": 1}
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "marks": [
+      {
+        "name": "bar",
+        "type": "rect",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {
+            "x": {"field": "Count", "scale": "x"},
+            "x2": {"value": 0, "scale": "x"},
+            "height": {"value": 12},
+            "y": {"field": "Occupation", "scale": "y", "offset": -5},
+            "fill": {"value": "#D7374A"},
+            "stroke": {"value": "#2A2024"},
+            "tooltip": {"signal": "datum"}
+          },
+          "update": {
+            "opacity": [
+              {"test": "hover && datum.Occupation === hover", "value": 1},
+              {
+                "test": "hover && indexof(hover,datum.Occupation)>= 0",
+                "value": 1
+              },
+              {"test": "hover", "value": 0.2},
+              {"value": 1}
+            ]
+          }
+        }
+      },
+      {
+        "name": "barGroupped",
+        "type": "rect",
+        "from": {"data": "groupped"},
+        "encode": {
+          "enter": {
+            "x": {"field": "Count", "scale": "x", "offset": 80},
+            "x2": {"value": 80},
+            "height": {"value": 12},
+            "y": {"value": 605},
+            "fill": {"value": "#D7374A"},
+            "stroke": {"value": "#2A2024"},
+            "tooltip": {"signal": "datum"}
+          },
+          "update": {
+            "opacity": [
+              {"test": "hover && datum.Occupation === hover", "value": 1},
+              {"test": "hover", "value": 0.2},
+              {"value": 1}
+            ]
+          }
+        }
+      },
+      {
+        "type": "text",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "format(datum.Count,',.0f')"},
+            "fontSize": {"value": 16},
+            "fill": {"value": "#808080"},
+            "x": {"value": -60},
+            "y": {"field": "Occupation", "scale": "y", "offset": 5}
+          },
+          "update": {
+            "opacity": [
+              {"test": "hover && datum.Occupation === hover", "value": 1},
+              {
+                "test": "hover && indexof(hover,datum.Occupation)>= 0",
+                "value": 1
+              },
+              {"test": "hover", "value": 0.2},
+              {"value": 1}
+            ]
+          }
+        }
+      },
+      {
+        "type": "path",
+        "from": {"data": "links"},
+        "encode": {
+          "enter": {
+            "path": {"field": "linkpath"},
+            "stroke": {"value": "black"},
+            "strokeWidth": {"value": 0.5}
+          }
+        }
+      },
+      {
+        "type": "text",
+        "encode": {
+          "enter": {
+            "text": {"value": "1890."},
+            "fontSize": {"value": 30},
+            "x": {"value": 180},
+            "y": {"value": 500}
+          }
+        }
+      }
+    ]
+  }

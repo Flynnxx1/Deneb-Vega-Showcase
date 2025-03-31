@@ -1,0 +1,123 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "Du Bois Challenge 2025 03 Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl)",
+    "width": 800,
+    "height": 1000,
+    "padding": 40,
+    "background": "#EADDCE",
+    "title": {
+      "text": ["LAND OWNED BY BLACK AMERICANS IN GEORGIA, U.S.A 1870-1900."],
+      "fontSize": 30,
+      "color": "#3D3C35",
+      "font": "Source Sans Pro"
+    },
+    "projections": [
+      {
+        "name": "projection",
+        "type": "mercator",
+        "scale": 12000,
+        "center": [-65, 12.5],
+        "rotate": [0, -3, 0],
+        "translate": [2700, 2000]
+      }
+    ],
+    "signals": [
+      {
+        "name": "hover",
+        "value": null,
+        "on": [
+          {"events": "shape:pointerover", "update": "datum.NHGISNAM"},
+          {"events": "shape:pointerout", "update": "null"}
+        ]
+      }
+    ],
+    "data": [
+      {
+        "name": "table",
+        "url": "https://raw.githubusercontent.com/Flynnxx1/datasets/refs/heads/main/challenge03-2025.csv",
+        "format": {"type": "csv", "parse": "auto", "delimiter": ","}
+      },
+      {
+        "name": "map",
+        "url": "https://raw.githubusercontent.com/Flynnxx1/datasets/refs/heads/main/DuBoisChallenge%20-%20Georgia%20Counties%20w%201870%20%26%201880%20data.json",
+        "format": {
+          "type": "topojson",
+          "feature": "DuBoisChallenge - Georgia Counties w 1870 & 1880 data"
+        },
+        "transform": [
+          {
+            "type": "formula",
+            "expr": "pluck(datum.properties, 'NHGISNAM')",
+            "as": "NHGISNAM"
+          },
+          {
+            "type": "lookup",
+            "from": "table",
+            "key": "County1890",
+            "fields": ["NHGISNAM"],
+            "values": [
+              "color",
+              "Black population 1890",
+              "Acres 1899",
+              "population 2010"
+            ],
+            "as": ["color", "pop1890", "arc1899", "pop2010"]
+          }
+        ]
+      }
+    ],
+    "scales": [],
+    "axes": [],
+    "marks": [
+      {
+        "name": "shapMap",
+        "type": "shape",
+        "from": {"data": "map"},
+        "encode": {
+          "update": {
+            "strokeWidth": {"value": 1},
+            "stroke": {"value": "#3D3C35"},
+            "fill": {"field": "color"},
+            "opacity": [
+              {"test": "hover && datum.NHGISNAM === hover", "value": 1},
+              {"test": "hover", "value": 0.2},
+              {"value": 0.6}
+            ],
+            "tooltip": {"signal": "datum"}
+          }
+        },
+        "transform": [{"type": "geoshape", "projection": "projection"}]
+      },
+      {"interactive":false,
+        "type": "text",
+        "from": {"data": "shapMap"},
+        "encode": {
+          "update": {
+            "x": {"signal": "(datum.bounds.x1+datum.bounds.x2)/2"},
+            "y": {"signal": "(datum.bounds.y1+datum.bounds.y2)/2"},
+            "text": {"signal": "datum.datum.arc1899"},
+            "align": {"value": "center"},
+            "font": {"value": "Source Sans Pro"}
+          }
+        }
+      },
+      {
+        "type": "text",
+        "encode": {
+          "enter": {
+            "x": {"value": 800},
+            "y": {"value": 200},
+            "text": {
+              "value": [
+                "THE FIGURES INDICATE THE NUMBER OF",
+                "ACRES OWEND IN EACH COUNTY IN 1899"
+              ]
+            },
+            "align": {"value": "center"},
+            "font": {"value": "Source Sans Pro"},
+            "fontSize": {"value": 16}
+          }
+        }
+      }
+    ]
+  }

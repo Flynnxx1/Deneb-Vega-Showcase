@@ -1,0 +1,234 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "Du Bois Challenge 2025 04 Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl)",
+    "width": 800,
+    "height": 1000,
+    "padding": 40,
+    "background": "#EADDCE",
+    "title": {
+      "text": ["VALUATION OF TOWN AND CITY PROPERTY OWNED", "BY BLACK AMERICANS IN GEORGIA."],
+      "fontSize": 30,
+      "color": "#3D3C35",
+      "font": "Source Sans Pro"
+    },
+    "signals": [
+      {"name": "domainY", "update": "domain('y')"},
+      {
+        "name": "domainX",
+        "update": "[year(domain('x')[0]), year(domain('x')[1])]"
+      }
+    ],
+    "data": [
+      {
+        "name": "table",
+        "url": "https://raw.githubusercontent.com/Flynnxx1/datasets/refs/heads/main/dataChallege04.csv",
+        "format": {
+          "type": "csv",
+          "parse": {"Year": "date", "Property Valuation": "number"},
+          "delimiter": ","
+        },
+        "transform": [
+          {"type": "formula", "as": "yearValue", "expr": "year(datum.Year)"},
+          {
+            "type": "formula",
+            "as": "color",
+            "expr": "datum.yearValue <= 1874 ? 'a':  datum.yearValue >1899 ? 'b':'c'"
+          }
+        ]
+      },
+      {
+        "name": "bridgeA",
+        "source": "table",
+        "transform": [
+          {
+            "type": "filter",
+            "expr": "datum.yearValue >= 1874 && datum.yearValue <=1876"
+          }
+        ]
+      },
+      {
+        "name": "bridgeB",
+        "source": "table",
+        "transform": [{"type": "filter", "expr": "datum.yearValue >= 1894"}]
+      }
+    ],
+    "scales": [
+      {
+        "name": "x",
+        "type": "time",
+        "domain": {"data": "table", "field": "Year"},
+        "range": [0, {"signal": "width"}],
+        "nice": "year"
+      },
+      {
+        "name": "y",
+        "type": "linear",
+        "domain": {"data": "table", "field": "Property Valuation"},
+        "range": "height"
+      },
+      {
+        "name": "verticalGridLineAdjusted",
+        "type": "linear",
+        "range": [{"signal": "0"}, {"signal": "height-9"}]
+      }
+    ],
+    "axes": [
+      {
+        "orient": "bottom",
+        "scale": "x",
+        "tickCount": "year",
+        "labels": false,
+        "grid": true,
+        "ticks": false,
+        "gridScale": "verticalGridLineAdjusted",
+        "encode": {
+          "grid": {
+            "update": {
+              "stroke": {
+                "signal": "year(datum.value) == 1870 || year(datum.value) == 1900? 'black' : 'red'"
+              }
+            }
+          }
+        }
+      },
+      {
+        "orient": "bottom",
+        "scale": "x",
+        "tickCount": 5,
+        "grid": false,
+        "ticks": false,
+        "gridColor": "black"
+      },
+      {
+        "orient": "left",
+        "scale": "y",
+        "offset": 80,
+        "tickCount": 40,
+        "grid": true,
+        "ticks": true,
+        "tickSize": 70,
+        "labels": true,
+        "encode": {
+          "domain": {
+            "update": {
+              "stroke": {"value": "black"},
+              "y": {"value": 10},
+              "y2": {"signal": "height"}
+            }
+          },
+          "ticks": {
+            "update": {
+              "x": {
+                "signal": "indexof([1000000, 2000000, 3000000,4000000], datum.value) >=0 ? 100 : 0"
+              },
+              "x2": {
+                "signal": "indexof([1000000, 2000000, 3000000,4000000], datum.value) >=0 ? 0 : -70"
+              },
+              "stroke": {
+                "signal": "datum.value == domainY[0] || datum.value+50000 == domainY[1] ? 'black' : 'red'"
+              }
+            }
+          },
+          "grid": {
+            "update": {
+              "stroke": {
+                "signal": "datum.value == domainY[0] || datum.value+50000 == domainY[1] ? 'black' : 'red'"
+              }
+            }
+          },
+          "labels": {
+            "update": {
+              "text": {"signal": "datum.value==domainY[1]-50000? 'DOLLARS':''"},
+              "x":{"value": -10},
+              "y":{"value": 20}
+            }
+          }
+        }
+      },
+      {
+        "orient": "left",
+        "scale": "y",
+        "offset": 150,
+        "tickCount": 5,
+        "grid": false,
+        "ticks": false,
+        "encode": {
+          "domain": {
+            "update": {
+              "stroke": {"value": "black"},
+              "y": {"value": 10},
+              "y2": {"signal": "height"}
+            }
+          },
+          "labels": {
+            "update": {
+              "x": {"value": 60},
+              "fill": {"signal": "datum.value == 0? '': 'black'"}
+            }
+          }
+        }
+      }
+    ],
+    "marks": [
+      {
+        "zindex": 1,
+        "type": "group",
+        "from": {
+          "facet": {"name": "series", "data": "table", "groupby": "color"}
+        },
+        "marks": [
+          {
+            "type": "line",
+            "from": {"data": "series"},
+            "encode": {
+              "enter": {
+                "x": {"field": "Year", "scale": "x"},
+                "y": {"field": "Property Valuation", "scale": "y"},
+                "strokeWidth": {"value": 10},
+                "interpolate": {"value": "natural"},
+                "stroke": {
+                  "signal": "datum.color == 'a'? 'grey':datum.color == 'b'? '':'black'"
+                },
+                "strokeCap": {"value": "butt"},
+                "opacity": {
+                  "signal": "datum.color == 'a'? 0.5:datum.color == 'b'? 0:1"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "zindex": 2,
+        "type": "line",
+        "from": {"data": "bridgeA"},
+        "encode": {
+          "enter": {
+            "x": {"field": "Year", "scale": "x", "offset": -3},
+            "y": {"field": "Property Valuation", "scale": "y", "offset": 0},
+            "stroke": {"value": "black"},
+            "strokeWidth": {"value": 9},
+            "strokeCap": {"value": "butt"},
+            "interpolate": {"value": "natural"},
+            "opacity": {"value": 1}
+          }
+        }
+      },
+      {
+        "zindex": 0,
+        "type": "line",
+        "from": {"data": "bridgeB"},
+        "encode": {
+          "enter": {
+            "x": {"field": "Year", "scale": "x"},
+            "y": {"field": "Property Valuation", "scale": "y"},
+            "stroke": {"value": "grey"},
+            "strokeCap": {"value": "butt"},
+            "strokeWidth": {"value": 10},
+            "interpolate": {"value": "natural"},
+            "strokeOpacity": {"value": 0.5}
+          }
+        }
+      }
+    ]
+  }

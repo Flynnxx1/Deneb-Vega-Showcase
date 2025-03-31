@@ -1,0 +1,369 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "Du Bois Challenge 2025 10 Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl)",
+    "autosize": "fit",
+    "width": 1000,
+    "height": 800,
+    "padding": 40,
+    "background": "#EADDCE",
+    "title": {
+      "text": ["OCCUPATIONS OF BLACK AND WHITE AMERICANS", "IN GEORGIA."],
+      "fontSize": 30,
+      "color": "#3D3C35",
+      "font": "Source Sans Pro"
+    },
+    "signals": [
+      {"name": "startAngle", "value": -0.9},
+      {"name": "endAngle", "value": 0.9}
+    ],
+    "data": [
+      {
+        "name": "table",
+        "values": [
+          {
+            "Class": "$100-200",
+            "Actual Average": 139.1,
+            "Rent": 19,
+            "Food": 43,
+            "Clothes": 28,
+            "Tax": 0.1,
+            "Other": 9.9
+          },
+          {
+            "Class": "$200-300",
+            "Actual Average": 249.45,
+            "Rent": 22,
+            "Food": 47,
+            "Clothes": 23,
+            "Tax": 4,
+            "Other": 4
+          },
+          {
+            "Class": "$300-400",
+            "Actual Average": 335.66,
+            "Rent": 23,
+            "Food": 43,
+            "Clothes": 18,
+            "Tax": 4.5,
+            "Other": 11.5
+          },
+          {
+            "Class": "$400-500",
+            "Actual Average": 433.82,
+            "Rent": 18,
+            "Food": 37,
+            "Clothes": 15,
+            "Tax": 5.5,
+            "Other": 24.5
+          },
+          {
+            "Class": "$500-750",
+            "Actual Average": 547,
+            "Rent": 13,
+            "Food": 31,
+            "Clothes": 17,
+            "Tax": 5,
+            "Other": 34
+          },
+          {
+            "Class": "$750-1000",
+            "Actual Average": 880,
+            "Rent": 0,
+            "Food": 37,
+            "Clothes": 19,
+            "Tax": 8,
+            "Other": 36
+          },
+          {
+            "Class": "Over $1000",
+            "Actual Average": 1125,
+            "Rent": 0,
+            "Food": 29,
+            "Clothes": 16,
+            "Tax": 4.5,
+            "Other": 50.5
+          },
+          {
+            "Class": "topRowPlaceHolder",
+            "Actual Average": 1125,
+            "Rent": 20,
+            "Food": 20,
+            "Clothes": 20,
+            "Tax": 20,
+            "Other": 20
+          }
+        ],
+        "transform": [
+          {
+            "type": "fold",
+            "fields": ["Rent", "Food", "Clothes", "Tax", "Other"],
+            "as": ["key", "percent"]
+          },
+          {
+            "type": "formula",
+            "expr": "indexof(['Rent', 'Food', 'Clothes', 'Tax', 'Other'], datum.key)",
+            "as": "order"
+          },
+          {
+            "type": "stack",
+            "groupby": ["Class"],
+            "sort": {"field": "order", "order": "ascending"},
+            "field": "percent",
+            "as": ["x0", "x1"]
+          },
+          {
+            "type": "formula",
+            "expr": "indexof(['topRowPlaceHolder', '$100-200', '$200-300', '$300-400', '$400-500','$500-750','$750-1000','Over $1000'], datum.Class)",
+            "as": "orderYaxis"
+          },
+          {
+            "type": "collect",
+            "sort": {"field": "orderYaxis", "order": "ascending"}
+          }
+        ]
+      },
+      {
+        "name": "lines-data",
+        "source": ["table"],
+        "transform": [
+          {"type": "filter", "expr": "datum.key != 'Rent'"},
+          {"type": "fold", "fields": ["x0", "x1"], "as": ["xType", "x"]},
+          {
+            "type": "formula",
+            "expr": "datum.xType  == 'x1' && datum.Class  != 'topRowPlaceHolder' ? scale('y',datum.Class)+50 :  datum.Class  == 'topRowPlaceHolder' ? scale('y',datum.Class)+50: scale('y',datum.Class)+0",
+            "as": "y"
+          }
+        ]
+      },
+      {"name": "rules-data", "values": [{"x": 1}, {"x": 2}, {"x": 3}]}
+    ],
+    "scales": [
+      {
+        "name": "y",
+        "type": "band",
+        "paddingInner": 0.5,
+        "domain": {"data": "table", "field": "Class"},
+        "range": [50, {"signal": "height-50"}]
+      },
+      {
+        "name": "x",
+        "type": "linear",
+        "domain": {"data": "table", "fields": ["x1", "x0"]},
+        "range": [100, {"signal": "width-50"}]
+      },
+      {
+        "name": "color",
+        "type": "ordinal",
+        "domain": ["Rent", "Food", "Clothes", "Tax", "Other"],
+        "range": ["black", "#816581", "#D79583", "#BCD2E8", "#d6d6d4"]
+      },
+      {
+        "name": "rulesX",
+        "type": "band",
+        "domain": {"data": "rules-data", "field": "x"},
+        "range": [-145, 155]
+      }
+    ],
+    "axes": [
+      {
+        "orient": "left",
+        "scale": "y",
+        "domain": false,
+        "ticks": false,
+        "labelFontSize": 16,
+        "labelAlign": "left",
+        "labelColor": "#6e6a6a",
+        "encode": {
+          "labels": {
+            "update": {
+              "x": {"value": -140},
+              "lineBreak": {"value": " "},
+              "text": {
+                "signal": "datum.value == 'topRowPlaceHolder'? '':datum.value"
+              },
+              "font": {"value": "Source Sans Pro"}
+            }
+          }
+        }
+      }
+    ],
+    "legends": [
+      {
+        "fill": "color",
+        "orient": "none",
+        "columns": 5,
+        "legendX": 120,
+        "legendY": 50,
+        "columnPadding": 60,
+        "labelFontSize": 18,
+        "symbolOpacity": 0,
+        "labelColor": "#6e6a6a",
+        "encode": {
+          "labels": {
+            "update": {
+              "text": {"signal": "upper(datum.value)"},
+              "font": {"value": "Source Sans Pro"}
+            }
+          }
+        }
+      }
+    ],
+    "marks": [
+      {
+        "name": "bars",
+        "type": "rect",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {
+            "x": {"field": "x0", "scale": "x"},
+            "x2": {"field": "x1", "scale": "x"},
+            "y": {
+              "field": "Class",
+              "scale": "y",
+              "offset": {"signal": "datum.Class == 'topRowPlaceHolder'? 30:0"}
+            },
+            "height": {"signal": "datum.Class == 'topRowPlaceHolder'? 20:50"},
+            "fill": {"scale": "color", "field": "key"},
+            "tooltip": {"signal": "datum"},
+            "stroke": {"value": "black"},
+            "strokeWidth": {"value": 0.5},
+            "opacity": {"value": 0.8}
+          }
+        }
+      },
+      {
+        "type": "text",
+        "from": {"data": "bars"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "'$'+datum.datum['Actual Average']"},
+            "x": {"value": -40},
+            "y": {"field": "y", "offset": 26},
+            "fontSize": {"value": 16},
+            "fill": {"value": "#6e6a6a"},
+            "opacity": [
+              {"test": "datum.datum.Class == 'topRowPlaceHolder'", "value": 0},
+              {"test": "datum.datum.order == 0", "value": 1},
+              {"value": 0}
+            ]
+          }
+        }
+      },
+      {
+        "zindex": 1,
+        "type": "rule",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {
+            "x": {"value": -145},
+            "x2": {"value": 110},
+            "y": {"field": "Class", "scale": "y", "offset": 70},
+            "stroke": {"value": "#6e6a6a"},
+            "strokeWidth": {"value": 0.5},
+            "opacity": [{"test": "datum.order == 0", "value": 1}, {"value": 0}]
+          }
+        }
+      },
+      {
+        "zindex": 0,
+        "type": "symbol",
+        "from": {"data": "table"},
+        "encode": {
+          "enter": {
+            "shape": {
+              "value": "M437.5 261.8l6-5.8-6-5.8-184-176-5.8-5.5L236.7 80.2l5.8 5.5L412.1 248 8 248l-8 0 0 16 8 0 404.1 0L242.5 426.2l-5.8 5.5 11.1 11.6 5.8-5.5 184-176z"
+            },
+            "x": {"value": 99},
+            "y": {"field": "Class", "scale": "y", "offset": 62},
+            "size": {"value": 0.004},
+            "fill": {"value": "#6e6a6a"},
+            "opacity": [{"test": "datum.order == 0", "value": 1}, {"value": 0}]
+          }
+        }
+      },
+      {
+        "type": "rule",
+        "from": {"data": "rules-data"},
+        "encode": {
+          "enter": {
+            "x": {"field": "x", "scale": "rulesX"},
+            "y": {"value": 120},
+            "y2": {"signal": "height-23"},
+            "stroke": {"value": "#6e6a6a"},
+            "strokeWidth": {"value": 0.5}
+          }
+        }
+      },
+      {
+        "zindex": 1,
+        "type": "text",
+        "from": {"data": "bars"},
+        "encode": {
+          "enter": {
+            "text": {"signal": "datum.datum.percent+ '%'"},
+            "x": {"signal": "(datum.bounds.x1+datum.bounds.x2)/2", "offset": -15},
+            "y": {"signal": "(datum.bounds.y1+datum.bounds.y2)/2", "offset": 5},
+            "fill": {"value": "white"},
+            "fontSize": {"value": 16},
+            "opacity": [
+              {"test": "datum.datum.Class == 'topRowPlaceHolder'", "value": 0},
+              {"test": "datum.datum.percent <=0.1", "value": 0},
+              {"value": 1}
+            ]
+          }
+        }
+      },
+      {
+        "zindex": 0,
+        "type": "group",
+        "name": "connectiongLines",
+        "from": {
+          "facet": {"name": "facet", "data": "lines-data", "groupby": "key"}
+        },
+        "encode": {
+          "update": {"width": {"signal": "width"}, "height": {"signal": "height"}}
+        },
+        "marks": [
+          {
+            "type": "line",
+            "from": {"data": "facet"},
+            "encode": {
+              "enter": {
+                "x": {"field": "x0", "scale": "x"},
+                "y": {"signal": "datum.x0 == 0? 558: datum.y"},
+                "tooltip": {"signal": "datum"},
+                "stroke": {"value": "#3d3a3a"},
+                "strokeWidth": {"value": 0.5}
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "encode": {
+          "enter": {
+            "x": {"value": 300},
+            "y": {"signal": "height"},
+            "fontSize": {"value": 16},
+            "fill": {"value": "#6e6a6a"},
+            "text": {"value": "FOR FURTHEF STATISTICS RAISE THIS FRAME."}
+          }
+        }
+      },
+      {
+        "type": "text",
+        "encode": {
+          "enter": {
+            "fontSize": {"value": 12},
+            "x": {"value": -140},
+            "y": {"value": 110},
+            "fill": {"value": "#6e6a6a"},
+            "text": {
+              "value": "CLASS ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ACTUAL AVERAGE"
+            }
+          }
+        }
+      }
+    ]
+  }

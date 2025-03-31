@@ -1,0 +1,120 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "Du Bois Challenge 2025 07 Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl)",
+    "width": 800,
+    "height": 1000,
+    "padding": 40,
+    "background": "#EADDCE",
+    "title": {
+      "text": [
+        "ASSESSED VALUE OF HOUSEHOLD AND KITCHEN FURNITURE",
+        "OWNED BY GEORGIA BLACK AMERICANS."
+      ],
+      "fontSize": 30,
+      "color": "#3D3C35",
+      "font": "Source Sans Pro"
+    },
+    "data": [
+      {
+        "name": "table",
+        "values": [
+          {"HousholdValue": 21186, "Year": 1875, "index": 1},
+          {"HousholdValue": 498532, "Year": 1880, "index": 2},
+          {"HousholdValue": 736170, "Year": 1885, "index": 3},
+          {"HousholdValue": 1173624, "Year": 1890, "index": 4},
+          {"HousholdValue": 1322694, "Year": 1895, "index": 5},
+          {"HousholdValue": 1434975, "Year": 1899, "index": 6}
+        ],
+        "transform": [
+          {"type": "formula", "expr": "(datum.index*1 /25)", "as": "scaledValue"},
+          {
+            "type": "formula",
+            "expr": "340 - (datum.scaledValue * 480)",
+            "as": "scaledRadius"
+          },
+          {
+            "type": "formula",
+            "expr": "5+(datum.HousholdValue / 1750)",
+            "as": "spiralLength"
+          },
+          {
+            "type": "formula",
+            "expr": "sequence(400, 410 - datum.spiralLength, -1)",
+            "as": "Sequence"
+          },
+          {"type": "flatten", "fields": ["Sequence"]}
+        ]
+      }
+    ],
+    "scales": [
+      {
+        "name": "color",
+        "type": "ordinal",
+        "domain": {"data": "table", "field": "Year"},
+        "range": [
+          "#DF3249",
+          "#bab6b1",
+          "#EEB030",
+          "#BE9C86",
+          "#AAA9B7",
+          "#E9AFA5"
+        ],
+        "reverse": true
+      }
+    ],
+    "marks": [
+      {
+        "name": "spiralGroup",
+        "type": "group",
+        "from": {"facet": {"data": "table", "name": "facet", "groupby": "Year"}},
+        "encode": {
+          "update": {"width": {"signal": "width"}, "height": {"signal": "height"}}
+        },
+        "marks": [
+          {
+            "type": "trail",
+            "name": "Spiral",
+            "from": {"data": "facet"},
+            "encode": {
+              "enter": {
+                "fill": {"field": "Year", "scale": "color"},
+                "size": {"value": 16}
+              },
+              "update": {
+                "x": {
+                  "signal": "380 - (datum.scaledRadius + datum.Sequence*0.16) * cos(PI * (datum.Sequence) / 260)"
+                },
+                "y": {
+                  "signal": "500+ (datum.scaledRadius + datum.Sequence*0.16) * sin(PI * (datum.Sequence) / 260)"
+                },
+                "tooltip": {"signal": "datum"}
+              }
+            }
+          },
+          {
+            "type": "text",
+            "from": {"data": "Spiral"},
+            "encode": {
+              "enter": {
+                "text": {
+                  "signal": "datum.datum.Year+ ' —— '+ '$'+ format(datum.datum.HousholdValue,',.0f')"
+                },
+                "fontSize": {"value": 18},
+                "fill":{"value":"#3d3a3a"},
+                "font":{"value": "Source Sans Pro"}
+              },
+              "update": {
+                "x": {
+                  "signal": "data('Spiral')[0].x",
+                  "offset": {"signal": "-190-datum.datum.index*1.85"}
+                },
+                "y": {"signal": "data('Spiral')[0].y", "offset": 8},
+                "tooltip": {"signal": "datum"},
+                "opacity": {"signal": "datum.datum.Sequence ==398? 1:0"}
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
