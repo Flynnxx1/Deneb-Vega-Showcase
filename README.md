@@ -52,7 +52,7 @@ Workout Wednesday 2025 Week 3 challenge: Can you build a Voronoi?
 ![2025-W3 Voronoi](WOW/2025-W3%20Voronoi/2025-W3%20Voronoi.gif) 
 
 ## Love Songs
-No matter where your heart stands this Valentine's Day
+No matter where your heart stands this Valentine's Day, there is always a song for you.
 
 [Open in Power BI](https://tinyurl.com/5n8bxeaj)
 
