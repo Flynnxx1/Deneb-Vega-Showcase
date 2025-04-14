@@ -1,0 +1,677 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl). This visualization is part of the Makeover Monday challenge (2025 Week 15). Scrolling logic based on https://vega.github.io/vega/examples/table-scrollbar/",
+    "width": 1000,
+    "height": 800,
+    "padding": 40,
+    "background": "transparent",
+    "title": {
+        "text": [
+            "Doomsday Clock"
+        ],
+        "fontSize": 30,
+        "color": "#950606",
+        "font": "Segoe UI"
+    },
+    "config": {
+        "text": {
+            "font": "Segoe UI",
+            "fontWeight": 400
+        }
+    },
+    "signals": [
+        {
+            "name": "rowsToDisplay",
+            "value": 5
+        },
+        {
+            "name": "rowHeight",
+            "value": 120
+        },
+        {
+            "name": "scrollBarWidth",
+            "description": "Scrollbar width in pixels",
+            "init": "12"
+        },
+        {
+            "name": "scrollBarHeight",
+            "description": "Scrollbar height: Dynamically calculated based on the percentage of visible rows out of all data rows, with a range limited to minimum and maximum values",
+            "init": "clamp((rowHeight*1)*1/length(data('scrollDataset-raw')),30,20)"
+        },
+        {
+            "name": "scrollPositionMax",
+            "update": "length(data('table'))-rowsToDisplay+3"
+        },
+        {
+            "name": "scrollbarMouseDragY",
+            "init": "0",
+            "on": [
+                {
+                    "events": "[@rect-scrollbar:pointerdown, window:pointerup] > window:pointermove",
+                    "update": "clamp(y(),1,scrollAreaHeight)"
+                }
+            ]
+        },
+        {
+            "name": "scrollAreaHeight",
+            "description": "Scroll area height in pixels",
+            "update": "rowHeight*rowsToDisplay"
+        },
+        {
+            "name": "scrollPosition",
+            "description": "Scrollbar Position: The scrollbar responds to dragging the scrollbar with a mouse, mouse wheel scrolling, and the Home, End, Page Up, Page Down, Arrow Up, and Arrow Down buttons",
+            "value": 1,
+            "on": [
+                {
+                    "events": {
+                        "type": "wheel",
+                        "consume": true
+                    },
+                    "update": "clamp(round(scrollPosition+event.deltaY/abs(event.deltaY)*pow(1.0001, event.deltaY*pow(16, event.deltaMode)),0),1,scrollPositionMax)"
+                },
+                {
+                    "events": "window:keydown",
+                    "update": "event.code=='Home'?1:event.code=='End'?scrollPositionMax:scrollPosition"
+                },
+                {
+                    "events": "window:keydown",
+                    "update": "clamp(event.code=='PageDown'?(scrollPosition+rowsToDisplay):event.code=='PageUp'?(scrollPosition-rowsToDisplay):scrollPosition,1,scrollPositionMax)"
+                },
+                {
+                    "events": "window:keydown",
+                    "update": "clamp(event.code=='ArrowDown'?(scrollPosition+1):event.code=='ArrowUp'?(scrollPosition-1):scrollPosition,1,scrollPositionMax)"
+                },
+                {
+                    "events": "[@rect-scrollbar:pointerdown, window:pointerup] > window:pointermove",
+                    "update": "clamp(round(invert('scaleScrollBarY',scrollbarMouseDragY),0),1,scrollPositionMax)"
+                }
+            ]
+        },
+        {
+            "name": "smoothScroll",
+            "description": "timer runs continuously, Every time it ticks, smoothScroll gets a little closer to scrollPosition. This gives you a frame-by-frame easing effect — like animation.This will snap to final value once it's close enough.",
+            "value": 1,
+            "on": [
+                {
+                    "events": {
+                        "type": "timer",
+                        "throttle": 30
+                    },
+                    "update": "abs(scrollPosition - smoothScroll) < 0.01 ? scrollPosition : smoothScroll + (scrollPosition - smoothScroll) * 0.15"
+                }
+            ]
+        }
+    ],
+    "data": [
+        {
+            "name": "table",
+            "url": "https://raw.githubusercontent.com/Flynnxx1/datasets/refs/heads/main/Doomsday%20Clock%20Timeline.csv",
+            "format": {
+                "type": "csv",
+                "parse": "auto",
+                "delimiter": ","
+            },
+            "transform": [
+                {
+                    "type": "window",
+                    "ops": [
+                        "row_number"
+                    ],
+                    "as": [
+                        "index"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "scrollDataset",
+            "source": "table",
+            "transform": [
+                {
+                    "type": "filter",
+                    "expr": "(datum.index>=scrollPosition)&&(datum.index<(scrollPosition+rowsToDisplay))"
+                },
+                {
+                    "type": "collect",
+                    "sort": {
+                        "field": "index",
+                        "order": "ascending"
+                    }
+                },
+                {
+                    "type": "extent",
+                    "field": "index",
+                    "signal": "extentScroll"
+                }
+            ]
+        },
+        {
+            "name": "lineData",
+            "source": "table",
+            "transform": [
+                {
+                    "type": "filter",
+                    "expr": "datum.index>=3"
+                }
+            ]
+        }
+    ],
+    "scales": [
+        {
+            "name": "scaleYtextContent",
+            "type": "band",
+            "domain": {
+                "data": "scrollDataset",
+                "field": "index",
+                "sort": true
+            },
+            "range": [
+                {
+                    "signal": "0"
+                },
+                {
+                    "signal": "rowHeight*length(data('scrollDataset'))-2"
+                }
+            ]
+        },
+        {
+            "name": "scaleScrollBarY",
+            "type": "linear",
+            "domain": [
+                1,
+                {
+                    "signal": "scrollPositionMax"
+                }
+            ],
+            "range": [
+                {
+                    "signal": "0"
+                },
+                {
+                    "signal": "rowHeight*rowsToDisplay-scrollBarHeight"
+                }
+            ]
+        },
+        {
+            "name": "lineChartX",
+            "type": "band",
+            "domain": {
+                "data": "lineData",
+                "field": "Year"
+            },
+            "range": [
+                {
+                    "signal": "150"
+                },
+                {
+                    "signal": "width-50"
+                }
+            ]
+        },
+        {
+            "name": "lineChartY",
+            "type": "linear",
+            "reverse": true,
+            "zero": true,
+            "domain": {
+                "data": "lineData",
+                "field": "MinutesToMidnight"
+            },
+            "range": [
+                {
+                    "signal": "50"
+                },
+                {
+                    "signal": "300"
+                }
+            ]
+        },
+        {
+            "name": "verticalTimeY",
+            "type": "band",
+            "domain": {
+                "data": "scrollDataset",
+                "field": "Year"
+            },
+            "range": [
+                {
+                    "signal": "40"
+                },
+                {
+                    "signal": "900"
+                }
+            ]
+        }
+    ],
+    "axes": [
+        {
+            "orient": "top",
+            "offset": -35,
+            "scale": "lineChartX",
+            "ticks": false,
+            "domain": false,
+            "labelFontSize": 16,
+            "encode": {
+                "labels": {
+                    "update": {
+                        "y": {
+                            "value": -5
+                        },
+                        "dx": {
+                            "value": -10
+                        },
+                        "opacity": {
+                            "signal": "datum.value === 2025 ? 1 : datum.value ===1947 ?1:0"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "marks": [
+        {
+            "name": "yearText",
+            "type": "text",
+            "from": {
+                "data": "scrollDataset"
+            },
+            "encode": {
+                "update": {
+                    "text": {
+                        "signal": "datum.Year"
+                    },
+                    "dx": {
+                        "value": 35
+                    },
+                    "y": {
+                        "scale": "scaleYtextContent",
+                        "field": "index",
+                        "band": 1
+                    },
+                    "baseline": {
+                        "value": "middle"
+                    },
+                    "align": {
+                        "value": "left"
+                    },
+                    "font": {
+                        "value": "Segoe UI Semibold"
+                    },
+                    "fontSize": {
+                        "signal": "clamp(40- abs(datum.index - (smoothScroll + 2)) *20, 20, 40)"
+                    },
+                    "opacity": {
+                        "signal": "datum.index==scrollPosition+2? 1:0.5"
+                    }
+                }
+            }
+        },
+        {
+            "name": "rect-scrollbar",
+            "type": "rect",
+            "encode": {
+                "update": {
+                    "x": {
+                        "signal": "width-scrollBarWidth-1"
+                    },
+                    "y": {
+                        "scale": "scaleScrollBarY",
+                        "signal": "scrollPosition"
+                    },
+                    "width": {
+                        "signal": "scrollBarWidth"
+                    },
+                    "height": {
+                        "signal": "scrollBarHeight"
+                    },
+                    "fill": {
+                        "value": "#666666"
+                    }
+                }
+            }
+        },
+        {
+            "name": "vertical timeline rule",
+            "type": "line",
+            "from": {
+                "data": "scrollDataset"
+            },
+            "encode": {
+                "update": {
+                    "x": {
+                        "value": 25
+                    },
+                    "y": {
+                        "scale": "verticalTimeY",
+                        "field": "Year"
+                    },
+                    "stroke": {
+                        "value": "#36454F"
+                    },
+                    "strokeWidth": {
+                        "value": 2
+                    }
+                }
+            }
+        },
+        {
+            "name": "vertical dots",
+            "type": "symbol",
+            "from": {
+                "data": "yearText"
+            },
+            "encode": {
+                "update": {
+                    "x": {
+                        "signal": "datum.dx",
+                        "offset": -10
+                    },
+                    "y": {
+                        "signal": "datum.y"
+                    },
+                    "size": {
+                        "signal": "clamp(300- abs(datum.datum.index - (smoothScroll +2)) *300, 100, 300)"
+                    },
+                    "stroke": {
+                        "signal": "datum.datum.index<=scrollPosition+2? 'black':'#A9A9A9'"
+                    },
+                    "fill": {
+                        "signal": "datum.datum.index<=scrollPosition+2? '#818589':'white'"
+                    }
+                }
+            }
+        },
+        {
+            "name": "reasons text",
+            "type": "text",
+            "from": {
+                "data": "yearText"
+            },
+            "encode": {
+                "update": {
+                    "x": {
+                        "value": 170
+                    },
+                    "y": {
+                        "field": "y"
+                    },
+                    "dy": {
+                        "value": 40
+                    },
+                    "text": {
+                        "signal": "datum.datum.Reason"
+                    },
+                    "fontSize": {
+                        "value": 18
+                    },
+                    "lineBreak": {
+                        "value": "|"
+                    },
+                    "opacity": {
+                        "signal": "datum.opacity ==1?1:0"
+                    }
+                }
+            }
+        },
+        {
+            "name": "minutes text label",
+            "type": "text",
+            "from": {
+                "data": "yearText"
+            },
+            "encode": {
+                "update": {
+                    "x": {
+                        "value": 170
+                    },
+                    "y": {
+                        "field": "y"
+                    },
+                    "dy": {
+                        "value": 5
+                    },
+                    "text": {
+                        "signal": "datum.datum.MinutesToMidnight+' minutes to midnight'"
+                    },
+                    "fontSize": {
+                        "value": 24
+                    },
+                    "font": {
+                        "value": "Segoe UI Semibold"
+                    },
+                    "align": {
+                        "value": "left"
+                    },
+                    "opacity": {
+                        "signal": "datum.opacity ==1?1:0"
+                    }
+                }
+            }
+        },
+        {
+            "name": "midnight horizental line",
+            "type": "line",
+            "from": {
+                "data": "lineData"
+            },
+            "encode": {
+                "enter": {
+                    "x": {
+                        "scale": "lineChartX",
+                        "field": "Year",
+                        "offset": 5
+                    },
+                    "y": {
+                        "scale": "lineChartY",
+                        "value": 0,
+                        "offset": 6
+                    },
+                    "stroke": {
+                        "value": "#950606"
+                    },
+                    "strokeWidth": {
+                        "value": 1
+                    }
+                }
+            }
+        },
+        {
+            "name": "xhorizental line",
+            "type": "line",
+            "from": {
+                "data": "lineData"
+            },
+            "encode": {
+                "enter": {
+                    "x": {
+                        "scale": "lineChartX",
+                        "field": "Year"
+                    },
+                    "y": {
+                        "scale": "lineChartY",
+                        "value": 18
+                    },
+                    "stroke": {
+                        "value": "#D3D3D3"
+                    },
+                    "strokeWidth": {
+                        "value": 1
+                    }
+                }
+            }
+        },
+        {
+            "name": "scroll for more text",
+            "type": "text",
+            "encode": {
+                "update": {
+                    "x": {
+                        "value": 40
+                    },
+                    "y": {
+                        "value": 700
+                    },
+                    "fontSize": {
+                        "value": 16
+                    },
+                    "fill": {
+                        "value": "grey"
+                    },
+                    "fontStyle": {
+                        "value": "italic"
+                    },
+                    "text": {
+                        "signal": "scrollPosition==1?'Scroll for more': scrollPosition==32?'Scroll for more':'Scroll for more'"
+                    }
+                }
+            }
+        },
+        {
+            "name": "arrow scroll for more text",
+            "type": "text",
+            "encode": {
+                "update": {
+                    "x": {
+                        "value": 40
+                    },
+                    "y": {
+                        "value": 680
+                    },
+                    "fontSize": {
+                        "value": 22
+                    },
+                    "fill": {
+                        "value": "grey"
+                    },
+                    "text": {
+                        "signal": "scrollPosition==1?'↓': scrollPosition==32?'↑':'⇅'"
+                    }
+                }
+            }
+        },
+        {
+            "name": "mindnight text label",
+            "type": "text",
+            "from": {
+                "data": "lineData"
+            },
+            "encode": {
+                "enter": {
+                    "text": {
+                        "value": "midnight"
+                    },
+                    "fontSize": {
+                        "value": 16
+                    },
+                    "x": {
+                        "scale": "lineChartX",
+                        "field": "Year",
+                        "offset": -40
+                    },
+                    "y": {
+                        "scale": "lineChartY",
+                        "value": -1.8
+                    },
+                    "fill": {
+                        "value": "#950606"
+                    },
+                    "opacity": {
+                        "signal": "datum.Year==2025?1:0"
+                    }
+                }
+            }
+        },
+        {
+            "name": "minutesVerticalLines",
+            "type": "rule",
+            "from": {
+                "data": "lineData"
+            },
+            "encode": {
+                "update": {
+                    "x": {
+                        "scale": "lineChartX",
+                        "field": "Year"
+                    },
+                    "y": {
+                        "scale": "lineChartY",
+                        "value": 18
+                    },
+                    "y2": {
+                        "scale": "lineChartY",
+                        "field": "MinutesToMidnight"
+                    },
+                    "stroke": {
+                        "signal": "datum.index<=scrollPosition+2? 'black':'#D3D3D3'"
+                    }
+                }
+            }
+        },
+        {
+            "name": "minutesDots",
+            "type": "symbol",
+            "from": {
+                "data": "lineData"
+            },
+            "encode": {
+                "update": {
+                    "size": {
+                        "value": 100
+                    },
+                    "x": {
+                        "scale": "lineChartX",
+                        "field": "Year"
+                    },
+                    "y": {
+                        "scale": "lineChartY",
+                        "field": "MinutesToMidnight",
+                        "offset": 5
+                    },
+                    "stroke": {
+                        "signal": "datum.index<=scrollPosition+2? 'black':'#A9A9A9'"
+                    },
+                    "fill": {
+                        "signal": "datum.index<=scrollPosition+2? '#818589':''"
+                    },
+                    "tooltip": {
+                        "signal": "datum"
+                    }
+                }
+            }
+        },
+        {
+            "name": "minutesDataLabel",
+            "type": "text",
+            "from": {
+                "data": "lineData"
+            },
+            "encode": {
+                "update": {
+                    "text": {
+                        "field": "MinutesToMidnight"
+                    },
+                    "fontSize": {
+                        "value": 14
+                    },
+                    "x": {
+                        "scale": "lineChartX",
+                        "field": "Year"
+                    },
+                    "y": {
+                        "scale": "lineChartY",
+                        "field": "MinutesToMidnight"
+                    },
+                    "dy": {
+                        "value": 25
+                    },
+                    "align": {
+                        "value": "center"
+                    },
+                    "fill": {
+                        "signal": "datum.index<=scrollPosition+2? '#36454F':'transparent'"
+                    }
+                }
+            }
+        }
+    ]
+}

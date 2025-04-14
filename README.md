@@ -10,6 +10,7 @@ Documenting my journey into learning [Vega](https://vega.github.io/vega/) and us
 5. [WOW 2025-W3 Voronoi](#wow-2025-w3-voronoi)
 6. [Love Songs](#Love-Songs)
 7. [Du Bois Challenge 2025](#du-bois-challenge-2025)
+8. [Doomsday Clock](#doomsday-clock)
 
 
 ## Rotatable Globe
@@ -71,3 +72,13 @@ There are 10 different visualizations.
 [Open in Power BI](https://tinyurl.com/VegaDB25)
 
 [![Du Bois Challenge 2025](Du%20Bois%20Challenge%202025/Du%20Bois%20Challenge%202025.png)](Du%20Bois%20Challenge%202025/README.md)
+
+## Doomsday Clock
+
+This visualization is part of the [Makeover Monday challenge](https://makeovermonday.co.uk/) (2025 Week 15).
+
+Scrolling logic based on https://vega.github.io/vega/examples/table-scrollbar/
+
+[Open in Vega Editor](https://seealso.link/flynnxx1/DoomsdayClock)
+
+![Doomsday Clock](Doomsday%20Clock/Doomsday%20Clock.gif) 
