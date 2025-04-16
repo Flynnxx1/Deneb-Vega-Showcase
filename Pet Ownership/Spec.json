@@ -1,0 +1,309 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+     "description": "Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl). This visualization is part of the Makeover Monday challenge (2025 Week 16).",
+    "width": 700,
+    "height": 600,
+    "padding": 40,
+      "title": {
+      "text":"Pet Ownership Internationally",
+      "subtitle":"Percentage of people living with different pets in 22 markets",
+      "subtitlePadding":10,
+      "offset":20,
+      "fontSize": 20,
+      "anchor":"start",
+      "font": "Segoe UI"
+    },
+    "signals": [
+      {"name": "child_width", "value": 600},
+      {"name": "child_height", "value": 20},
+      {
+        "name": "Highlight",
+        "value": "dog",
+        "bind": {"input": "select", "options": ["bird", "cat", "dog", "fish"]}
+      },
+      {
+        "name": "hoveredSymbol",
+        "value": null,
+        "on": [
+          {"events": "symbol:mouseover", "update": "datum.petType"},
+          {"events": "symbol:mouseout", "update": "null"}
+        ]
+      }
+    ],
+    "data": [
+      {
+        "name": "dataset",
+        "values": [
+          {"country": "USA", "dog": 50, "cat": 39, "fish": 11, "bird": 6},
+          {"country": "Argentina", "dog": 66, "cat": 32, "fish": 8, "bird": 7},
+          {"country": "UK", "dog": 27, "cat": 27, "fish": 9, "bird": 4},
+          {"country": "Australia", "dog": 39, "cat": 29, "fish": 13, "bird": 10},
+          {"country": "Turkey", "dog": 12, "cat": 15, "fish": 16, "bird": 20},
+          {"country": "Belgium", "dog": 29, "cat": 33, "fish": 15, "bird": 8},
+          {"country": "Sweden", "dog": 22, "cat": 28, "fish": 6, "bird": 3},
+          {"country": "Brazil", "dog": 58, "cat": 28, "fish": 7, "bird": 11},
+          {"country": "Spain", "dog": 37, "cat": 23, "fish": 9, "bird": 11},
+          {"country": "Canada", "dog": 33, "cat": 35, "fish": 9, "bird": 4},
+          {"country": "South Korea", "dog": 20, "cat": 6, "fish": 7, "bird": 1},
+          {"country": "Russia", "dog": 29, "cat": 57, "fish": 11, "bird": 9},
+          {
+            "country": "Czech Republic",
+            "dog": 38,
+            "cat": 26,
+            "fish": 14,
+            "bird": 8
+          },
+          {"country": "China", "dog": 25, "cat": 10, "fish": 17, "bird": 5},
+          {"country": "Poland", "dog": 45, "cat": 32, "fish": 12, "bird": 7},
+          {"country": "France", "dog": 29, "cat": 41, "fish": 12, "bird": 5},
+          {"country": "Netherlands", "dog": 25, "cat": 26, "fish": 11, "bird": 7},
+          {"country": "Germany", "dog": 21, "cat": 29, "fish": 9, "bird": 6},
+          {"country": "Mexico", "dog": 64, "cat": 24, "fish": 10, "bird": 10},
+          {"country": "Hong Kong", "dog": 14, "cat": 10, "fish": 14, "bird": 5},
+          {"country": "Japan", "dog": 17, "cat": 14, "fish": 9, "bird": 2},
+          {"country": "Italy", "dog": 39, "cat": 34, "fish": 11, "bird": 8},
+          {
+            "country": "Overall Average",
+            "dog": 33,
+            "cat": 23,
+            "fish": 12,
+            "bird": 6
+          }
+        ]
+      },
+      {
+        "name": "dataset-facet-sortingHelper",
+        "source": "dataset",
+        "transform": [
+          {
+            "type": "fold",
+            "fields": ["bird", "cat", "dog", "fish"],
+            "as": ["petType", "counts"]
+          },
+          {"type": "filter", "expr": "datum.petType === Highlight"},
+          {
+            "type": "aggregate",
+            "groupby": ["country"],
+            "ops": ["max"],
+            "fields": ["counts"],
+            "as": ["sortingByCountry"]
+          },
+          {
+            "type": "formula",
+            "expr": "datum.country=='Overall Average'? 9999:datum.sortingByCountry",
+            "as": "sortingByCountry"
+          }
+        ]
+      },
+      {
+        "name": "dataset-leftRight-sortingHelper",
+        "source": "dataset",
+        "transform": [
+          {
+            "type": "fold",
+            "fields": ["bird", "cat", "dog", "fish"],
+            "as": ["petType", "counts"]
+          },
+          {
+            "type": "aggregate",
+            "groupby": ["country", "petType"],
+            "ops": ["max"],
+            "fields": ["counts"],
+            "as": ["sortingByPet"]
+          },
+          {
+            "type": "formula",
+            "expr": "datum.country+datum.petType",
+            "as": "lookupKey"
+          }
+        ]
+      },
+      {
+        "name": "dataset-plot",
+        "source": "dataset",
+        "transform": [
+          {"type": "formula", "expr": "Highlight", "as": "sortingField"},
+          {
+            "type": "fold",
+            "fields": ["bird", "cat", "dog", "fish"],
+            "as": ["petType", "counts"]
+          },
+          {
+            "type": "aggregate",
+            "groupby": ["petType", "country", "sortingField"],
+            "ops": ["min"],
+            "fields": ["counts"],
+            "as": ["Percent"]
+          },
+          {
+            "type": "formula",
+            "expr": "sequence(1,datum.Percent+1)",
+            "as": "Sequence"
+          },
+          {"type": "flatten", "fields": ["Sequence"], "as": ["Sequence"]},
+          {
+            "type": "formula",
+            "expr": "datum.petType === datum.sortingField ? 0 : -1",
+            "as": "petTypeSortingLeftRight"
+          },
+          {
+            "type": "window",
+            "params": [null],
+            "as": ["_id_"],
+            "ops": ["row_number"],
+            "fields": [null],
+            "sort": {
+              "field": ["petTypeSortingLeftRight"],
+              "order": ["descending"]
+            },
+            "groupby": ["country"]
+          },
+          {"type": "formula", "expr": "ceil(datum._id_ /1)", "as": "col"},
+          {"type": "formula", "expr": "(datum._id_ - 1) % 1 + 1", "as": "row"},
+          {
+            "type": "lookup",
+            "from": "dataset-facet-sortingHelper",
+            "key": "country",
+            "fields": ["country"],
+            "values": ["sortingByCountry"]
+          },
+          {
+            "type": "formula",
+            "expr": "datum.country+datum.petType",
+            "as": "lookupKey"
+          },
+          {
+            "type": "lookup",
+            "from": "dataset-leftRight-sortingHelper",
+            "key": "lookupKey",
+            "fields": ["lookupKey"],
+            "values": ["sortingByPet"]
+          },
+          {
+            "type": "collect",
+            "sort": {"field": "sortingByCountry", "order": "descending"}
+          }
+        ]
+      }
+    ],
+    "scales": [
+      {
+        "name": "x",
+        "type": "point",
+        "domain": {"data": "dataset-plot", "field": "col", "sort": true},
+        "range": [0, {"signal": "child_width"}],
+        "padding": 0.5
+      },
+      {
+        "name": "y",
+        "type": "point",
+        "domain": {
+          "data": "dataset-plot",
+          "field": "row",
+          "sort": {"order": "descending", "field": "key"}
+        },
+        "range": [0, {"signal": "child_height"}],
+        "padding": 0.5
+      },
+      {
+        "name": "color",
+        "type": "ordinal",
+        "domain": {"data": "dataset-plot", "field": "petType"},
+        "range": {"scheme": "category10"}
+      }
+    ],
+    "layout": {"padding": 1, "columns": 1},
+    "marks": [
+      {
+        "name": "groupMark",
+        "type": "group",
+        "title": {
+          "text": {"signal": "parent.country"},
+          "fontSize": {"value": 10},
+          "fontWeight": {"signal": "parent.country =='Overall Average'? 700:400"},
+          "align": "right",
+          "dy": {"value": 22},
+          "dx": {"value": -320}
+        },
+        "from": {
+          "facet": {
+            "name": "facet",
+            "data": "dataset-plot",
+            "groupby": ["country", "sortingByCountry"]
+          }
+        },
+        "sort": {"field": ["datum.sortingByCountry"], "order": ["descending"]},
+        "encode": {
+          "update": {
+            "width": {"signal": "child_width"},
+            "height": {"signal": "child_height"}
+          }
+        },
+        "marks": [
+          {
+            "name": "bars",
+            "type": "symbol",
+            "from": {"data": "facet"},
+            "encode": {
+              "update": {
+                "x": {"scale": "x", "field": "col"},
+                "y": {"scale": "y", "field": "row"},
+                "stroke": {"value": "white"},
+                "strokeWidth": {"value": 1},
+                "size": {"value": 40},
+                "shape": {"value": "square"},
+                "tooltip": {
+                  "signal": "{Country:datum.country, Pet: datum.petType, Percent: datum.Percent+'%'}"
+                },
+                "fill": {"scale": "color", "field": "petType"},
+                "opacity": [
+                  {
+                    "test": "hoveredSymbol &&datum.petType==hoveredSymbol",
+                    "value": 1
+                  },
+                  {"test": "hoveredSymbol", "value": 0.3},
+                  {"value": 1}
+                ]
+              }
+            }
+          },
+          {
+            "name": "textlable",
+            "from": {"data": "bars"},
+            "type": "text",
+            "encode": {
+              "update": {
+                "text": {"signal": "datum.datum.Percent+'%'"},
+                "x": {"signal": "datum.bounds.x1"},
+                "y": {"signal": "datum.bounds.y1", "offset": -2},
+                "opacity": [
+                  {
+                    "test": "datum.datum.country == 'Overall Average' && datum.datum.Sequence == ceil(datum.datum.Percent / 2)",
+                    "value": 1
+                  },
+                  {
+                    "test": "(datum.datum.petType == Highlight||datum.datum.petType==hoveredSymbol)  && datum.datum.Sequence == ceil(datum.datum.Percent / 2)",
+                    "value": 1
+                  },
+                  {"value": 0}
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "legends": [
+      {
+        "fill": "color",
+        "title": "Pets",
+        "orient": "right",
+        "encode": {
+          "symbols": {
+            "update": {"shape": {"value": "square"}, "size": {"value": 100}}
+          }
+        }
+      }
+    ]
+  }
+  

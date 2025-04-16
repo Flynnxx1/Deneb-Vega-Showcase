@@ -11,6 +11,7 @@ Documenting my journey into learning [Vega](https://vega.github.io/vega/) and us
 6. [Love Songs](#Love-Songs)
 7. [Du Bois Challenge 2025](#du-bois-challenge-2025)
 8. [Doomsday Clock](#doomsday-clock)
+9. [Pet Ownership](#pet-ownership)
 
 
 ## Rotatable Globe
@@ -82,3 +83,13 @@ Scrolling logic based on https://vega.github.io/vega/examples/table-scrollbar/
 [Open in Vega Editor](https://seealso.link/flynnxx1/DoomsdayClock)
 
 ![Doomsday Clock](Doomsday%20Clock/Doomsday%20Clock.gif) 
+
+## Pet Ownership
+
+This visualization is part of the [Makeover Monday challenge](https://makeovermonday.co.uk/) (2025 Week 16).
+
+[Open in Power BI](https://seealso.link/flynnxx1/PBI_PetOwnership)
+
+[Open in Vega Editor](https://seealso.link/flynnxx1/PetOwnership)
+
+![Pet Ownership](Pet%20Ownership/PetOwnership.gif) 
