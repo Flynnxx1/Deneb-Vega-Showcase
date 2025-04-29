@@ -12,6 +12,7 @@ Documenting my journey into learning [Vega](https://vega.github.io/vega/) and us
 7. [Du Bois Challenge 2025](#du-bois-challenge-2025)
 8. [Doomsday Clock](#doomsday-clock)
 9. [Pet Ownership](#pet-ownership)
+10. [Trump Approval Rating](#trump-approval-rating)
 
 
 ## Rotatable Globe
@@ -93,3 +94,11 @@ This visualization is part of the [Makeover Monday challenge](https://makeovermo
 [Open in Vega Editor](https://seealso.link/flynnxx1/PetOwnership)
 
 ![Pet Ownership](Pet%20Ownership/PetOwnership.gif) 
+
+## Trump Approval Rating
+
+This visualization is part of the [Makeover Monday challenge](https://makeovermonday.co.uk/) (2025 Week 18).
+
+[Open in Vega Editor](https://seealso.link/flynnxx1/TrumpApprovalRating)
+
+![Trump Approval Rating](Trump%20Approval%20Rating/Trump%20Approval%20Rating.png)

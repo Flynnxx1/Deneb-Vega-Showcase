@@ -1,0 +1,556 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl). This visualization is part of the Makeover Monday challenge (2025 Week 18).",
+  "width": 550,
+  "height": 660,
+  "padding": 0,
+  "config": {"text": {"fontSize": 11, "font": "segoe ui"}},
+  "data": [
+    {
+      "name": "dataset",
+      "values": [
+        {
+          "Net Approve": 40,
+          "Net Disapprove": 59,
+          "Not Strongly Approve": 9,
+          "Not Strongly Disapprove": 11,
+          "Very Strongly Approve": 31,
+          "Very Strongly Disapprove": 48,
+          "Demographic": "Total",
+          "Order": 1
+        },
+        {
+          "Net Approve": null,
+          "Net Disapprove": null,
+          "Not Strongly Approve": null,
+          "Not Strongly Disapprove": null,
+          "Very Strongly Approve": null,
+          "Very Strongly Disapprove": null,
+          "Demographic": "",
+          "Order": 2
+        },
+        {
+          "Net Approve": 44,
+          "Net Disapprove": 55,
+          "Not Strongly Approve": 10,
+          "Not Strongly Disapprove": 10,
+          "Very Strongly Approve": 34,
+          "Very Strongly Disapprove": 45,
+          "Demographic": "Men",
+          "Order": 3
+        },
+        {
+          "Net Approve": 37,
+          "Net Disapprove": 62,
+          "Not Strongly Approve": 9,
+          "Not Strongly Disapprove": 11,
+          "Very Strongly Approve": 28,
+          "Very Strongly Disapprove": 51,
+          "Demographic": "Women",
+          "Order": 4
+        },
+        {
+          "Net Approve": null,
+          "Net Disapprove": null,
+          "Not Strongly Approve": null,
+          "Not Strongly Disapprove": null,
+          "Very Strongly Approve": null,
+          "Very Strongly Disapprove": null,
+          "Demographic": "‎",
+          "Order": 5
+        },
+        {
+          "Net Approve": 49,
+          "Net Disapprove": 51,
+          "Not Strongly Approve": 10,
+          "Not Strongly Disapprove": 8,
+          "Very Strongly Approve": 39,
+          "Very Strongly Disapprove": 43,
+          "Demographic": "White",
+          "Order": 6
+        },
+        {
+          "Net Approve": 14,
+          "Net Disapprove": 82,
+          "Not Strongly Approve": 6,
+          "Not Strongly Disapprove": 16,
+          "Very Strongly Approve": 8,
+          "Very Strongly Disapprove": 66,
+          "Demographic": "Black",
+          "Order": 7
+        },
+        {
+          "Net Approve": 27,
+          "Net Disapprove": 72,
+          "Not Strongly Approve": 7,
+          "Not Strongly Disapprove": 18,
+          "Very Strongly Approve": 20,
+          "Very Strongly Disapprove": 54,
+          "Demographic": "Hispanic",
+          "Order": 8
+        },
+        {
+          "Net Approve": 29,
+          "Net Disapprove": 69,
+          "Not Strongly Approve": 10,
+          "Not Strongly Disapprove": 13,
+          "Very Strongly Approve": 19,
+          "Very Strongly Disapprove": 56,
+          "Demographic": "Asian",
+          "Order": 9
+        },
+        {
+          "Net Approve": null,
+          "Net Disapprove": null,
+          "Not Strongly Approve": null,
+          "Not Strongly Disapprove": null,
+          "Very Strongly Approve": null,
+          "Very Strongly Disapprove": null,
+          "Demographic": " ‎ ",
+          "Order": 10
+        },
+        {
+          "Net Approve": 36,
+          "Net Disapprove": 63,
+          "Not Strongly Approve": 13,
+          "Not Strongly Disapprove": 14,
+          "Very Strongly Approve": 23,
+          "Very Strongly Disapprove": 49,
+          "Demographic": "Ages 18-29",
+          "Order": 11
+        },
+        {
+          "Net Approve": 37,
+          "Net Disapprove": 62,
+          "Not Strongly Approve": 10,
+          "Not Strongly Disapprove": 13,
+          "Very Strongly Approve": 27,
+          "Very Strongly Disapprove": 49,
+          "Demographic": "Ages 30-49",
+          "Order": 12
+        },
+        {
+          "Net Approve": 46,
+          "Net Disapprove": 53,
+          "Not Strongly Approve": 8,
+          "Not Strongly Disapprove": 8,
+          "Very Strongly Approve": 38,
+          "Very Strongly Disapprove": 45,
+          "Demographic": "Ages 50-64",
+          "Order": 13
+        },
+        {
+          "Net Approve": 42,
+          "Net Disapprove": 56,
+          "Not Strongly Approve": 6,
+          "Not Strongly Disapprove": 7,
+          "Very Strongly Approve": 36,
+          "Very Strongly Disapprove": 49,
+          "Demographic": "Ages 65+",
+          "Order": 14
+        },
+        {
+          "Net Approve": null,
+          "Net Disapprove": null,
+          "Not Strongly Approve": null,
+          "Not Strongly Disapprove": null,
+          "Very Strongly Approve": null,
+          "Very Strongly Disapprove": null,
+          "Demographic": "‎ ",
+          "Order": 15
+        },
+        {
+          "Net Approve": 27,
+          "Net Disapprove": 71,
+          "Not Strongly Approve": 7,
+          "Not Strongly Disapprove": 9,
+          "Very Strongly Approve": 20,
+          "Very Strongly Disapprove": 62,
+          "Demographic": "Postgrad",
+          "Order": 16
+        },
+        {
+          "Net Approve": 36,
+          "Net Disapprove": 63,
+          "Not Strongly Approve": 10,
+          "Not Strongly Disapprove": 8,
+          "Very Strongly Approve": 26,
+          "Very Strongly Disapprove": 55,
+          "Demographic": "College Grad",
+          "Order": 17
+        },
+        {
+          "Net Approve": 45,
+          "Net Disapprove": 55,
+          "Not Strongly Approve": 11,
+          "Not Strongly Disapprove": 10,
+          "Very Strongly Approve": 34,
+          "Very Strongly Disapprove": 45,
+          "Demographic": "Some College",
+          "Order": 18
+        },
+        {
+          "Net Approve": 43,
+          "Net Disapprove": 55,
+          "Not Strongly Approve": 8,
+          "Not Strongly Disapprove": 14,
+          "Very Strongly Approve": 35,
+          "Very Strongly Disapprove": 41,
+          "Demographic": "HS or Less",
+          "Order": 19
+        },
+        {
+          "Net Approve": null,
+          "Net Disapprove": null,
+          "Not Strongly Approve": null,
+          "Not Strongly Disapprove": null,
+          "Very Strongly Approve": null,
+          "Very Strongly Disapprove": null,
+          "Demographic": "‎ ‎ ",
+          "Order": 20
+        },
+        {
+          "Net Approve": 75,
+          "Net Disapprove": 24,
+          "Not Strongly Approve": 15,
+          "Not Strongly Disapprove": 10,
+          "Very Strongly Approve": 60,
+          "Very Strongly Disapprove": 14,
+          "Demographic": "Rep/Lean Rep",
+          "Order": 21
+        },
+        {
+          "Net Approve": 7,
+          "Net Disapprove": 93,
+          "Not Strongly Approve": 2,
+          "Not Strongly Disapprove": 11,
+          "Very Strongly Approve": 5,
+          "Very Strongly Disapprove": 82,
+          "Demographic": "Rep/Lean Dem",
+          "Order": 22
+        },
+        {
+          "Net Approve": null,
+          "Net Disapprove": null,
+          "Not Strongly Approve": null,
+          "Not Strongly Disapprove": null,
+          "Very Strongly Approve": null,
+          "Very Strongly Disapprove": null,
+          "Demographic": "‎   ‎ ",
+          "Order": 23
+        },
+        {
+          "Net Approve": null,
+          "Net Disapprove": null,
+          "Not Strongly Approve": null,
+          "Not Strongly Disapprove": null,
+          "Very Strongly Approve": null,
+          "Very Strongly Disapprove": null,
+          "Demographic": "Self-reported 2024 vote",
+          "Order": 24
+        },
+        {
+          "Net Approve": 88,
+          "Net Disapprove": 11,
+          "Not Strongly Approve": 15,
+          "Not Strongly Disapprove": 6,
+          "Very Strongly Approve": 73,
+          "Very Strongly Disapprove": 5,
+          "Demographic": "Trump Voters",
+          "Order": 25
+        },
+        {
+          "Net Approve": 96,
+          "Net Disapprove": 4,
+          "Not Strongly Approve": 7,
+          "Not Strongly Disapprove": 1,
+          "Very Strongly Approve": 89,
+          "Very Strongly Disapprove": 3,
+          "Demographic": "Strongly",
+          "Order": 26
+        },
+        {
+          "Net Approve": 75,
+          "Net Disapprove": 24,
+          "Not Strongly Approve": 29,
+          "Not Strongly Disapprove": 14,
+          "Very Strongly Approve": 46,
+          "Very Strongly Disapprove": 10,
+          "Demographic": "Not Strongly",
+          "Order": 27
+        },
+        {
+          "Net Approve": null,
+          "Net Disapprove": null,
+          "Not Strongly Approve": null,
+          "Not Strongly Disapprove": null,
+          "Very Strongly Approve": null,
+          "Very Strongly Disapprove": null,
+          "Demographic": " ",
+          "Order": 28
+        },
+        {
+          "Net Approve": 2,
+          "Net Disapprove": 97,
+          "Not Strongly Approve": 0,
+          "Not Strongly Disapprove": 7,
+          "Very Strongly Approve": 2,
+          "Very Strongly Disapprove": 90,
+          "Demographic": "Harris Voters",
+          "Order": 29
+        },
+        {
+          "Net Approve": 1,
+          "Net Disapprove": 99,
+          "Not Strongly Approve": 0,
+          "Not Strongly Disapprove": 5,
+          "Very Strongly Approve": 1,
+          "Very Strongly Disapprove": 94,
+          "Demographic": "Strongly ",
+          "Order": 30
+        },
+        {
+          "Net Approve": 5,
+          "Net Disapprove": 95,
+          "Not Strongly Approve": 4,
+          "Not Strongly Disapprove": 9,
+          "Very Strongly Approve": 1,
+          "Very Strongly Disapprove": 86,
+          "Demographic": "Not Strongly ",
+          "Order": 31
+        }
+      ]
+    },
+    {
+      "name": "polt-dataset",
+      "source": "dataset",
+      "transform": [
+        {
+          "type": "formula",
+          "expr": "datum['Not Strongly Disapprove']*-1",
+          "as": "Not Strongly Disapprove"
+        },
+        {
+          "type": "formula",
+          "expr": "datum['Very Strongly Disapprove']*-1",
+          "as": "Very Strongly Disapprove"
+        },
+        {
+          "type": "fold",
+          "fields": [
+            "Very Strongly Disapprove",
+            "Not Strongly Disapprove",
+            "Very Strongly Approve",
+            "Not Strongly Approve"
+          ],
+          "as": ["key", "value"]
+        },
+        {
+          "type": "stack",
+          "groupby": ["Demographic"],
+          "field": "value",
+          "sort": {"field": ["key"], "order": ["ascending"]},
+          "as": ["x0", "x1"]
+        },
+        {"type": "collect", "sort": {"field": "Order", "order": "ascending"}}
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "y",
+      "type": "band",
+      "paddingInner": 0.3,
+      "paddingOuter": 0,
+      "domain": {"data": "polt-dataset", "field": "Demographic"},
+      "range": {"step": 21}
+    },
+    {
+      "name": "x",
+      "type": "linear",
+      "domain": {"data": "polt-dataset", "field": "x1"},
+      "range": [290, {"signal": "width-20"}]
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": {"data": "polt-dataset", "field": "key"},
+      "range": ["#377eb8", "#a6cee3", "#ff7f00", "#fdbf6f"]
+    },
+    {
+      "name": "netApproveColor",
+      "type": "linear",
+      "domain": {"data": "dataset", "field": "Net Approve"},
+      "range": ["#fdbf6f", "#fdae61", "#f46d43", "#ff7f00"],
+      "reverse": false
+    },
+    {
+      "name": "netDisapproveColor",
+      "type": "linear",
+      "domain": {"data": "dataset", "field": "Net Approve"},
+      "range": ["#a6cee3", "#74add1", "#4575b4", "#377eb8"],
+      "reverse": false
+    }
+  ],
+  "axes": [
+    {
+      "orient": "left",
+      "scale": "y",
+      "tickSize": 0,
+      "labelColor": "#000000",
+      "labelFontSize": 12,
+      "labelPadding": -130,
+      "grid": true,
+      "gridColor": "#D3D3D3",
+      "domain": false,
+      "tickOffset": -12,
+      "labelOffset": 10,
+      "labelFont": "segoe ui",
+      "encode": {
+        "grid": {
+          "update": {"strokeWidth": {"signal": "datum.value == 'Total'?0:0.4"}}
+        },
+        "labels": {
+          "update": {
+            "fontStyle": {
+              "signal": "datum.value == 'Self-reported 2024 vote' ? 'italic':'normal'"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "marks": [
+    {
+      "name": "bar",
+      "type": "rect",
+      "from": {"data": "polt-dataset"},
+      "encode": {
+        "update": {
+          "y": {"scale": "y", "field": "Demographic"},
+          "height": {"scale": "y", "band": 0.8},
+          "x": {"scale": "x", "field": "x0"},
+          "x2": {"scale": "x", "field": "x1"},
+          "fill": {"scale": "color", "field": "key"},
+          "tooltip": {
+            "signal": "{title:datum.key, Demographic:datum.Demographic, '%': abs(datum.value)}"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "from": {"data": "bar"},
+      "encode": {
+        "update": {
+          "text": {"signal": "abs(datum.datum.value)"},
+          "align": {"value": "center"},
+          "x": {"signal": "(datum.bounds.x1+datum.bounds.x2)/2"},
+          "y": {"signal": "(datum.bounds.y1+datum.bounds.y2)/2", "offset": 4},
+          "fill": {"value": "white"},
+          "opacity": [
+            {"test": "abs(datum.datum.x1 - datum.datum.x0) < 10", "value": 0},
+            {
+              "test": "indexof(['Not Strongly Disapprove','Not Strongly Approve'], datum.datum.key) !== -1 ",
+              "value": 0
+            },
+            {"value": 1}
+          ]
+        }
+      }
+    },
+    {
+      "name": "vertical line",
+      "type": "rule",
+      "from": {"data": "polt-dataset"},
+      "encode": {
+        "update": {
+          "y": {"value": -10},
+          "y2": {"signal": "height"},
+          "x": {"scale": "x", "value": 0},
+          "stroke": {"value": "#D3D3D3"},
+          "strokeWidth": {"value": 0.5}
+        }
+      }
+    },
+    {
+      "name": "netDis",
+      "type": "symbol",
+      "from": {"data": "dataset"},
+      "encode": {
+        "enter": {
+          "size": {"value": 250},
+          "y": {"scale": "y", "field": "Demographic", "offset": 6},
+          "x": {"value": 180}
+        },
+        "update": {
+          "opacity": [
+            {
+              "test": "indexof([2,5,10,15,20,23,28], datum.Order) !== -1",
+              "value": 0
+            },
+            {"value": 1}
+          ],
+          "fill": {"scale": "netDisapproveColor", "field": "Net Disapprove"},
+          "tooltip": {
+            "signal": "{title:'Net disapprove', Demographic:datum.Demographic, '%': datum['Net Disapprove']}"
+          }
+        }
+      }
+    },
+    {
+      "interactive": false,
+      "type": "text",
+      "from": {"data": "netDis"},
+      "encode": {
+        "update": {
+          "text": {"signal": "datum.datum['Net Disapprove']"},
+          "align": {"value": "center"},
+          "x": {"signal": "(datum.bounds.x1+datum.bounds.x2)/2"},
+          "y": {"signal": "(datum.bounds.y1+datum.bounds.y2)/2", "offset": 4},
+          "fill": {"value": "white"}
+        }
+      }
+    },
+    {
+      "interactive": false,
+      "name": "netApp",
+      "type": "symbol",
+      "from": {"data": "dataset"},
+      "encode": {
+        "enter": {
+          "size": {"value": 250},
+          "y": {"scale": "y", "field": "Demographic", "offset": 6},
+          "x": {"value": 240}
+        },
+        "update": {
+          "opacity": [
+            {
+              "test": "indexof([2,5,10,15,20,23,28], datum.Order) !== -1",
+              "value": 0
+            },
+            {"value": 1}
+          ],
+          "fill": {"scale": "netApproveColor", "field": "Net Approve"},
+          "tooltip": {
+            "signal": "{title:'Net approve', Demographic:datum.Demographic, '%': datum['Net Disapprove']}"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {"data": "netApp"},
+      "encode": {
+        "update": {
+          "text": {"signal": "datum.datum['Net Approve']"},
+          "align": {"value": "center"},
+          "x": {"signal": "(datum.bounds.x1+datum.bounds.x2)/2"},
+          "y": {"signal": "(datum.bounds.y1+datum.bounds.y2)/2", "offset": 4},
+          "fill": {"value": "white"}
+        }
+      }
+    }
+  ]
+}
