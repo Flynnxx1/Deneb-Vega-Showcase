@@ -13,7 +13,7 @@ Documenting my journey into learning [Vega](https://vega.github.io/vega/) and us
 8. [Doomsday Clock](#doomsday-clock)
 9. [Pet Ownership](#pet-ownership)
 10. [Trump Approval Rating](#trump-approval-rating)
-11. [Dutch Street Foods] (#dutch-street-food)
+11. [Dutch Street Foods](#dutch-street-foods)
 
 
 ## Rotatable Globe
@@ -104,7 +104,7 @@ This visualization is part of the [Makeover Monday challenge](https://makeovermo
 
 ![Trump Approval Rating](Trump%20Approval%20Rating/Trump%20Approval%20Rating.png)
 
-## Dutch Street Food
+## Dutch Street Foods
 
 Nutrient breakdown of popular Dutch street foods in a ternary diagram.
 
