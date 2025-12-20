@@ -21,7 +21,7 @@ Documenting my journey into learning [Vega](https://vega.github.io/vega/) and us
 
 Top 10 festive favorite stongs. Data from [Billboard](https://www.billboard.com/charts/hot-holiday-songs/).
 
-[View interactive version](https://flynnxx1.github.io/Deneb-Vega-Showcase/Our%20Festive%20Favorites/)
+[View musical interactive version](https://flynnxx1.github.io/Deneb-Vega-Showcase/Our%20Festive%20Favorites/)
 
 [Open in Vega Editor](https://seealso.link/flynnxx1/OurFestiveFavorites)
 
@@ -95,13 +95,13 @@ There are 10 different visualizations.
 
 [View the original challenge](https://www.datavisualizationsociety.org/news/2025/2/3/2025-du-bois-visualization-challenge) 
 
-[Explore my submissions in Vega](Du%20Bois%20Challenge%202025/README.md)
+[Explore my submissions in Vega](Du%20Bois%20Challenge%202025/)
 
 [Open in Power BI](https://tinyurl.com/VegaDB25)
 
 [View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Du%20Bois%20Challenge%202025)
 
-[![Du Bois Challenge 2025](Du%20Bois%20Challenge%202025/Du%20Bois%20Challenge%202025.png)](Du%20Bois%20Challenge%202025/README.md)
+[![Du Bois Challenge 2025](Du%20Bois%20Challenge%202025/Du%20Bois%20Challenge%202025.png)](Du%20Bois%20Challenge%202025/)
 
 ## Doomsday Clock
 

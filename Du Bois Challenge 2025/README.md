@@ -1,8 +1,8 @@
-# [Deneb / Vega Showcase](../README.md)
+# [Deneb / Vega Showcase](../)
 
 This page is a part of me documenting my journey into learning [Vega](https://vega.github.io/vega/) and using [Deneb](https://deneb-viz.github.io/) for Power BI.
 
-[👈 Go back to the main page of my Deneb / Vega Showcase](../README.md)
+[👈 Go back to the main page of my Deneb / Vega Showcase](../)
 
 # Du Bois Challenge 2025
 
