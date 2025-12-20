@@ -1,0 +1,959 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.1.2.json",
+  "title": "Nutrient Breakdown of Popular Dutch Street Foods",
+  "description": "Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl)",
+  "width": 500,
+  "height": 400,
+  "padding": 20,
+  "config": {
+    "text": {"font": "Segoe UI"},
+    "title": {
+      "anchor": "start",
+      "offset": 50,
+      "orient": "top",
+      "fontSize": 16,
+      "font": "Segoe UI"
+    }
+  },
+  "signals": [
+    {
+      "name": "the height h",
+      "value": 0.866,
+      "description": "Height of equilateral triangle (for y),this is the height of an equilateral triangle with side length = 1"
+    },
+    {
+      "name": "horizontal midpoint",
+      "value": 0.5,
+      "description": "Controls x-position (horizontal mix),this is the horizontal midpoint, and also used to project barycentric proportions into 2D space"
+    },
+    {
+      "name": "slope of the sides",
+      "value": 1.732,
+      "description": "The slope of the sides of the triangle is related to tan(60),Since each side forms a 60° angle with the base, the slopes of the triangle edges are square root of 3: +1.732 (left side); -1.732 (right side)"
+    },
+    {
+      "name": "square root of 3 times 2",
+      "value": 3.464,
+      "description": "square root of 3 times 2: 1.732*2"
+    },
+    {
+      "name": "hoveredPoint",
+      "value": null,
+      "on": [
+        {"events": "@plotPoints:mouseover", "update": "datum"},
+        {"events": "@plotPoints:mouseout", "update": "null"}
+      ]
+    }
+  ],
+  "data": [
+    {
+      "name": "snacks",
+      "values": [
+        {
+          "name": "Stroopwafel",
+          "carbs": 63,
+          "protein": 4,
+          "fat": 33,
+          "data source": "nutritionix.com"
+        },
+        {
+          "name": "Bitterballen",
+          "carbs": 26,
+          "protein": 12,
+          "fat": 62,
+          "data source": "nutritionix.com"
+        },
+        {
+          "name": "Kroket",
+          "carbs": 32,
+          "protein": 15,
+          "fat": 53,
+          "data source": "nutritionix.com"
+        },
+        {
+          "name": "Haring",
+          "carbs": 0,
+          "protein": 47,
+          "fat": 53,
+          "data source": "nutritionix.com"
+        },
+        {
+          "name": "Poffertjes",
+          "carbs": 77,
+          "protein": 14,
+          "fat": 9,
+          "data source": "mynetdiary.com"
+        },
+        {
+          "name": "Frikandel",
+          "carbs": 18,
+          "protein": 25,
+          "fat": 57,
+          "data source": "mynetdiary.com"
+        },
+        {
+          "name": "Patat",
+          "carbs": 55,
+          "protein": 3,
+          "fat": 42,
+          "data source": "mynetdiary.com"
+        },
+        {
+          "name": "Oliebollen",
+          "carbs": 65,
+          "protein": 7,
+          "fat": 28,
+          "data source": "nutritionix.com"
+        }
+      ],
+      "transform": [
+        {
+          "type": "formula",
+          "as": "x",
+          "expr": "0.5 * (2 * datum.protein + datum.fat) / (datum.carbs + datum.protein + datum.fat)"
+        },
+        {
+          "type": "formula",
+          "as": "y",
+          "expr": "0.866 * datum.fat / (datum.carbs + datum.protein + datum.fat)"
+        }
+      ]
+    },
+    {
+      "name": "triangle",
+      "values": [
+        {"x": 0, "y": 0},
+        {"x": 1, "y": 0},
+        {"x": 0.5, "y": 0.866},
+        {"x": 0, "y": 0}
+      ]
+    },
+    {
+      "name": "guidelineHorizontal",
+      "values": [
+        {"line_id": 0, "a1": 1, "b1": 0, "c1": 0, "a2": 0, "b2": 1, "c2": 0},
+        {
+          "line_id": 1,
+          "a1": 0.9,
+          "b1": 0,
+          "c1": 0.1,
+          "a2": 0,
+          "b2": 0.9,
+          "c2": 0.1
+        },
+        {
+          "line_id": 2,
+          "a1": 0.8,
+          "b1": 0,
+          "c1": 0.2,
+          "a2": 0,
+          "b2": 0.8,
+          "c2": 0.2
+        },
+        {
+          "line_id": 3,
+          "a1": 0.7,
+          "b1": 0,
+          "c1": 0.3,
+          "a2": 0,
+          "b2": 0.7,
+          "c2": 0.3
+        },
+        {
+          "line_id": 4,
+          "a1": 0.6,
+          "b1": 0,
+          "c1": 0.4,
+          "a2": 0,
+          "b2": 0.6,
+          "c2": 0.4
+        },
+        {
+          "line_id": 5,
+          "a1": 0.5,
+          "b1": 0,
+          "c1": 0.5,
+          "a2": 0,
+          "b2": 0.5,
+          "c2": 0.5
+        },
+        {
+          "line_id": 6,
+          "a1": 0.4,
+          "b1": 0,
+          "c1": 0.6,
+          "a2": 0,
+          "b2": 0.4,
+          "c2": 0.6
+        },
+        {
+          "line_id": 7,
+          "a1": 0.3,
+          "b1": 0,
+          "c1": 0.7,
+          "a2": 0,
+          "b2": 0.3,
+          "c2": 0.7
+        },
+        {
+          "line_id": 8,
+          "a1": 0.2,
+          "b1": 0,
+          "c1": 0.8,
+          "a2": 0,
+          "b2": 0.2,
+          "c2": 0.8
+        },
+        {
+          "line_id": 9,
+          "a1": 0.1,
+          "b1": 0,
+          "c1": 0.9,
+          "a2": 0,
+          "b2": 0.1,
+          "c2": 0.9
+        }
+      ],
+      "transform": [
+        {
+          "type": "formula",
+          "as": "x1",
+          "expr": "0.5 * (2 * datum.b1 + datum.c1)"
+        },
+        {"type": "formula", "as": "y1", "expr": "0.866 * datum.c1"},
+        {
+          "type": "formula",
+          "as": "x2",
+          "expr": "0.5 * (2 * datum.b2 + datum.c2)"
+        },
+        {"type": "formula", "as": "y2", "expr": "0.866 * datum.c2"},
+        {"type": "formula", "as": "x", "expr": "(datum.x1 + datum.x2)/2"},
+        {"type": "formula", "as": "y", "expr": "(datum.y1 + datum.y2)/2"},
+        {"type": "formula", "as": "label", "expr": "datum.line_id * 10 + '%'"}
+      ]
+    },
+    {
+      "name": "guidelineDiagonalLeftUp",
+      "values": [
+        {"line_id": 0, "a1": 0, "b1": 1, "c1": 0, "a2": 0, "b2": 0, "c2": 1},
+        {
+          "line_id": 1,
+          "a1": 0.1,
+          "b1": 0.9,
+          "c1": 0,
+          "a2": 0.1,
+          "b2": 0,
+          "c2": 0.9
+        },
+        {
+          "line_id": 2,
+          "a1": 0.2,
+          "b1": 0.8,
+          "c1": 0,
+          "a2": 0.2,
+          "b2": 0,
+          "c2": 0.8
+        },
+        {
+          "line_id": 3,
+          "a1": 0.3,
+          "b1": 0.7,
+          "c1": 0,
+          "a2": 0.3,
+          "b2": 0,
+          "c2": 0.7
+        },
+        {
+          "line_id": 4,
+          "a1": 0.4,
+          "b1": 0.6,
+          "c1": 0,
+          "a2": 0.4,
+          "b2": 0,
+          "c2": 0.6
+        },
+        {
+          "line_id": 5,
+          "a1": 0.5,
+          "b1": 0.5,
+          "c1": 0,
+          "a2": 0.5,
+          "b2": 0,
+          "c2": 0.5
+        },
+        {
+          "line_id": 6,
+          "a1": 0.6,
+          "b1": 0.4,
+          "c1": 0,
+          "a2": 0.6,
+          "b2": 0,
+          "c2": 0.4
+        },
+        {
+          "line_id": 7,
+          "a1": 0.7,
+          "b1": 0.3,
+          "c1": 0,
+          "a2": 0.7,
+          "b2": 0,
+          "c2": 0.3
+        },
+        {
+          "line_id": 8,
+          "a1": 0.8,
+          "b1": 0.2,
+          "c1": 0,
+          "a2": 0.8,
+          "b2": 0,
+          "c2": 0.2
+        },
+        {
+          "line_id": 9,
+          "a1": 0.9,
+          "b1": 0.1,
+          "c1": 0,
+          "a2": 0.9,
+          "b2": 0,
+          "c2": 0.1
+        }
+      ],
+      "transform": [
+        {
+          "type": "formula",
+          "as": "x1",
+          "expr": "0.5 * (2 * datum.b1 + datum.c1)"
+        },
+        {"type": "formula", "as": "y1", "expr": "0.866 * datum.c1"},
+        {
+          "type": "formula",
+          "as": "x2",
+          "expr": "0.5 * (2 * datum.b2 + datum.c2)"
+        },
+        {"type": "formula", "as": "y2", "expr": "0.866 * datum.c2"},
+        {"type": "formula", "as": "x", "expr": "(datum.x1 + datum.x2)/2"},
+        {"type": "formula", "as": "y", "expr": "(datum.y1 + datum.y2)/2"},
+        {"type": "formula", "as": "label", "expr": "datum.line_id * 10 + '%'"}
+      ]
+    },
+    {
+      "name": "guidelineDiagonalRightUp",
+      "values": [
+        {"line_id": 0, "a1": 1, "b1": 0, "c1": 0, "a2": 0, "b2": 0, "c2": 1},
+        {
+          "line_id": 1,
+          "a1": 0.9,
+          "b1": 0.1,
+          "c1": 0,
+          "a2": 0,
+          "b2": 0.1,
+          "c2": 0.9
+        },
+        {
+          "line_id": 2,
+          "a1": 0.8,
+          "b1": 0.2,
+          "c1": 0,
+          "a2": 0,
+          "b2": 0.2,
+          "c2": 0.8
+        },
+        {
+          "line_id": 3,
+          "a1": 0.7,
+          "b1": 0.3,
+          "c1": 0,
+          "a2": 0,
+          "b2": 0.3,
+          "c2": 0.7
+        },
+        {
+          "line_id": 4,
+          "a1": 0.6,
+          "b1": 0.4,
+          "c1": 0,
+          "a2": 0,
+          "b2": 0.4,
+          "c2": 0.6
+        },
+        {
+          "line_id": 5,
+          "a1": 0.5,
+          "b1": 0.5,
+          "c1": 0,
+          "a2": 0,
+          "b2": 0.5,
+          "c2": 0.5
+        },
+        {
+          "line_id": 6,
+          "a1": 0.4,
+          "b1": 0.6,
+          "c1": 0,
+          "a2": 0,
+          "b2": 0.6,
+          "c2": 0.4
+        },
+        {
+          "line_id": 7,
+          "a1": 0.3,
+          "b1": 0.7,
+          "c1": 0,
+          "a2": 0,
+          "b2": 0.7,
+          "c2": 0.3
+        },
+        {
+          "line_id": 8,
+          "a1": 0.2,
+          "b1": 0.8,
+          "c1": 0,
+          "a2": 0,
+          "b2": 0.8,
+          "c2": 0.2
+        },
+        {
+          "line_id": 9,
+          "a1": 0.1,
+          "b1": 0.9,
+          "c1": 0,
+          "a2": 0,
+          "b2": 0.9,
+          "c2": 0.1
+        }
+      ],
+      "transform": [
+        {
+          "type": "formula",
+          "as": "x1",
+          "expr": "0.5 * (2 * datum.b1 + datum.c1)"
+        },
+        {"type": "formula", "as": "y1", "expr": "0.866 * datum.c1"},
+        {
+          "type": "formula",
+          "as": "x2",
+          "expr": "0.5 * (2 * datum.b2 + datum.c2)"
+        },
+        {"type": "formula", "as": "y2", "expr": "0.866 * datum.c2"},
+        {"type": "formula", "as": "x", "expr": "(datum.x1 + datum.x2)/2"},
+        {"type": "formula", "as": "y", "expr": "(datum.y1 + datum.y2)/2"},
+        {"type": "formula", "as": "label", "expr": "datum.line_id * 10 + '%'"}
+      ]
+    },
+    {
+      "name": "labelLeft",
+      "source": "guidelineDiagonalLeftUp",
+      "transform": [
+        {"type": "formula", "as": "x", "expr": " datum.x2"},
+        {"type": "formula", "as": "y", "expr": " datum.y2"},
+        {"type": "formula", "as": "label", "expr": "datum.line_id * 10 + '%'"}
+      ]
+    },
+    {
+      "name": "labelBottom",
+      "source": "guidelineDiagonalRightUp",
+      "transform": [
+        {"type": "formula", "as": "x", "expr": "datum.x1"},
+        {"type": "formula", "as": "y", "expr": "0"},
+        {"type": "formula", "as": "label", "expr": "datum.line_id * 10 + '%'"}
+      ]
+    },
+    {
+      "name": "labelRight",
+      "source": "guidelineHorizontal",
+      "transform": [
+        {"type": "formula", "as": "x", "expr": "datum.x2"},
+        {"type": "formula", "as": "y", "expr": " datum.y2"},
+        {"type": "formula", "as": "label", "expr": "datum.line_id * 10 + '%'"}
+      ]
+    },
+    {
+      "name": "indicateLine",
+      "source": "snacks",
+      "transform": [
+        {
+          "type": "formula",
+          "as": "sum",
+          "expr": "datum.carbs + datum.protein + datum.fat"
+        },
+        {"type": "formula", "as": "a", "expr": "datum.carbs / datum.sum"},
+        {"type": "formula", "as": "b", "expr": "datum.protein / datum.sum"},
+        {"type": "formula", "as": "c", "expr": "datum.fat / datum.sum"},
+        {"type": "formula", "as": "x", "expr": "0.5 * (2 * datum.b + datum.c)"},
+        {"type": "formula", "as": "y", "expr": "0.866 * datum.c"},
+        {
+          "type": "formula",
+          "as": "x_intersect_bottom",
+          "expr": "datum.x - datum.y / 1.732"
+        },
+        {
+          "type": "formula",
+          "as": "x_intersect_left",
+          "expr": "(1.732 * datum.x + datum.y) / 3.464"
+        },
+        {
+          "type": "formula",
+          "as": "y_intersect_left",
+          "expr": "1.732 * datum.x_intersect_left"
+        },
+        {
+          "type": "formula",
+          "as": "x_intersect_right",
+          "expr": "(1.732 - datum.y) / 1.732"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {"name": "xscale", "domain": [0, 1], "range": [0, {"signal": "width"}]},
+    {"name": "yscale", "domain": [0, 0.866], "range": [{"signal": "height"}, 0]}
+  ],
+  "marks": [
+    {
+      "description": "bottom guideline line",
+      "type": "rule",
+      "from": {"data": "guidelineHorizontal"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x1"},
+          "y": {"scale": "yscale", "field": "y1"},
+          "x2": {"scale": "xscale", "field": "x2"},
+          "y2": {"scale": "yscale", "field": "y2"},
+          "stroke": {"value": "#ccc"},
+          "strokeDash": {"value": [2, 2]},
+          "strokeWidth": {"value": 1}
+        }
+      }
+    },
+    {
+      "description": "left guideline line",
+      "type": "rule",
+      "from": {"data": "guidelineDiagonalLeftUp"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x1"},
+          "y": {"scale": "yscale", "field": "y1"},
+          "x2": {"scale": "xscale", "field": "x2"},
+          "y2": {"scale": "yscale", "field": "y2"},
+          "stroke": {"value": "#ccc"},
+          "strokeDash": {"value": [2, 2]},
+          "strokeWidth": {"value": 1}
+        }
+      }
+    },
+    {
+      "description": "right guidelineline",
+      "type": "rule",
+      "from": {"data": "guidelineDiagonalRightUp"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x1"},
+          "y": {"scale": "yscale", "field": "y1"},
+          "x2": {"scale": "xscale", "field": "x2"},
+          "y2": {"scale": "yscale", "field": "y2"},
+          "stroke": {"value": "#ccc"},
+          "strokeDash": {"value": [2, 2]},
+          "strokeWidth": {"value": 1}
+        }
+      }
+    },
+    {
+      "description": "triangle outline",
+      "type": "line",
+      "from": {"data": "triangle"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x"},
+          "y": {"scale": "yscale", "field": "y"},
+          "stroke": {"value": "black"},
+          "strokeWidth": {"value": 1},
+          "fill": {"value": "white"},
+          "fillOpacity": {"value": 0.1}
+        }
+      }
+    },
+    {
+      "zindex": 3,
+      "name": "plotPoints",
+      "type": "symbol",
+      "from": {"data": "snacks"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x"},
+          "y": {"scale": "yscale", "field": "y"},
+          "size": {"value": 150},
+          "fill": {"value": "#FF7F00"},
+          "tooltip": {
+            "signal": "{'':'‎ ','Snack': datum.name,'Fat':datum.fat+'%','Carbohydrate':datum.carbs+'%','Protein':datum.protein+'%','source':datum['data source']}"
+          }
+        },
+        "update": {
+          "opacity": [
+            {"test": "!hoveredPoint", "value": 1},
+            {"test": "hoveredPoint.name==datum.name", "value": 1},
+            {"value": 0.5}
+          ]
+        }
+      }
+    },
+    {
+      "name": "snacksText",
+      "zindex": 4,
+      "interactive": false,
+      "type": "text",
+      "from": {"data": "snacks"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x"},
+          "y": {"scale": "yscale", "field": "y"},
+          "text": {"field": "name"},
+          "dy": {"value": -10},
+          "align": {"value": "center"},
+          "fill": {"value": "black"},
+          "fontSize": {"value": 14}
+        },
+        "update": {
+          "opacity": [
+            {"test": "!hoveredPoint", "value": 1},
+            {"test": "hoveredPoint.name==datum.name", "value": 1},
+            {"value": 0.3}
+          ]
+        }
+      }
+    },
+    {
+      "description": "snacks text background",
+      "zindex": 3,
+      "interactive": false,
+      "type": "text",
+      "from": {"data": "snacks"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x"},
+          "y": {"scale": "yscale", "field": "y"},
+          "text": {"field": "name"},
+          "dy": {"value": -10},
+          "align": {"value": "center"},
+          "fill": {"value": "white"},
+          "fontSize": {"value": 16}
+        },
+        "update": {
+          "opacity": [
+            {"test": "!hoveredPoint", "value": 1},
+            {"test": "hoveredPoint.name==datum.name", "value": 1},
+            {"value": 0.3}
+          ]
+        }
+      }
+    },
+    {
+      "description": "right side axis lable fat (100%)",
+      "type": "text",
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "value": "0.85"},
+          "y": {"scale": "yscale", "value": "0.5"},
+          "text": {"value": "Fat"},
+          "fontSize": {"value": 12},
+          "align": {"value": "center"},
+          "angle": {"value": 60}
+        }
+      }
+    },
+    {
+      "description": "arrow right side axis lable fat (100%)",
+      "type": "path",
+      "encode": {
+        "enter": {
+          "path": {
+            "value": "M 59 26 L 59 26 L 170 25 M 170 25 M 59 26 L 66 30 M 59 26 L 66 22"
+          },
+          "x": {"scale": "xscale", "value": "0.77"},
+          "y": {"scale": "yscale", "value": "0.72"},
+          "stroke": {"value": "black"},
+          "angle": {"value": 60}
+        }
+      }
+    },
+    {
+      "description": "left side axis lable carbs (100%)",
+      "type": "text",
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "value": "0.15"},
+          "y": {"scale": "yscale", "value": "0.5"},
+          "text": {"value": "Carbohydrate"},
+          "fontSize": {"value": 12},
+          "align": {"value": "center"},
+          "angle": {"value": -60}
+        }
+      }
+    },
+    {
+      "description": "arrow left side axis lable carbs (100%)",
+      "type": "path",
+      "encode": {
+        "enter": {
+          "path": {
+            "value": "M7.0167 183.2442 7.0167 183.2442 61.6506 86.6154M61.6506 86.6154M7.0167 183.2442 13.9808 179.1821M7.0167 183.2442 7.0526 175.1821"
+          },
+          "x": {"scale": "xscale", "value": "0.1"},
+          "y": {"scale": "yscale", "value": "0.78"},
+          "stroke": {"value": "black"},
+          "angle": {"value": 0}
+        }
+      }
+    },
+    {
+      "description": "bottom side axis lable protein (100%)",
+      "type": "text",
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "value": "0.5"},
+          "y": {"scale": "yscale", "value": "0", "offset": 50},
+          "text": {"value": "Protein"},
+          "fontSize": {"value": 12},
+          "align": {"value": "center"},
+          "angle": {"value": 0}
+        }
+      }
+    },
+    {
+      "description": "arrow bottom side axis lable fat (100%)",
+      "type": "path",
+      "encode": {
+        "enter": {
+          "path": {
+            "value": "M141 124 141 124 30 125M30 125M141 124 134 120M141 124 134 128"
+          },
+          "x": {"scale": "xscale", "value": "0.32"},
+          "y": {"scale": "yscale", "value": "0.14"},
+          "stroke": {"value": "black"},
+          "angle": {"value": 0}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {"data": "labelLeft"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x"},
+          "y": {"scale": "yscale", "field": "y"},
+          "text": {"field": "label"},
+          "fontSize": {"value": 10},
+          "fill": {"signal": "datum.line_id==0? 'transparent':'gray'"},
+          "align": {"value": "center"},
+          "baseline": {"value": "middle"},
+          "dx": {"value": -20}
+        },
+        "update": {"opacity": {"signal": "hoveredPoint? 0:1"}}
+      }
+    },
+    {
+      "type": "text",
+      "from": {"data": "labelBottom"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x"},
+          "y": {"scale": "yscale", "field": "y"},
+          "text": {"field": "label"},
+          "fontSize": {"value": 10},
+          "fill": {"signal": "datum.line_id==0? 'transparent':'gray'"},
+          "align": {"value": "center"},
+          "baseline": {"value": "middle"},
+          "dy": {"value": 10}
+        },
+        "update": {"opacity": {"signal": "hoveredPoint? 0:1"}}
+      }
+    },
+    {
+      "type": "text",
+      "from": {"data": "labelRight"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x"},
+          "y": {"scale": "yscale", "field": "y"},
+          "text": {"field": "label"},
+          "fontSize": {"value": 10},
+          "fill": {"signal": "datum.line_id==0? 'transparent':'gray'"},
+          "align": {"value": "center"},
+          "baseline": {"value": "middle"},
+          "dx": {"value": 20}
+        },
+        "update": {"opacity": {"signal": "hoveredPoint? 0:1"}}
+      }
+    },
+    {
+      "description": "bottom indicate horizontal line ",
+      "type": "rule",
+      "from": {"data": "indicateLine"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x_intersect_bottom"},
+          "y": {"scale": "yscale", "value": 0},
+          "x2": {"scale": "xscale", "field": "x"},
+          "y2": {"scale": "yscale", "field": "y"},
+          "stroke": {"value": "black"},
+          "strokeWidth": {"value": 1}
+        },
+        "update": {
+          "opacity": {
+            "signal": "hoveredPoint&&hoveredPoint.name == datum.name? 1:0"
+          }
+        }
+      }
+    },
+    {
+      "description": "Left indicate line diagonal",
+      "type": "rule",
+      "from": {"data": "indicateLine"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x_intersect_left"},
+          "y": {"scale": "yscale", "field": "y_intersect_left"},
+          "x2": {"scale": "xscale", "field": "x"},
+          "y2": {"scale": "yscale", "field": "y"},
+          "stroke": {"value": "black"},
+          "strokeWidth": {"value": 1}
+        },
+        "update": {
+          "opacity": {
+            "signal": "hoveredPoint&&hoveredPoint.name == datum.name? 1:0"
+          }
+        }
+      }
+    },
+    {
+      "description": "Right indicate horizontal line ",
+      "type": "rule",
+      "from": {"data": "indicateLine"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x"},
+          "y": {"scale": "yscale", "field": "y"},
+          "x2": {"scale": "xscale", "field": "x_intersect_right"},
+          "y2": {"scale": "yscale", "field": "y"},
+          "stroke": {"value": "black"},
+          "strokeWidth": {"value": 1}
+        },
+        "update": {
+          "opacity": {
+            "signal": "hoveredPoint&&hoveredPoint.name == datum.name? 1:0"
+          }
+        }
+      }
+    },
+    {
+      "description": "right Side Point",
+      "type": "symbol",
+      "from": {"data": "indicateLine"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x_intersect_right"},
+          "y": {"scale": "yscale", "field": "y"},
+          "size": {"value": 50},
+          "stroke": {"value": "black"},
+          "fill": {"value": "white"}
+        },
+        "update": {
+          "opacity": {
+            "signal": "hoveredPoint&&hoveredPoint.name == datum.name? 1:0"
+          }
+        }
+      }
+    },
+    {
+      "description": "left Side Point",
+      "type": "symbol",
+      "from": {"data": "indicateLine"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x_intersect_left"},
+          "y": {"scale": "yscale", "field": "y_intersect_left"},
+          "size": {"value": 50},
+          "stroke": {"value": "black"},
+          "fill": {"value": "white"}
+        },
+        "update": {
+          "opacity": {
+            "signal": "hoveredPoint&&hoveredPoint.name == datum.name? 1:0"
+          }
+        }
+      }
+    },
+    {
+      "description": "bottom Side Point",
+      "type": "symbol",
+      "from": {"data": "indicateLine"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "x_intersect_bottom"},
+          "y": {"scale": "yscale", "value": 0},
+          "size": {"value": 50},
+          "stroke": {"value": "black"},
+          "fill": {"value": "white"}
+        },
+        "update": {
+          "opacity": {
+            "signal": "hoveredPoint&&hoveredPoint.name == datum.name? 1:0"
+          }
+        }
+      }
+    },
+    {
+      "description": "text label bottom Side Point",
+      "type": "text",
+      "from": {"data": "indicateLine"},
+      "encode": {
+        "enter": {
+          "text": {"signal": "format(datum.protein,'.1f')+'%'"},
+          "x": {"scale": "xscale", "field": "x_intersect_bottom"},
+          "y": {"scale": "yscale", "value": 0, "offset": 20},
+          "align": {"value": "center"}
+        },
+        "update": {
+          "opacity": {
+            "signal": "hoveredPoint&&hoveredPoint.name == datum.name? 1:0"
+          }
+        }
+      }
+    },
+    {
+      "description": "text label left Side Point",
+      "type": "text",
+      "from": {"data": "indicateLine"},
+      "encode": {
+        "enter": {
+          "text": {"signal": "format(datum.carbs,'.1f')+'%'"},
+          "x": {"scale": "xscale", "field": "x_intersect_left", "offset": -25},
+          "y": {"scale": "yscale", "field": "y_intersect_left"},
+          "align": {"value": "center"}
+        },
+        "update": {
+          "opacity": {
+            "signal": "hoveredPoint&&hoveredPoint.name == datum.name? 1:0"
+          }
+        }
+      }
+    },
+    {
+      "description": "text label ridght Side Point",
+      "type": "text",
+      "from": {"data": "indicateLine"},
+      "encode": {
+        "enter": {
+          "text": {"signal": "format(datum.fat,'.1f')+'%'"},
+          "x": {"scale": "xscale", "field": "x_intersect_right", "offset": 25},
+          "y": {"scale": "yscale", "field": "y"},
+          "align": {"value": "center"}
+        },
+        "update": {
+          "opacity": {
+            "signal": "hoveredPoint&&hoveredPoint.name == datum.name? 1:0"
+          }
+        }
+      }
+    }
+  ]
+}
