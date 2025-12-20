@@ -1,0 +1,112 @@
+html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    padding: 30px;
+    background: #FDF5E6;
+    color:#4A0404;
+}
+
+body, button {
+    font-family: "Segoe Print", "Apple Chancery", "Marker Felt", "URW Chancery L", "DejaVu Sans", cursive, sans-serif;
+}
+
+h1, h2 {
+    margin: 0;
+    text-align: left;
+}
+
+h2 {
+    font-weight: normal;
+    color: #36533E;
+}
+
+.wrapper {
+    margin: 0 auto;
+    width: 1000px;
+}
+
+header {
+    font-size: 0.85em;
+    text-align: right;
+}
+
+/* Flexbox header layout for audio button */
+.header-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.header-titles {
+    display: flex;
+    flex-direction: column;
+}
+
+
+header button {
+    font-size: 1rem;
+    padding: 0.3em 1.0em;
+    border-radius: 0.5em;
+    border: 2px solid #293F2F;
+    color:white;
+    background: #43674C;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    transition: background 0.2s;
+    position: relative;
+    overflow: visible;
+    margin-bottom: 8px;
+}
+
+header button::before {
+    content: '';
+    position: absolute;
+    right: -1.3em;
+    top: -2.0em;
+    width: 3.5em;
+    height: 2.7em;
+    z-index: 2;
+    background: url('santa-hat.svg') no-repeat center/contain;
+    pointer-events: none;
+}
+
+header button::after {
+    content: '';
+    position: absolute;
+    left: -0.2em;
+    bottom: -0.5em;
+    width: calc(100% + 0.4em);
+    height: 1.1em;
+    z-index: 2;
+    pointer-events: none;
+    background: url('christmas-lights.svg') no-repeat center/contain;
+}
+
+header button:hover {
+    background: #5F916B;
+    border-color: #43674C;
+}
+
+header button.audio-enabled .music-note {
+    display: inline-block;
+    margin-right: 0.3em;
+    animation: jump 1s ease-in-out infinite;
+}
+
+@keyframes jump {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-0.4em);
+    }
+}
+
+a, a:link, a:visited, a:hover, a:active {
+    color: #CC0000;
+}
