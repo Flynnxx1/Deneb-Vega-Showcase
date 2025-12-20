@@ -1,0 +1,1480 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "background": "#FDF5E6",
+  "width": 1000,
+  "height": 650,
+  "padding": 10,
+  "signals": [
+    {
+      "name": "GapbetweenText",
+      "value": 55
+    },
+    {
+      "name": "hoverEvent",
+      "value": null,
+      "on": [
+        {
+          "events": "text:mouseover,@ornament:mouseover",
+          "update": "datum.id"
+        },
+        {
+          "events": "text:mouseout,@ornament:mouseout",
+          "update": "null"
+        }
+      ]
+    },
+    {
+      "name": "time",
+      "value": 0,
+      "on": [
+        {
+          "events": {
+            "type": "timer",
+            "throttle": 60
+          },
+          "update": "time+0.5"
+        }
+      ]
+    },
+    {
+      "name": "blink",
+      "update": "0.1 + 2 * ((sin(time) + 1) / 2)"
+    },
+    {
+      "name": "isMusicOn",
+      "value": 0
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear",
+      "domain": [
+        0,
+        10
+      ],
+      "range": [
+        20,
+        {
+          "signal": "width/1.8"
+        }
+      ]
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "domain": [
+        0,
+        10
+      ],
+      "range": [
+        {
+          "signal": "height"
+        },
+        0
+      ]
+    },
+    {
+      "name": "scaleYText",
+      "type": "band",
+      "domain": {
+        "data": "songData",
+        "field": "id",
+        "sort": {
+          "field": "id",
+          "order": "descending"
+        }
+      },
+      "range": [
+        {
+          "signal": "0"
+        },
+        {
+          "signal": "GapbetweenText*length(data('songData'))"
+        }
+      ]
+    },
+    {
+      "name": "colorLights",
+      "type": "ordinal",
+      "domain": {
+        "data": "pointLights",
+        "field": "id"
+      },
+      "range": {
+        "scheme": "category10"
+      }
+    },
+    {
+      "name": "xLights",
+      "type": "linear",
+      "domain": {
+        "data": "pointLights",
+        "field": "x"
+      },
+      "range": [
+        {
+          "signal": "0"
+        },
+        {
+          "signal": "width-20"
+        }
+      ]
+    },
+    {
+      "name": "yLights",
+      "type": "linear",
+      "domain": [
+        0,
+        100
+      ],
+      "range": "height"
+    }
+  ],
+  "axes": [],
+  "data": [
+    {
+      "name": "dataset",
+      "url": "https://raw.githubusercontent.com/Flynnxx1/datasets/refs/heads/main/treebackground.csv",
+      "format": {
+        "type": "csv"
+      }
+    },
+    {
+      "name": "pointsData",
+      "values": [
+        {
+          "id": 1,
+          "x": 5,
+          "y": 10,
+          "color": "#fff066",
+          "h": 54.118,
+          "s": 1,
+          "l": 0.7
+        },
+        {
+          "id": 2,
+          "x": 4,
+          "y": 8.5,
+          "color": "#ff7f0e",
+          "h": 28.133,
+          "s": 1,
+          "l": 0.527
+        },
+        {
+          "id": 3,
+          "x": 7,
+          "y": 8,
+          "color": "#2ca02c",
+          "h": 120,
+          "s": 0.569,
+          "l": 0.4
+        },
+        {
+          "id": 4,
+          "x": 2,
+          "y": 6.1,
+          "color": "#8c564b",
+          "h": 10.154,
+          "s": 0.302,
+          "l": 0.422
+        },
+        {
+          "id": 5,
+          "x": 5,
+          "y": 6.2,
+          "color": "#9467bd",
+          "h": 271.395,
+          "s": 0.394,
+          "l": 0.573
+        },
+        {
+          "id": 6,
+          "x": 8,
+          "y": 6.5,
+          "color": "#d62728",
+          "h": 359.657,
+          "s": 0.692,
+          "l": 0.496
+        },
+        {
+          "id": 7,
+          "x": 2,
+          "y": 4,
+          "color": "#e377c2",
+          "h": 318.333,
+          "s": 0.659,
+          "l": 0.678
+        },
+        {
+          "id": 8,
+          "x": 4,
+          "y": 3.5,
+          "color": "#7f7f7f",
+          "h": 0,
+          "s": 0,
+          "l": 0.498
+        },
+        {
+          "id": 9,
+          "x": 6,
+          "y": 4,
+          "color": "#bcbd22",
+          "h": 60.387,
+          "s": 0.695,
+          "l": 0.437
+        },
+        {
+          "id": 10,
+          "x": 10,
+          "y": 3.5,
+          "color": "#17becf",
+          "h": 185.543,
+          "s": 0.8,
+          "l": 0.451
+        }
+      ]
+    },
+    {
+      "name": "songData",
+      "values": [
+        {
+          "id": 1,
+          "songName": "All I Want For Christmas Is You",
+          "singer": "Mariah Carey"
+        },
+        {
+          "id": 2,
+          "songName": "Rockin' Around The Christmas Tree",
+          "singer": "Brenda Lee"
+        },
+        {
+          "id": 3,
+          "songName": "Last Christmas",
+          "singer": "Wham!"
+        },
+        {
+          "id": 4,
+          "songName": "Jingle Bell Rock",
+          "singer": "Bobby Helms"
+        },
+        {
+          "id": 5,
+          "songName": "Santa Tell Me",
+          "singer": "Ariana Grande"
+        },
+        {
+          "id": 6,
+          "songName": "The Christmas Song (Merry Christmas To You)",
+          "singer": "Nat 'King' Cole"
+        },
+        {
+          "id": 7,
+          "songName": "Underneath The Tree",
+          "singer": "Kelly Clarkson"
+        },
+        {
+          "id": 8,
+          "songName": "It's The Most Wonderful Time Of The Year",
+          "singer": "Andy Williams"
+        },
+        {
+          "id": 9,
+          "songName": "Let It Snow! Let It Snow! Let It Snow!",
+          "singer": "Dean Martin"
+        },
+        {
+          "id": 10,
+          "songName": "It's Beginning To Look A Lot Like Christmas",
+          "singer": "Michael Buble"
+        }
+      ]
+    },
+    {
+      "name": "linkData",
+      "source": "pointsData",
+      "transform": [
+        {
+          "type": "lookup",
+          "from": "songData",
+          "key": "id",
+          "fields": [
+            "id"
+          ],
+          "values": [
+            "songName",
+            "singer"
+          ],
+          "as": [
+            "songName",
+            "singer"
+          ]
+        },
+        {
+          "type": "formula",
+          "as": "targetXPx",
+          "expr": "scale('x', datum.x)"
+        },
+        {
+          "type": "formula",
+          "as": "targetYPx",
+          "expr": "scale('y', datum.y)"
+        },
+        {
+          "type": "formula",
+          "as": "sourceYPx",
+          "expr": "scale('scaleYText', datum.id) + bandwidth('scaleYText')/2"
+        },
+        {
+          "type": "formula",
+          "as": "sourceXPx",
+          "expr": "width"
+        },
+        {
+          "type": "linkpath",
+          "orient": "horizontal",
+          "shape": "curve",
+          "sourceX": "sourceXPx",
+          "sourceY": "sourceYPx",
+          "targetX": "targetXPx",
+          "targetY": "targetYPx",
+          "as": "linkpath"
+        }
+      ]
+    },
+    {
+      "name": "trunkData",
+      "values": [
+        {
+          "x": 5,
+          "y": 2.21
+        },
+        {
+          "x": 5.2,
+          "y": 2.21
+        },
+        {
+          "x": 5.4,
+          "y": 2.21
+        },
+        {
+          "x": 5.5,
+          "y": 2.21
+        }
+      ],
+      "transform": [
+        {
+          "type": "formula",
+          "as": "y_positions",
+          "expr": "[2.2,2.1,2.0,1.9,1.8,1.7,1.6,1.5,1.4,1.3,1.2]"
+        },
+        {
+          "type": "flatten",
+          "fields": [
+            "y_positions"
+          ]
+        },
+        {
+          "type": "formula",
+          "as": "y",
+          "expr": "datum.y_positions"
+        }
+      ]
+    },
+    {
+      "name": "pointLights",
+      "values": [
+        {
+          "id": 1,
+          "x": 930,
+          "y": 92,
+          "color": "#fff066",
+          "h": 54.118,
+          "s": 1,
+          "l": 0.7
+        },
+        {
+          "id": 1,
+          "x": 900,
+          "y": 94,
+          "color": "#fff066",
+          "h": 54.118,
+          "s": 1,
+          "l": 0.7
+        },
+        {
+          "id": 1,
+          "x": 800,
+          "y": 88,
+          "color": "#fff066",
+          "h": 54.118,
+          "s": 1,
+          "l": 0.7
+        },
+        {
+          "id": 1,
+          "x": 710,
+          "y": 90,
+          "color": "#fff066",
+          "h": 54.118,
+          "s": 1,
+          "l": 0.7
+        },
+        {
+          "id": 1,
+          "x": 585,
+          "y": 87,
+          "color": "#fff066",
+          "h": 54.118,
+          "s": 1,
+          "l": 0.7
+        },
+        {
+          "id": 1,
+          "x": 460,
+          "y": 90,
+          "color": "#fff066",
+          "h": 54.118,
+          "s": 1,
+          "l": 0.7
+        },
+        {
+          "id": 1,
+          "x": 350,
+          "y": 97,
+          "color": "#fff066",
+          "h": 54.118,
+          "s": 1,
+          "l": 0.7
+        },
+        {
+          "id": 2,
+          "x": 850,
+          "y": 81.5,
+          "color": "#ff7f0e",
+          "h": 28.133,
+          "s": 1,
+          "l": 0.527
+        },
+        {
+          "id": 2,
+          "x": 930,
+          "y": 86,
+          "color": "#ff7f0e",
+          "h": 28.133,
+          "s": 1,
+          "l": 0.527
+        },
+        {
+          "id": 2,
+          "x": 800,
+          "y": 77,
+          "color": "#ff7f0e",
+          "h": 28.133,
+          "s": 1,
+          "l": 0.527
+        },
+        {
+          "id": 2,
+          "x": 640,
+          "y": 77,
+          "color": "#ff7f0e",
+          "h": 28.133,
+          "s": 1,
+          "l": 0.527
+        },
+        {
+          "id": 2,
+          "x": 470,
+          "y": 75,
+          "color": "#ff7f0e",
+          "h": 28.133,
+          "s": 1,
+          "l": 0.527
+        },
+        {
+          "id": 2,
+          "x": 330,
+          "y": 81,
+          "color": "#ff7f0e",
+          "h": 28.133,
+          "s": 1,
+          "l": 0.527
+        },
+        {
+          "id": 2,
+          "x": 260,
+          "y": 81.5,
+          "color": "#ff7f0e",
+          "h": 28.133,
+          "s": 1,
+          "l": 0.527
+        },
+        {
+          "id": 3,
+          "x": 920,
+          "y": 75,
+          "color": "#2ca02c",
+          "h": 120,
+          "s": 0.569,
+          "l": 0.4
+        },
+        {
+          "id": 3,
+          "x": 850,
+          "y": 74,
+          "color": "#2ca02c",
+          "h": 120,
+          "s": 0.569,
+          "l": 0.4
+        },
+        {
+          "id": 3,
+          "x": 770,
+          "y": 69.5,
+          "color": "#2ca02c",
+          "h": 120,
+          "s": 0.569,
+          "l": 0.4
+        },
+        {
+          "id": 3,
+          "x": 600,
+          "y": 70,
+          "color": "#2ca02c",
+          "h": 120,
+          "s": 0.569,
+          "l": 0.4
+        },
+        {
+          "id": 3,
+          "x": 490,
+          "y": 76,
+          "color": "#2ca02c",
+          "h": 120,
+          "s": 0.569,
+          "l": 0.4
+        },
+        {
+          "id": 3,
+          "x": 420,
+          "y": 76,
+          "color": "#2ca02c",
+          "h": 120,
+          "s": 0.569,
+          "l": 0.4
+        },
+        {
+          "id": 4,
+          "x": 920,
+          "y": 66,
+          "color": "#8c564b",
+          "h": 10.154,
+          "s": 0.302,
+          "l": 0.422
+        },
+        {
+          "id": 4,
+          "x": 870,
+          "y": 60,
+          "color": "#8c564b",
+          "h": 10.154,
+          "s": 0.302,
+          "l": 0.422
+        },
+        {
+          "id": 4,
+          "x": 730,
+          "y": 57.5,
+          "color": "#8c564b",
+          "h": 10.154,
+          "s": 0.302,
+          "l": 0.422
+        },
+        {
+          "id": 4,
+          "x": 540,
+          "y": 51,
+          "color": "#8c564b",
+          "h": 10.154,
+          "s": 0.302,
+          "l": 0.422
+        },
+        {
+          "id": 4,
+          "x": 320,
+          "y": 55.5,
+          "color": "#8c564b",
+          "h": 10.154,
+          "s": 0.302,
+          "l": 0.422
+        },
+        {
+          "id": 4,
+          "x": 190,
+          "y": 56,
+          "color": "#8c564b",
+          "h": 10.154,
+          "s": 0.302,
+          "l": 0.422
+        },
+        {
+          "id": 5,
+          "x": 930,
+          "y": 58,
+          "color": "#9467bd",
+          "h": 271.395,
+          "s": 0.394,
+          "l": 0.573
+        },
+        {
+          "id": 5,
+          "x": 880,
+          "y": 53,
+          "color": "#9467bd",
+          "h": 271.395,
+          "s": 0.394,
+          "l": 0.573
+        },
+        {
+          "id": 5,
+          "x": 760,
+          "y": 50,
+          "color": "#9467bd",
+          "h": 271.395,
+          "s": 0.394,
+          "l": 0.573
+        },
+        {
+          "id": 5,
+          "x": 600,
+          "y": 52.5,
+          "color": "#9467bd",
+          "h": 271.395,
+          "s": 0.394,
+          "l": 0.573
+        },
+        {
+          "id": 5,
+          "x": 430,
+          "y": 52.5,
+          "color": "#9467bd",
+          "h": 271.395,
+          "s": 0.394,
+          "l": 0.573
+        },
+        {
+          "id": 5,
+          "x": 330,
+          "y": 57,
+          "color": "#9467bd",
+          "h": 271.395,
+          "s": 0.394,
+          "l": 0.573
+        },
+        {
+          "id": 6,
+          "x": 920,
+          "y": 50,
+          "color": "#d62728",
+          "h": 359.657,
+          "s": 0.692,
+          "l": 0.496
+        },
+        {
+          "id": 6,
+          "x": 880,
+          "y": 49,
+          "color": "#d62728",
+          "h": 359.657,
+          "s": 0.692,
+          "l": 0.496
+        },
+        {
+          "id": 6,
+          "x": 780,
+          "y": 47,
+          "color": "#d62728",
+          "h": 359.657,
+          "s": 0.692,
+          "l": 0.496
+        },
+        {
+          "id": 6,
+          "x": 640,
+          "y": 50,
+          "color": "#d62728",
+          "h": 359.657,
+          "s": 0.692,
+          "l": 0.496
+        },
+        {
+          "id": 6,
+          "x": 540,
+          "y": 57,
+          "color": "#d62728",
+          "h": 359.657,
+          "s": 0.692,
+          "l": 0.496
+        },
+        {
+          "id": 6,
+          "x": 460,
+          "y": 60.5,
+          "color": "#d62728",
+          "h": 359.657,
+          "s": 0.692,
+          "l": 0.496
+        },
+        {
+          "id": 7,
+          "x": 930,
+          "y": 39,
+          "color": "#e377c2",
+          "h": 318.333,
+          "s": 0.659,
+          "l": 0.678
+        },
+        {
+          "id": 7,
+          "x": 800,
+          "y": 33,
+          "color": "#e377c2",
+          "h": 318.333,
+          "s": 0.659,
+          "l": 0.678
+        },
+        {
+          "id": 7,
+          "x": 650,
+          "y": 28,
+          "color": "#e377c2",
+          "h": 318.333,
+          "s": 0.659,
+          "l": 0.678
+        },
+        {
+          "id": 7,
+          "x": 480,
+          "y": 30,
+          "color": "#e377c2",
+          "h": 318.333,
+          "s": 0.659,
+          "l": 0.678
+        },
+        {
+          "id": 7,
+          "x": 300,
+          "y": 30,
+          "color": "#e377c2",
+          "h": 318.333,
+          "s": 0.659,
+          "l": 0.678
+        },
+        {
+          "id": 7,
+          "x": 174,
+          "y": 38.5,
+          "color": "#e377c2",
+          "h": 318.333,
+          "s": 0.659,
+          "l": 0.678
+        },
+        {
+          "id": 8,
+          "x": 905,
+          "y": 29,
+          "color": "#7f7f7f",
+          "h": 0,
+          "s": 0,
+          "l": 0.498
+        },
+        {
+          "id": 8,
+          "x": 800,
+          "y": 23,
+          "color": "#7f7f7f",
+          "h": 0,
+          "s": 0,
+          "l": 0.498
+        },
+        {
+          "id": 8,
+          "x": 700,
+          "y": 24.5,
+          "color": "#7f7f7f",
+          "h": 0,
+          "s": 0,
+          "l": 0.498
+        },
+        {
+          "id": 8,
+          "x": 530,
+          "y": 22,
+          "color": "#7f7f7f",
+          "h": 0,
+          "s": 0,
+          "l": 0.498
+        },
+        {
+          "id": 8,
+          "x": 410,
+          "y": 27,
+          "color": "#7f7f7f",
+          "h": 0,
+          "s": 0,
+          "l": 0.498
+        },
+        {
+          "id": 8,
+          "x": 300,
+          "y": 28,
+          "color": "#7f7f7f",
+          "h": 0,
+          "s": 0,
+          "l": 0.498
+        },
+        {
+          "id": 9,
+          "x": 950,
+          "y": 20,
+          "color": "#bcbd22",
+          "h": 60.387,
+          "s": 0.695,
+          "l": 0.437
+        },
+        {
+          "id": 9,
+          "x": 800,
+          "y": 21,
+          "color": "#bcbd22",
+          "h": 60.387,
+          "s": 0.695,
+          "l": 0.437
+        },
+        {
+          "id": 9,
+          "x": 700,
+          "y": 19,
+          "color": "#bcbd22",
+          "h": 60.387,
+          "s": 0.695,
+          "l": 0.437
+        },
+        {
+          "id": 9,
+          "x": 550,
+          "y": 26.5,
+          "color": "#bcbd22",
+          "h": 60.387,
+          "s": 0.695,
+          "l": 0.437
+        },
+        {
+          "id": 9,
+          "x": 440,
+          "y": 29,
+          "color": "#bcbd22",
+          "h": 60.387,
+          "s": 0.695,
+          "l": 0.437
+        },
+        {
+          "id": 9,
+          "x": 370,
+          "y": 34,
+          "color": "#bcbd22",
+          "h": 60.387,
+          "s": 0.695,
+          "l": 0.437
+        },
+        {
+          "id": 10,
+          "x": 910,
+          "y": 11,
+          "color": "#17becf",
+          "h": 185.543,
+          "s": 0.8,
+          "l": 0.451
+        },
+        {
+          "id": 10,
+          "x": 800,
+          "y": 13,
+          "color": "#17becf",
+          "h": 185.543,
+          "s": 0.8,
+          "l": 0.451
+        },
+        {
+          "id": 10,
+          "x": 700,
+          "y": 21,
+          "color": "#17becf",
+          "h": 185.543,
+          "s": 0.8,
+          "l": 0.451
+        },
+        {
+          "id": 10,
+          "x": 600,
+          "y": 25,
+          "color": "#17becf",
+          "h": 185.543,
+          "s": 0.8,
+          "l": 0.451
+        },
+        {
+          "id": 10,
+          "x": 0,
+          "y": 0,
+          "color": "#17becf",
+          "h": 185.543,
+          "s": 0.8,
+          "l": 0.451
+        }
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "name": "ornament",
+      "zindex": 5,
+      "type": "symbol",
+      "from": {
+        "data": "pointsData"
+      },
+      "encode": {
+        "enter": {
+          "cursor": {
+            "value": "pointer"
+          },
+          "x": {
+            "scale": "x",
+            "field": "x"
+          },
+          "y": {
+            "scale": "y",
+            "field": "y"
+          },
+          "strokeOpacity": {
+            "value": 0.5
+          },
+          "strokeWidth": {
+            "value": 2
+          }
+        },
+        "update": {
+          "shape": {
+            "signal": "datum.id==1? 'M0,.5L.6,.8L.5,.1L1,-.3L.3,-.4L0,-1L-.3,-.4L-1,-.3L-.5,.1L-.6,.8L0,.5Z':'circle'"
+          },
+          "size": {
+            "signal": "datum.id==1? 1400:500"
+          },
+          "fill": {
+            "field": "color"
+          },
+          "stroke": {
+            "signal": "hsl(datum.h, datum.s, clamp(datum.l - 4 * 0.10, 0, 1))"
+          },
+          "opacity": [
+            {
+              "test": "hoverEvent && hoverEvent == datum.id",
+              "value": 1
+            },
+            {
+              "test": "hoverEvent",
+              "value": 0.5
+            },
+            {
+              "value": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "description": "textcontentSongs",
+      "type": "text",
+      "from": {
+        "data": "songData"
+      },
+      "encode": {
+        "update": {
+          "cursor": {
+            "value": "pointer"
+          },
+          "text": {
+            "signal": "datum.id +'. '+datum.songName"
+          },
+          "fontSize": {
+            "value": 16
+          },
+          "fontWeight": {
+            "value": "700"
+          },
+          "x": {
+            "signal": "width"
+          },
+          "y": {
+            "scale": "scaleYText",
+            "field": "id",
+            "band": 0.5
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "align": {
+            "value": "left"
+          },
+          "fill": {
+            "value": "#4A0404"
+          },
+          "opacity": [
+            {
+              "test": "hoverEvent && hoverEvent == datum.id",
+              "value": 1
+            },
+            {
+              "test": "hoverEvent",
+              "value": 0.5
+            },
+            {
+              "value": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "description": "textcontentSingers",
+      "type": "text",
+      "from": {
+        "data": "songData"
+      },
+      "encode": {
+        "update": {
+          "text": {
+            "signal": "datum.singer"
+          },
+          "x": {
+            "signal": "width"
+          },
+          "y": {
+            "scale": "scaleYText",
+            "field": "id",
+            "band": 0.5
+          },
+          "dy": {
+            "value": 20
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "align": {
+            "value": "left"
+          },
+          "fill": {
+            "value": "#4A0404"
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "opacity": [
+            {
+              "test": "hoverEvent && hoverEvent == datum.id",
+              "value": 1
+            },
+            {
+              "test": "hoverEvent",
+              "value": 0.5
+            },
+            {
+              "value": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "zindex": 4,
+      "type": "path",
+      "from": {
+        "data": "linkData"
+      },
+      "encode": {
+        "enter": {
+          "path": {
+            "field": "linkpath"
+          },
+          "stroke": {
+            "signal": "{'gradient': 'linear','stops': [{'offset': 0.1, 'color':datum.color},{'offset': 0.9, 'color':'red'}]}"
+          },
+          "strokeWidth": {
+            "value": 4
+          }
+        },
+        "update": {
+          "opacity": [
+            {
+              "test": "hoverEvent && hoverEvent== datum.id",
+              "value": 1
+            },
+            {
+              "value": 0.1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "description": "tree background",
+      "zindex": 0,
+      "type": "symbol",
+      "from": {
+        "data": "dataset"
+      },
+      "encode": {
+        "enter": {
+          "x": {
+            "scale": "x",
+            "field": "x"
+          },
+          "y": {
+            "scale": "y",
+            "field": "y"
+          },
+          "stroke": {
+            "value": "#41644A"
+          },
+          "fill": {
+            "signal": "hsl(135, 0.21, 0.2 + random() * 0.5)"
+          }
+        },
+        "update": {
+          "opacity": [
+            {
+              "test": "hoverEvent && hoverEvent == datum.id",
+              "value": 1
+            },
+            {
+              "test": "hoverEvent",
+              "value": 0.5
+            },
+            {
+              "value": 1
+            }
+          ]
+        }
+      },
+      "transform": [
+        {
+          "type": "force",
+          "iterations": 100,
+          "static": false,
+          "forces": [
+            {
+              "force": "collide",
+              "iterations": 2,
+              "radius": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "tree trunk",
+      "zindex": 0,
+      "type": "symbol",
+      "from": {
+        "data": "trunkData"
+      },
+      "encode": {
+        "enter": {
+          "x": {
+            "scale": "x",
+            "field": "x"
+          },
+          "y": {
+            "scale": "y",
+            "field": "y"
+          },
+          "fill": {
+            "signal": "hsl(30, 0.6, 0.2 + random() * 0.2)"
+          },
+          "stroke": {
+            "value": "#662222"
+          }
+        },
+        "update": {
+          "opacity": [
+            {
+              "test": "hoverEvent && hoverEvent == datum.id ",
+              "value": 1
+            },
+            {
+              "test": "hoverEvent",
+              "value": 0.5
+            },
+            {
+              "value": 1
+            }
+          ]
+        }
+      },
+      "transform": [
+        {
+          "type": "force",
+          "static": false,
+          "forces": [
+            {
+              "force": "collide",
+              "iterations": 4,
+              "radius": 4.4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "songData"
+      },
+      "encode": {
+        "update": {
+          "text": {
+            "value": "♩"
+          },
+          "x": {
+            "signal": "width-60"
+          },
+          "y": {
+            "scale": "scaleYText",
+            "field": "id",
+            "band": 0.5
+          },
+          "dy": {
+            "signal": "15 * sin(time)"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "align": {
+            "value": "left"
+          },
+          "fill": {
+            "value": "#2ca02c"
+          },
+          "fontSize": {
+            "value": 20
+          },
+          "font": {
+            "value": "Segoe ui"
+          },
+          "opacity": [
+            {
+              "test": "hoverEvent && hoverEvent == datum.id&& isMusicOn==1",
+              "signal": "blink"
+            },
+            {
+              "value": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "songData"
+      },
+      "encode": {
+        "update": {
+          "text": {
+            "value": "♪"
+          },
+          "x": {
+            "signal": "width-50"
+          },
+          "y": {
+            "scale": "scaleYText",
+            "field": "id",
+            "band": 0.5
+          },
+          "dy": {
+            "signal": "15 * sin(time+1)"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "align": {
+            "value": "left"
+          },
+          "fill": {
+            "value": "#17becf"
+          },
+          "fontSize": {
+            "value": 20
+          },
+          "font": {
+            "value": "Segoe ui"
+          },
+          "opacity": [
+            {
+              "test": "hoverEvent && hoverEvent == datum.id&& isMusicOn==1",
+              "signal": "blink"
+            },
+            {
+              "value": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "songData"
+      },
+      "encode": {
+        "update": {
+          "text": {
+            "value": "♬"
+          },
+          "x": {
+            "signal": "width-45"
+          },
+          "y": {
+            "scale": "scaleYText",
+            "field": "id",
+            "band": 0.5
+          },
+          "dy": {
+            "signal": "15 * sin(time+2)"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "align": {
+            "value": "left"
+          },
+          "fill": {
+            "value": "#ff7f0e"
+          },
+          "fontSize": {
+            "value": 20
+          },
+          "font": {
+            "value": "Segoe ui"
+          },
+          "opacity": [
+            {
+              "test": "hoverEvent && hoverEvent == datum.id&& isMusicOn==1",
+              "signal": "blink"
+            },
+            {
+              "value": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "songData"
+      },
+      "encode": {
+        "update": {
+          "text": {
+            "value": "♫"
+          },
+          "x": {
+            "signal": "width-35"
+          },
+          "y": {
+            "scale": "scaleYText",
+            "field": "id",
+            "band": 0.5
+          },
+          "dy": {
+            "signal": "15 * sin(time+3)"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "align": {
+            "value": "left"
+          },
+          "fill": {
+            "value": "#d62728"
+          },
+          "fontSize": {
+            "value": 20
+          },
+          "font": {
+            "value": "Segoe ui"
+          },
+          "opacity": [
+            {
+              "test": "hoverEvent && hoverEvent == datum.id&& isMusicOn==1",
+              "signal": "blink"
+            },
+            {
+              "value": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "zindex": 7,
+      "type": "symbol",
+      "from": {
+        "data": "pointLights"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "scale": "xLights",
+            "field": "x"
+          },
+          "y": {
+            "scale": "yLights",
+            "field": "y"
+          },
+          "size": {
+            "value": 0.07
+          },
+          "shape": {
+            "value": "M 50 -3 C 25 4 17 25 17 50 C 19 76 25 100 50 105 C 74 97 81 73 83 48 C 84 22 76 5 50 -3 Z"
+          },
+          "fill": {
+            "signal": "{'gradient': 'linear','stops': [{'offset': 0.1, 'color':datum.color},{'offset': 0.9, 'color':'white'}]}"
+          },
+          "stroke": {
+            "signal": "hsl(datum.h, datum.s, clamp(datum.l - 4 * 0.10, 0, 1))"
+          },
+          "opacity": [
+            {
+              "test": "datum.x ==0",
+              "value": 0
+            },
+            {
+              "test": "hoverEvent && hoverEvent == datum.id",
+              "signal": "blink"
+            },
+            {
+              "test": "hoverEvent",
+              "value": 0.2
+            },
+            {
+              "value": 0.2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
