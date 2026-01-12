@@ -76,8 +76,8 @@
         {
           "rank": 0,
           "category": "Core",
-          "startDate": "2025-01-01T08:34:00.000Z",
-          "endDate": "2025-01-01T08:36:00.000Z",
+          "startDate": "01-01-2025 09:34",
+          "endDate": "01-01-2025 09:36",
           "Hours": 0,
           "description": "Buffer row to prevent infinite extent error"
         }
