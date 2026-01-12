@@ -1,0 +1,712 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl). This visualization is based on my personal sleep data tracked via my Apple Watch.",
+  "width": 1000,
+  "height": 1200,
+  "padding": 50,
+  "autosize": "pad",
+  "background": "#0F172A",
+  "signals": [
+    {"name": "nodesInStraight", "value": 35},
+    {"name": "nodesInTurn", "value": 5},
+    {"name": "nodesInLoop", "update": "nodesInStraight + nodesInTurn"},
+    {"name": "rowHeight", "value": 100},
+    {"name": "radius", "value": 8},
+    {"name": "gravityX", "value": 0.2},
+    {"name": "gravityY", "value": 0.3},
+    {"name": "static", "value": true},
+    {"name": "tYoffset", "value": 220},
+    {"name": "tXoffset", "value": 50},
+    {"name": "infoCardW", "value": 960},
+    {"name": "infoCardH", "value": 150},
+    {
+      "name": "hover",
+      "value": null,
+      "on": [
+        {"events": "@nodes:mouseover,@pieGroup:mouseover", "update": "datum"},
+        {"events": "@nodes:mouseout,@pieGroup:mouseout", "update": "null"}
+      ]
+    },
+    {
+      "name": "clicked",
+      "value": null,
+      "on": [
+        {
+          "events": "@nodes:click,@pieGroup:click",
+          "update": "datum && datum.rank === clicked ? null : datum"
+        },
+        {"events": "click", "update": "!event.item ? null : clicked"}
+      ]
+    },
+    {
+      "name": "activeRank",
+      "update": "hover ? hover.rank : (clicked ? clicked.rank : null)"
+    }
+  ],
+  "data": [
+    {
+      "name": "raw",
+      "url": "https://raw.githubusercontent.com/Flynnxx1/Deneb-Vega-Showcase/refs/heads/main/Sleep/fullSleepData.csv",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "startDate": "date:'%d-%m-%Y %H:%M'",
+          "endDate": "date:'%d-%m-%Y %H:%M'"
+        },
+        "delimiter": ","
+      }
+    },
+    {
+      "name": "groupedData",
+      "source": ["raw"],
+      "transform": [
+        {"type": "formula", "expr": "toNumber(datum.Hours)", "as": "value"},
+        {
+          "type": "aggregate",
+          "groupby": ["rank", "category", "creationDate"],
+          "ops": ["sum"],
+          "fields": ["value"],
+          "as": ["value"]
+        }
+      ]
+    },
+    {
+      "name": "static_row",
+      "values": [
+        {
+          "rank": 0,
+          "category": "Core",
+          "startDate": "2025-01-01T08:34:00.000Z",
+          "endDate": "2025-01-01T08:36:00.000Z",
+          "Hours": 0,
+          "description": "Buffer row to prevent infinite extent error"
+        }
+      ],
+      "format": {
+        "parse": {
+          "startDate": "date:'%d-%m-%Y %H:%M'",
+          "endDate": "date:'%d-%m-%Y %H:%M'",
+          "rank": "number",
+          "Hours": "number"
+        }
+      }
+    },
+    {
+      "name": "timeline",
+      "source": ["raw", "static_row"],
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.rank === (activeRank !== null ? activeRank : 0)"
+        },
+        {"type": "formula", "expr": "toNumber(datum.Hours)", "as": "value"}
+      ]
+    },
+    {
+      "name": "activeData",
+      "source": "groupedData",
+      "transform": [
+        {"type": "filter", "expr": "datum.rank === activeRank"},
+        {
+          "type": "formula",
+          "as": "order",
+          "expr": "datum.category === 'Awake' ? 0 : datum.category === 'REM' ? 1 : datum.category === 'Core' ? 2 : datum.category === 'Deep' ? 3 : 4"
+        },
+        {"type": "collect", "sort": {"field": "order"}},
+        {"type": "pie", "field": "value"},
+        {"type": "window", "as": ["index"], "ops": ["row_number"]},
+        {
+          "type": "joinaggregate",
+          "ops": ["sum"],
+          "fields": ["value"],
+          "as": ["totalHours"]
+        }
+      ]
+    },
+    {
+      "name": "layoutSource",
+      "source": ["groupedData"],
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": ["rank", "creationDate"],
+          "fields": ["value"],
+          "ops": ["sum"],
+          "as": ["value"]
+        },
+        {
+          "type": "formula",
+          "as": "loopIndex",
+          "expr": "floor((datum.rank - 1) / nodesInLoop)"
+        },
+        {
+          "type": "formula",
+          "as": "posInLoop",
+          "expr": "(datum.rank - 1) % nodesInLoop"
+        },
+        {
+          "type": "formula",
+          "as": "tx",
+          "expr": "datum.posInLoop < nodesInStraight ? (datum.loopIndex % 2 === 0 ? scale('xscale', datum.posInLoop) : scale('xscale', nodesInStraight - datum.posInLoop)) : (datum.loopIndex % 2 === 0 ? 850 + (sin((datum.posInLoop - nodesInStraight) / nodesInTurn * PI) * (rowHeight/2)) : 50 - (sin((datum.posInLoop - nodesInStraight) / nodesInTurn * PI) * (rowHeight/2)))"
+        },
+        {"type": "formula", "as": "targetX", "expr": "datum.tx+tXoffset"},
+        {
+          "type": "formula",
+          "as": "targetY",
+          "expr": "tYoffset+(datum.loopIndex * rowHeight) + (datum.posInLoop < nodesInStraight ? 0 : ((datum.posInLoop - nodesInStraight) / nodesInTurn) * rowHeight)"
+        }
+      ]
+    },
+    {
+      "name": "layout",
+      "source": ["layoutSource"],
+      "transform": [
+        {
+          "type": "formula",
+          "as": "radiusSize",
+          "expr": "scale('radiusScale', datum.value)"
+        },
+        {
+          "type": "force",
+          "iterations": 300,
+          "static": {"signal": "static"},
+          "forces": [
+            {"force": "collide", "radius": {"field": "radiusSize"}},
+            {"force": "x", "x": "targetX", "strength": {"signal": "gravityX"}},
+            {"force": "y", "y": "targetY", "strength": {"signal": "gravityY"}}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "monthData",
+      "source": ["layout"],
+      "transform": [
+        {
+          "type": "formula",
+          "as": "is_month_first",
+          "expr": "indexof(datum.creationDate, '1-1-') === 0"
+        },
+        {"type": "filter", "expr": "datum.is_month_first==true"}
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "xscale",
+      "type": "linear",
+      "domain": [0, {"signal": "nodesInStraight"}],
+      "range": [50, {"signal": "width-150"}]
+    },
+    {
+      "name": "radiusScale",
+      "type": "linear",
+      "domain": {"data": "layoutSource", "field": "value"},
+      "range": [5, 20]
+    },
+    {
+      "name": "colorPie",
+      "type": "ordinal",
+      "domain": [
+        "Deep",
+        "Core",
+        "REM",
+        "Unspecified",
+        "Awake",
+        "InBed",
+        "nodata"
+      ],
+      "range": [
+        "#165EF0",
+        "#5DA6FF",
+        "#AC88FF",
+        "#31E1C1",
+        "#FD4B4D",
+        "#454545",
+        ""
+      ]
+    },
+    {
+      "name": "xTimeScale",
+      "type": "time",
+      "domain": {"data": "timeline", "fields": ["startDate", "endDate"]},
+      "range": [80, 400]
+    },
+    {
+      "name": "yStageScale",
+      "type": "band",
+      "domain": ["Awake", "REM", "Core", "Deep", "Unspecified"],
+      "range": [20, {"signal": "infoCardH-45"}],
+      "padding": 0.2
+    }
+  ],
+  "marks": [
+    {
+      "name": "nodes",
+      "type": "symbol",
+      "from": {"data": "layout"},
+      "encode": {
+        "enter": {"fill": {"value": "transparent"}},
+        "update": {
+          "cursor": {"value": "pointer"},
+          "x": {"field": "x"},
+          "y": {"field": "y"},
+          "size": {"signal": "datum.radiusSize * datum.radiusSize * 5"}
+        }
+      }
+    },
+    {
+      "interactive": false,
+      "type": "text",
+      "from": {"data": "monthData"},
+      "encode": {
+        "enter": {
+          "x": {"field": "x", "offset": -10},
+          "y": {
+            "field": "y",
+            "offset": {"signal": "datum.creationDate=='1-1-2025'?30:35"}
+          },
+          "text": {
+            "signal": "timeFormat(timeParse(datum.creationDate, '%d-%m-%Y'), '%b %Y')"
+          },
+          "fontSize": {"value": 12}
+        }
+      }
+    },
+    {
+      "name": "pieGroup",
+      "type": "group",
+      "from": {"data": "layout"},
+      "encode": {
+        "enter": {
+          "x": {"field": "x"},
+          "y": {"field": "y"},
+          "width": {"value": 0},
+          "height": {"value": 0},
+          "fill": {"value": "transparent"}
+        }
+      },
+      "data": [
+        {
+          "name": "pieData",
+          "source": "groupedData",
+          "transform": [
+            {"type": "filter", "expr": "datum.rank === parent.rank"},
+            {"type": "pie", "field": "value", "startAngle": 0, "endAngle": 6.28}
+          ]
+        }
+      ],
+      "marks": [
+        {
+          "type": "arc",
+          "from": {"data": "pieData"},
+          "interactive": false,
+          "encode": {
+            "enter": {
+              "fill": {"scale": "colorPie", "field": "category"},
+              "stroke": {
+                "signal": "datum.category == 'nodata'? '#3A3A3C':'#0F172A'"
+              }
+            },
+            "update": {
+              "strokeWidth": {"value": 1.5},
+              "stroke": {
+                "signal": "datum.category == 'nodata'? '#3A3A3C':'#0F172A'"
+              },
+              "startAngle": {"field": "startAngle"},
+              "endAngle": {"field": "endAngle"},
+              "innerRadius": {"signal": "parent.radiusSize * 0.5"},
+              "outerRadius": {"field": {"parent": "radiusSize"}},
+              "opacity": [
+                {"test": "hover && parent.rank == hover.rank", "value": 1},
+                {"test": "clicked && parent.rank == clicked.rank", "value": 1},
+                {"test": "clicked || hover", "value": 0.3},
+                {"value": 1}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "inforCard",
+      "type": "group",
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {"value": 20},
+          "y": {"value": 10},
+          "width": {"signal": "infoCardW"},
+          "height": {"signal": "infoCardH"},
+          "fill": {"value": "#1E293B"},
+          "stroke": {"value": "#334155"},
+          "cornerRadius": {"value": 12},
+          "opacity": {"signal": "activeRank ? 1 :0"}
+        }
+      },
+      "marks": [
+        {
+          "type": "text",
+          "from": {"data": "activeData"},
+          "encode": {
+            "update": {
+              "text": {"signal": "'TIME ASLEEP'"},
+              "x": {"value": 30},
+              "y": {"value": 30},
+              "align": {"value": "left"},
+              "baseline": {"value": "middle"},
+              "fontSize": {"value": 15},
+              "opacity": [
+                {"test": "datum.category =='nodata'", "value": 0},
+                {"test": "datum.index ==1", "value": 1},
+                {"value": 0}
+              ]
+            }
+          }
+        },
+        {
+          "type": "text",
+          "from": {"data": "activeData"},
+          "encode": {
+            "update": {
+              "text": {
+                "signal": "timeFormat(timeParse(datum.creationDate, '%d-%m-%Y'), '%d %b %Y')"
+              },
+              "x": {"value": 45},
+              "y": {"value": 120},
+              "align": {"value": "left"},
+              "baseline": {"value": "middle"},
+              "fontSize": {"value": 16},
+              "opacity": [{"test": "datum.index ==1", "value": 1}, {"value": 0}]
+            }
+          }
+        },
+        {
+          "type": "text",
+          "from": {"data": "activeData"},
+          "encode": {
+            "update": {
+              "text": {"signal": "floor(datum.totalHours)"},
+              "x": {"value": 40},
+              "y": {"value": 90},
+              "align": {"value": "left"},
+              "fontSize": {"value": 38},
+              "fontWeight": {"value": "bold"},
+              "fill": {"value": "#FFFFFF"},
+              "opacity": [
+                {"test": "datum.category =='nodata'", "value": 0},
+                {"test": "datum.index == 1", "value": 1},
+                {"value": 0}
+              ]
+            }
+          }
+        },
+        {
+          "type": "text",
+          "from": {"data": "activeData"},
+          "encode": {
+            "update": {
+              "text": {"signal": "round((datum.totalHours % 1) * 60)"},
+              "x": {"value": 90},
+              "y": {"value": 90},
+              "align": {"value": "left"},
+              "fontSize": {"value": 38},
+              "fontWeight": {"value": "bold"},
+              "fill": {"value": "#FFFFFF"},
+              "opacity": [
+                {"test": "datum.category =='nodata'", "value": 0},
+                {"test": "datum.index == 1", "value": 1},
+                {"value": 0}
+              ]
+            }
+          }
+        },
+        {
+          "type": "text",
+          "from": {"data": "activeData"},
+          "encode": {
+            "update": {
+              "text": {"value": "hr"},
+              "x": {"value": 67},
+              "y": {"value": 90},
+              "fontSize": {"value": 18},
+              "fontWeight": {"value": "normal"},
+              "fill": {"value": "#94A3B8"},
+              "opacity": [
+                {"test": "datum.category =='nodata'", "value": 0},
+                {"test": "datum.index == 1", "value": 1},
+                {"value": 0}
+              ]
+            }
+          }
+        },
+        {
+          "type": "text",
+          "from": {"data": "activeData"},
+          "encode": {
+            "update": {
+              "text": {"value": "min"},
+              "x": {
+                "signal": "round((datum.totalHours % 1) * 60) >= 10? 140:120"
+              },
+              "y": {"value": 90},
+              "fontSize": {"value": 18},
+              "fontWeight": {"value": "normal"},
+              "fill": {"value": "#94A3B8"},
+              "opacity": [
+                {"test": "datum.category =='nodata'", "value": 0},
+                {"test": "datum.index == 1", "value": 1},
+                {"value": 0}
+              ]
+            }
+          }
+        },
+        {
+          "type": "arc",
+          "from": {"data": "activeData"},
+          "encode": {
+            "update": {
+              "x": {"value": 250},
+              "y": {"value": 75},
+              "fill": [
+                {"test": "datum.category === 'nodata'", "value": "#C999999"},
+                {"scale": "colorPie", "field": "category"}
+              ],
+              "innerRadius": {"value": 30},
+              "outerRadius": {"value": 60},
+              "startAngle": {"field": "startAngle"},
+              "endAngle": {"field": "endAngle"},
+              "stroke": {
+                "signal": "datum.category === 'nodata'? 'white':'#1E293B'"
+              },
+              "strokeWidth": {"value": 1}
+            }
+          }
+        },
+        {
+          "type": "symbol",
+          "from": {"data": "activeData"},
+          "encode": {
+            "update": {
+              "size": {"value": 100},
+              "x": {"value": 340},
+              "y": {"signal": "datum.index * 22 + 10"},
+              "align": {"value": "left"},
+              "baseline": {"value": "middle"},
+              "fill": {"scale": "colorPie", "field": "category"},
+              "fontSize": {"value": 15}
+            }
+          }
+        },
+        {
+          "type": "text",
+          "from": {"data": "activeData"},
+          "encode": {
+            "update": {
+              "text": {"signal": "datum.category"},
+              "x": {"value": 360},
+              "y": {"signal": "datum.index * 22 + 10"},
+              "align": {"value": "left"},
+              "baseline": {"value": "middle"},
+              "fontSize": {"value": 15}
+            }
+          }
+        },
+        {
+          "type": "text",
+          "from": {"data": "activeData"},
+          "encode": {
+            "update": {
+              "text": {"signal": "format(datum.value, '.1f') + ' hrs'"},
+              "x": {"value": 500},
+              "y": {"signal": "datum.index * 22 + 10"},
+              "align": {"value": "left"},
+              "baseline": {"value": "middle"},
+              "fontSize": {"value": 14},
+              "opacity": {"signal": "datum.category=='nodata'?0:1"}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "name": "trendChart",
+      "axes": [
+        {
+          "orient": "right",
+          "scale": "yStageScale",
+          "labels": false,
+          "domain": false,
+          "ticks": false
+        },
+        {
+          "orient": "bottom",
+          "scale": "xTimeScale",
+          "tickCount": 5,
+          "offset": -105,
+          "tickSize": 100,
+          "labelColor": "#94A3B8",
+          "encode": {
+            "labels": {
+              "update": {
+                "opacity": {
+                  "signal": "activeRank === null || activeRank === 0 ? 0 : 1"
+                }
+              }
+            },
+            "ticks": {
+              "update": {
+                "opacity": {
+                  "signal": "activeRank === null || activeRank === 0 ? 0 : 1"
+                }
+              }
+            },
+            "domain": {
+              "update": {
+                "opacity": {
+                  "signal": "activeRank === null || activeRank === 0 ? 0 : 1"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "encode": {
+        "update": {
+          "x": {"value": 530},
+          "y": {"value": 30},
+          "height": {"signal": "infoCardH-40"},
+          "fill": {"value": ""}
+        }
+      },
+      "marks": [
+        {
+          "name": "Hypnogram",
+          "type": "rect",
+          "from": {"data": "timeline"},
+          "encode": {
+            "enter": {
+              "fill": {"scale": "colorPie", "field": "category"},
+              "cornerRadius": {"value": 2}
+            },
+            "update": {
+              "x": {"scale": "xTimeScale", "field": "startDate"},
+              "x2": {"scale": "xTimeScale", "field": "endDate"},
+              "y": {"scale": "yStageScale", "field": "category"},
+              "height": {"scale": "yStageScale", "band": 1},
+              "opacity": {"signal": "datum.rank==0? 0:1"}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "encode": {
+        "enter": {
+          "x": {"signal": "tXoffset"},
+          "y": {"value": 60},
+          "text": {"value": "From Dusk to Dawn"},
+          "fill": {"value": "#F8FAFC"},
+          "fontSize": {"value": 40},
+          "fontWeight": {"value": "bold"}
+        },
+        "update": {"opacity": {"signal": "activeRank ? 0 : 1"}}
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "encode": {
+        "enter": {
+          "x": {"signal": "tXoffset"},
+          "y": {"value": 100},
+          "text": {"value": "An Ongoing Journey of Rest"},
+          "fill": {"value": "#94A3B8"},
+          "fontSize": {"value": 24},
+          "fontWeight": {"value": 400}
+        },
+        "update": {"opacity": {"signal": "activeRank ? 0 : 1"}}
+      }
+    }
+  ],
+  "legends": [
+    {
+      "size": "radiusScale",
+      "values": [4, 6, 8, 10],
+      "orient": "top-right",
+      "direction": "horizontal",
+      "offset": 20,
+      "padding": 20,
+      "columnPadding": 10,
+      "symbolStrokeWidth": 6,
+      "labelOffset": 10,
+      "labelColor": "#94A3B8",
+      "labelFontSize": 12,
+      "encode": {
+        "symbols": {
+          "update": {
+            "size": {
+              "signal": "pow(scale('radiusScale', datum.value), 2) * PI"
+            },
+            "x": {"value": 25},
+            "stroke": {"value": "#5DA6FF"},
+            "strokeWidth": {
+              "signal": "scale('radiusScale', datum.value) * 0.5"
+            },
+            "opacity": {"signal": "activeRank ? 0 : 1"}
+          }
+        },
+        "labels": {
+          "update": {
+            "opacity": {"signal": "activeRank ? 0 : 1"},
+            "align": {"value": "center"},
+            "baseline": {"value": "middle"},
+            "dy": {"value": 35},
+            "dx": {"value": 25},
+            "text": {"signal": "datum.value + ' hrs'"}
+          }
+        }
+      }
+    },
+    {
+      "fill": "colorPie",
+      "direction": "vertical",
+      "orient": "top-right",
+      "offset": 30,
+      "rowPadding": 5,
+      "labelColor": "#94A3B8",
+      "labelFontSize": 12,
+      "symbolType": "circle",
+      "values": ["Deep", "Core", "REM", "Unspecified", "Awake", "InBed"],
+      "encode": {
+        "symbols": {"update": {"opacity": {"signal": "activeRank ? 0 : 1"}}},
+        "labels": {
+          "update": {
+            "dx": {"value": 10},
+            "opacity": {"signal": "activeRank ? 0 : 1"}
+          }
+        }
+      }
+    }
+  ],
+  "config": {
+    "view": {"stroke": "transparent"},
+    "axis": {
+      "domainColor": "white",
+      "gridColor": "#334155",
+      "tickColor": "white",
+      "labelColor": "white",
+      "titleColor": "white",
+      "labelFontSize": 11,
+      "titleFontSize": 12,
+      "domainWidth": 0
+    },
+    "text": {
+      "font": "Montserrat, 'Segoe UI', Roboto, sans-serif",
+      "fill": "#CBD5E1"
+    }
+  }
+}

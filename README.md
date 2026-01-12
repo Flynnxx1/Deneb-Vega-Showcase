@@ -3,19 +3,31 @@
 Documenting my journey into learning [Vega](https://vega.github.io/vega/) and using [Deneb](https://deneb-viz.github.io/) for Power BI.
 
 
-1. [Our Festive Favorites](#our-festive-favorites)
-2. [Rotatable Globe](#rotatable-globe)
-3. [US Election Map 2024](#us-election-map-2024)
-4. [Cycling Distance Map Netherlands](#cycling-distance-map-netherlands)
-5. [KPI Cards](#kpi-cards)
-6. [WOW 2025-W3 Voronoi](#wow-2025-w3-voronoi)
-7. [Love Songs](#Love-Songs)
-8. [Du Bois Challenge 2025](#du-bois-challenge-2025)
-9. [Doomsday Clock](#doomsday-clock)
-10. [Pet Ownership](#pet-ownership)
-11. [Trump Approval Rating](#trump-approval-rating)
-12. [Dutch Street Foods](#dutch-street-foods)
+1. [Sleep data - From Dusk to Dawn](#sleep-data---from-dusk-to-dawn)
+2. [Our Festive Favorites](#our-festive-favorites)
+3. [Rotatable Globe](#rotatable-globe)
+4. [US Election Map 2024](#us-election-map-2024)
+5. [Cycling Distance Map Netherlands](#cycling-distance-map-netherlands)
+6. [KPI Cards](#kpi-cards)
+7. [WOW 2025-W3 Voronoi](#wow-2025-w3-voronoi)
+8. [Love Songs](#Love-Songs)
+9. [Du Bois Challenge 2025](#du-bois-challenge-2025)
+10. [Doomsday Clock](#doomsday-clock)
+11. [Pet Ownership](#pet-ownership)
+12. [Trump Approval Rating](#trump-approval-rating)
+13. [Dutch Street Foods](#dutch-street-foods)
 
+
+## Sleep data - From Dusk to Dawn
+This visualization is based on my personal sleep data tracked via my Apple Watch.
+
+[Open in Vega Editor](https://seealso.link/flynnxx1/SleepData)
+
+[Open in Power BI](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Sleep/Sleep.pbix)
+
+[View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Sleep)
+
+![Sleep data - From Dusk to Dawn](Sleep/sleep.gif)
 
 ## Our Festive Favorites
 
