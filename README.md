@@ -3,19 +3,31 @@
 Documenting my journey into learning [Vega](https://vega.github.io/vega/) and using [Deneb](https://deneb-viz.github.io/) for Power BI.
 
 
-1. [Sleep data - From Dusk to Dawn](#sleep-data---from-dusk-to-dawn)
-2. [Our Festive Favorites](#our-festive-favorites)
-3. [Rotatable Globe](#rotatable-globe)
-4. [US Election Map 2024](#us-election-map-2024)
-5. [Cycling Distance Map Netherlands](#cycling-distance-map-netherlands)
-6. [KPI Cards](#kpi-cards)
-7. [WOW 2025-W3 Voronoi](#wow-2025-w3-voronoi)
-8. [Love Songs](#Love-Songs)
-9. [Du Bois Challenge 2025](#du-bois-challenge-2025)
-10. [Doomsday Clock](#doomsday-clock)
-11. [Pet Ownership](#pet-ownership)
-12. [Trump Approval Rating](#trump-approval-rating)
-13. [Dutch Street Foods](#dutch-street-foods)
+1. [Where LGBTQ+ Travelers Are Most Welcome in 2026](#where-lgbtq-travelers-are-most-welcome-in-2026)
+2. [Sleep data - From Dusk to Dawn](#sleep-data---from-dusk-to-dawn)
+3. [Our Festive Favorites](#our-festive-favorites)
+4. [Rotatable Globe](#rotatable-globe)
+5. [US Election Map 2024](#us-election-map-2024)
+6. [Cycling Distance Map Netherlands](#cycling-distance-map-netherlands)
+7. [KPI Cards](#kpi-cards)
+8. [WOW 2025-W3 Voronoi](#wow-2025-w3-voronoi)
+9. [Love Songs](#Love-Songs)
+10. [Du Bois Challenge 2025](#du-bois-challenge-2025)
+11. [Doomsday Clock](#doomsday-clock)
+12. [Pet Ownership](#pet-ownership)
+13. [Trump Approval Rating](#trump-approval-rating)
+14. [Dutch Street Foods](#dutch-street-foods)
+
+## Where LGBTQ+ Travelers Are Most Welcome in 2026
+Data from [Spartacus International Gay Guide](https://spartacus.gayguide.travel/blog/spartacus-gay-travel-index-2026/), legend inspiration from https://colors.italodoliva.com.br/
+
+[Open in Vega Editor](https://seealso.link/flynnxx1/TravelIndex2026)
+
+[Open in Power BI](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Travel%20Index/Travel%20Index%202026.pbix)
+
+[View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Travel%20Index)
+
+![Where LGBTQ+ Travelers Are Most Welcome in 2026](Travel%20Index/travel-index.gif)
 
 
 ## Sleep data - From Dusk to Dawn

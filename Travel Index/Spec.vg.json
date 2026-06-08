@@ -1,0 +1,698 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "Visualization by Ying Fu aka 'Flynnxx1' (https://www.linkedin.com/in/yingfu-nl). Data from https://spartacus.gayguide.travel/blog/spartacus-gay-travel-index-2026/, legend inspiration from https://colors.italodoliva.com.br/",
+  "width": 1680,
+  "height": 900,
+  "title": "Where LGBTQ+ Travelers Are Most Welcome in 2026",
+  "padding": 40,
+  "background": "#F0EBE3",
+  "signals": [
+    {
+      "name": "clickedCountry",
+      "value": "Iceland",
+      "on": [{"events": "@countryTiles:click", "update": "datum.Country"}]
+    },
+    {
+      "name": "hoveredCountry",
+      "value": null,
+      "on": [
+        {"events": "@countryTiles:mouseover", "update": "datum.Country"},
+        {"events": "@countryTiles:mouseout", "update": "null"}
+      ]
+    },
+    {"name": "selectedCountry", "update": "hoveredCountry || clickedCountry"},
+    {"name": "cellSize", "value": 36},
+    {"name": "step", "value": 36},
+    {"name": "glyphX", "value": 1650},
+    {"name": "rowTop", "value": 180},
+    {"name": "rowBottom", "value": 970},
+    {"name": "scoreRectSize", "value": 5}
+  ],
+  "data": [
+    {
+      "name": "countries",
+      "url": "https://raw.githubusercontent.com/Flynnxx1/Deneb-Vega-Showcase/refs/heads/main/Travel%20Index/Gay_travel_index_2026_countries.csv",
+      "format": {"type": "dsv", "delimiter": ";", "parse": "auto"},
+      "transform": [
+        {"type": "extent", "field": "Total", "signal": "scoreExtent"}
+      ]
+    },
+    {
+      "name": "ratingsRaw",
+      "source": "countries",
+      "transform": [
+        {
+          "type": "fold",
+          "fields": [
+            "Anti-Discrimination Legislation",
+            "Marriage / Civil Partnership",
+            "Adoption Allowed",
+            "Transgender Rights",
+            "Intersex / 3rd Option",
+            "Equal Age of Consent",
+            "Conversion Therapy",
+            "LGBT Marketing",
+            "Religious Influence",
+            "HIV Travel Restrictions",
+            "Anti-Gay Laws",
+            "Homosexuality Illegal",
+            "Pride Banned",
+            "Censorship",
+            "Locals Hostile",
+            "Prosecution",
+            "Murders",
+            "Death Sentences"
+          ],
+          "as": ["category", "rawScore"]
+        },
+        {"type": "formula", "as": "score", "expr": "toNumber(datum.rawScore)"},
+        {
+          "type": "formula",
+          "as": "intensity",
+          "expr": "min(5, abs(datum.score))"
+        },
+        {
+          "type": "formula",
+          "as": "label",
+          "expr": "datum.category === 'Anti-Discrimination Legislation' ? 'Antidiscrimination Legislation' : datum.category === 'Transgender Rights' ? 'Trans Gender Rights' : datum.category === 'Death Sentences' ? 'Death Sentence' : datum.category"
+        }
+      ]
+    },
+    {
+      "name": "categoryExtents",
+      "source": "ratingsRaw",
+      "transform": [
+        {
+          "type": "formula",
+          "as": "positiveScore",
+          "expr": "datum.score > 0 ? datum.score : 0"
+        },
+        {
+          "type": "formula",
+          "as": "negativeScore",
+          "expr": "datum.score < 0 ? abs(datum.score) : 0"
+        },
+        {
+          "type": "aggregate",
+          "groupby": ["category"],
+          "ops": ["max", "max"],
+          "fields": ["positiveScore", "negativeScore"],
+          "as": ["maxPositive", "maxNegative"]
+        },
+        {
+          "type": "formula",
+          "as": "layersUp",
+          "expr": "sequence(1, datum.maxPositive + 1)"
+        },
+        {
+          "type": "formula",
+          "as": "layersDown",
+          "expr": "sequence(1, datum.maxNegative + 1)"
+        }
+      ]
+    },
+    {
+      "name": "ratings",
+      "source": "ratingsRaw",
+      "transform": [
+        {"type": "filter", "expr": "datum.Country === selectedCountry"},
+        {
+          "type": "lookup",
+          "from": "categoryExtents",
+          "key": "category",
+          "fields": ["category"],
+          "values": ["maxPositive", "maxNegative", "layersUp", "layersDown"],
+          "as": ["maxPositive", "maxNegative", "layersUp", "layersDown"]
+        },
+        {
+          "type": "formula",
+          "as": "cy",
+          "expr": "scale('ratingY', datum.label) + bandwidth('ratingY') / 2"
+        },
+        {"type": "formula", "as": "innerY", "expr": "datum.cy"}
+      ]
+    },
+    {
+      "name": "baseLayersUp",
+      "source": "ratings",
+      "transform": [
+        {"type": "flatten", "fields": ["layersUp"], "as": ["layer"]},
+        {
+          "type": "formula",
+          "as": "halfW",
+          "expr": "scoreRectSize+ datum.layer * scoreRectSize"
+        },
+        {
+          "type": "formula",
+          "as": "outerY",
+          "expr": "datum.cy - 5 - datum.layer * scoreRectSize"
+        }
+      ]
+    },
+    {
+      "name": "baseLayersDown",
+      "source": "ratings",
+      "transform": [
+        {"type": "flatten", "fields": ["layersDown"], "as": ["layer"]},
+        {
+          "type": "formula",
+          "as": "halfW",
+          "expr": "scoreRectSize+ datum.layer * scoreRectSize"
+        },
+        {
+          "type": "formula",
+          "as": "outerY",
+          "expr": "datum.cy + 5 + datum.layer * scoreRectSize"
+        }
+      ]
+    },
+    {
+      "name": "activeLayers",
+      "source": "ratings",
+      "transform": [
+        {
+          "type": "formula",
+          "as": "activeLayerList",
+          "expr": "sequence(1, datum.intensity + 1)"
+        },
+        {"type": "flatten", "fields": ["activeLayerList"], "as": ["layer"]},
+        {"type": "filter", "expr": "datum.score !== 0"},
+        {
+          "type": "formula",
+          "as": "halfW",
+          "expr": "scoreRectSize+ datum.layer * scoreRectSize"
+        },
+        {
+          "type": "formula",
+          "as": "outerY",
+          "expr": "datum.score > 0 ? datum.cy - 5 - datum.layer * scoreRectSize : datum.cy + 5 + datum.layer * scoreRectSize"
+        },
+        {
+          "type": "formula",
+          "as": "glyphColor",
+          "expr": "datum.score > 0 ? '#00a6a6' : '#d9467a'"
+        }
+      ]
+    },
+    {
+      "name": "selectedCountryData",
+      "source": "countries",
+      "transform": [
+        {"type": "filter", "expr": "datum.Country === selectedCountry"},
+        {
+          "type": "formula",
+          "as": "flagUrl",
+          "expr": "'https://flagcdn.com/w80/' + datum.ISO2 + '.png'"
+        },
+        {
+          "type": "formula",
+          "as": "scoreColor",
+          "expr": "datum.Total > 0 ? '#00a6a6' : '#d9467a'"
+        }
+      ]
+    },
+    {
+      "name": "glyphLegend",
+      "values": [
+        {
+          "kind": "layer",
+          "label": "Positive",
+          "x": 110,
+          "y": 720,
+          "pathString": "M -13 8 V -4 H 13 V 8",
+          "color": "#00a6a6"
+        },
+        {
+          "kind": "layer",
+          "label": "Positive",
+          "x": 110,
+          "y": 720,
+          "pathString": "M -18 8 V -8 H 18 V 8",
+          "color": "#00a6a6"
+        },
+        {
+          "kind": "layer",
+          "label": "Positive",
+          "x": 110,
+          "y": 720,
+          "pathString": "M -23 8 V -12 H 23 V 8",
+          "color": "#c9bdd8"
+        },
+        {
+          "kind": "item",
+          "label": "Positive",
+          "x": 35,
+          "y": 720,
+          "color": "#00a6a6"
+        },
+        {
+          "kind": "item",
+          "label": "Neutral / 0",
+          "note": "center square",
+          "x": 135,
+          "y": 720,
+          "color": "#6f627a"
+        },
+        {
+          "kind": "layer",
+          "label": "Negative",
+          "x": 310,
+          "y": 720,
+          "pathString": "M -13 0 V 11 H 13 V 0",
+          "color": "#d9467a"
+        },
+        {
+          "kind": "layer",
+          "label": "Negative",
+          "x": 310,
+          "y": 720,
+          "pathString": "M -18 0 V 15 H 18 V 0",
+          "color": "#d9467a"
+        },
+        {
+          "kind": "layer",
+          "label": "Negative",
+          "x": 310,
+          "y": 720,
+          "pathString": "M -23 0 V 19 H 23 V 0",
+          "color": "#d9467a"
+        },
+        {
+          "kind": "layer",
+          "label": "Negative",
+          "x": 310,
+          "y": 720,
+          "pathString": "M -28 0 V 23 H 28 V 0",
+          "color": "#c9bdd8"
+        },
+        {
+          "kind": "item",
+          "label": "Negative",
+          "x": 235,
+          "y": 720,
+          "color": "#00a6a6"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "fillColor",
+      "type": "linear",
+      "domain": {"signal": "scoreExtent"},
+      "range": [
+        "#240046",
+        "#3c096c",
+        "#5a189a",
+        "#7b2cbf",
+        "#9d4edd",
+        "#c77dff",
+        "#e0aaff"
+      ]
+    },
+    {
+      "name": "textColor",
+      "type": "threshold",
+      "domain": [6],
+      "range": ["#ffffff", "#1b1026"]
+    },
+    {
+      "name": "ratingY",
+      "type": "band",
+      "domain": {"data": "ratingsRaw", "field": "label"},
+      "range": [{"signal": "rowTop"}, {"signal": "rowBottom"}],
+      "paddingInner": 0.7
+    }
+  ],
+  "legends": [
+    {
+      "fill": "fillColor",
+      "title": "Travel safety score",
+      "orient": "none",
+      "legendX": 20,
+      "legendY": 835,
+      "direction": "horizontal",
+      "gradientLength": 220,
+      "gradientThickness": 12,
+      "titleFontSize": 12,
+      "labelFontSize": 11,
+      "titleColor": "#6f627a",
+      "labelColor": "#6f627a",
+      "labelOffset": 10
+    }
+  ],
+  "marks": [
+    {
+      "name": "countryTiles",
+      "type": "rect",
+      "from": {"data": "countries"},
+      "encode": {
+        "enter": {
+          "x": {"signal": "datum.col * step", "offset": 20},
+          "y": {"signal": "datum.row * step", "offset": 115},
+          "width": {"signal": "cellSize"},
+          "height": {"signal": "cellSize"},
+          "fill": {"scale": "fillColor", "field": "Total"},
+          "tooltip": {
+            "signal": "{'Country': datum.Country,  'Ranking 2026': datum['Ranking 2026'], 'Total Score': datum.Total}"
+          },
+          "cursor": {"value": "pointer"}
+        },
+        "update": {
+          "stroke": {
+            "signal": "datum.Country === selectedCountry ? '#f3e8ff' : '#1b1026'"
+          },
+          "strokeWidth": {
+            "signal": "datum.Country === selectedCountry ? 3 : 1.2"
+          }
+        },
+        "hover": {"stroke": {"value": "#ffffff"}, "strokeWidth": {"value": 3}}
+      }
+    },
+    {
+      "description": "small square indicator",
+      "type": "text",
+      "from": {"data": "countryTiles"},
+      "encode": {
+        "update": {
+          "x": {"signal": "datum.bounds.x1", "offset": 5},
+          "y": {"signal": "datum.bounds.y1", "offset": 16},
+          "text": {"value": "▪"},
+          "fontSize": {"value": 20},
+          "fill": {
+            "signal": "datum.datum.Country === selectedCountry ?scale('textColor', datum.datum.Total) : ''"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "from": {"data": "countries"},
+      "encode": {
+        "enter": {
+          "x": {"signal": "datum.col * step + cellSize / 2", "offset": 20},
+          "y": {"signal": "datum.row * step + cellSize / 2", "offset": 115},
+          "align": {"value": "center"},
+          "baseline": {"value": "middle"},
+          "font": {"value": "Arial"},
+          "fontSize": {"value": 9},
+          "fill": {"scale": "textColor", "field": "Total"},
+          "text": {"field": "ISO3"}
+        }
+      }
+    },
+    {
+      "description": "category names",
+      "type": "text",
+      "from": {"data": "ratings"},
+      "encode": {
+        "enter": {
+          "x": {"signal": "glyphX -80"},
+          "y": {"scale": "ratingY", "field": "label", "band": 0.5},
+          "text": {"field": "label"},
+          "align": {"value": "right"},
+          "baseline": {"value": "middle"},
+          "fontSize": {"value": 14},
+          "fill": {"value": "#1b1026"}
+        }
+      }
+    },
+    {
+      "description": "grey background up",
+      "type": "path",
+      "from": {"data": "baseLayersUp"},
+      "encode": {
+        "enter": {
+          "path": {
+            "signal": "'M ' + (glyphX - datum.halfW) + ' ' + datum.innerY + ' V ' + datum.outerY + ' H ' + (glyphX + datum.halfW) + ' V ' + datum.innerY"
+          },
+          "stroke": {"value": "#c9bdd8"},
+          "strokeWidth": {"value": 2},
+          "fill": {"value": null}
+        }
+      }
+    },
+    {
+      "description": "grey background down",
+      "type": "path",
+      "from": {"data": "baseLayersDown"},
+      "encode": {
+        "enter": {
+          "path": {
+            "signal": "'M ' + (glyphX - datum.halfW) + ' ' + datum.innerY + ' V ' + datum.outerY + ' H ' + (glyphX + datum.halfW) + ' V ' + datum.innerY"
+          },
+          "stroke": {"value": "#c9bdd8"},
+          "strokeWidth": {"value": 2},
+          "fill": {"value": null}
+        }
+      }
+    },
+    {
+      "description": "actual score",
+      "type": "path",
+      "from": {"data": "activeLayers"},
+      "encode": {
+        "enter": {
+          "path": {
+            "signal": "'M ' + (glyphX - datum.halfW) + ' ' + datum.innerY + ' V ' + datum.outerY + ' H ' + (glyphX + datum.halfW) + ' V ' + datum.innerY"
+          },
+          "stroke": {"field": "glyphColor"},
+          "strokeWidth": {"value": 2},
+          "fill": {"value": null},
+          "strokeCap": {"value": "butt"},
+          "strokeJoin": {"value": "miter"}
+        }
+      }
+    },
+    {
+      "description": "zero scrores",
+      "type": "rect",
+      "from": {"data": "ratings"},
+      "encode": {
+        "enter": {
+          "x": {"signal": "glyphX - 4"},
+          "y": {
+            "signal": "scale('ratingY', datum.label) + bandwidth('ratingY') / 2 - 4"
+          },
+          "width": {"value": 8},
+          "height": {"value": 8}
+        },
+        "update": {
+          "fill": {"signal": "datum.score === 0 ? '#5f526b' : '#c9bdd8'"}
+        }
+      }
+    },
+    {
+      "description": "callOut Country Card",
+      "type": "group",
+      "from": {"data": "selectedCountryData"},
+      "encode": {"enter": {"x": {"signal": "glyphX-260"}, "y": {"value": 20}}},
+      "marks": [
+        {
+          "description": "Top rect ",
+          "type": "rect",
+          "encode": {
+            "enter": {
+              "x": {"value": 0},
+              "y": {"value": 0},
+              "width": {"value": 280},
+              "height": {"value": 50},
+              "stroke": {"value": "#1b0136"},
+              "strokeWidth": {"value": 1}
+            },
+            "update": {"fill": {"signal": "scale('fillColor',parent.Total)"}}
+          }
+        },
+        {
+          "type": "rect",
+          "encode": {
+            "enter": {
+              "x": {"value": 0},
+              "y": {"value": 50},
+              "width": {"value": 280},
+              "height": {"value": 70},
+              "stroke": {"value": "#1b0136"},
+              "strokeWidth": {"value": 1},
+              "fill": {"value": "#f4f0f7"}
+            }
+          }
+        },
+        {
+          "type": "text",
+          "encode": {
+            "enter": {
+              "x": {"value": 10},
+              "y": {"value": 25},
+              "align": {"value": "left"},
+              "baseline": {"value": "middle"},
+              "fontSize": {"value": 20},
+              "fontWeight": {"value": 600},
+              "fill": {"value": "#1b1026"}
+            },
+            "update": {
+              "text": {"signal": "parent.Country"},
+              "fill": {"signal": "scale('textColor', parent.Total)"}
+            }
+          }
+        },
+        {
+          "type": "image",
+          "encode": {
+            "enter": {
+              "x": {"value": 230},
+              "y": {"value": 8},
+              "width": {"value": 35},
+              "height": {"value": 35},
+              "url": {"signal": "parent.flagUrl"}
+            }
+          }
+        },
+        {
+          "type": "text",
+          "encode": {
+            "enter": {
+              "x": {"value": 10},
+              "y": {"value": 100},
+              "align": {"value": "left"},
+              "baseline": {"value": "middle"},
+              "fontSize": {"value": 14},
+              "fill": {"value": "#1b1026"},
+              "text": {"value": "Total score"}
+            }
+          }
+        },
+        {
+          "type": "text",
+          "encode": {
+            "enter": {
+              "x": {"value": 10},
+              "y": {"value": 75},
+              "align": {"value": "left"},
+              "baseline": {"value": "middle"},
+              "fontSize": {"value": 14},
+              "fill": {"value": "#1b1026"},
+              "text": {"value": "Ranking 2026"}
+            }
+          }
+        },
+        {
+          "type": "text",
+          "encode": {
+            "enter": {
+              "x": {"value": 260},
+              "y": {"value": 75},
+              "align": {"value": "right"},
+              "baseline": {"value": "middle"},
+              "fontSize": {"value": 18},
+              "fontWeight": {"value": 600}
+            },
+            "update": {
+              "text": {"signal": "parent['Ranking 2026']"},
+              "fill": {"signal": "scale('fillColor',parent.Total)"}
+            }
+          }
+        },
+        {
+          "type": "text",
+          "encode": {
+            "enter": {
+              "x": {"value": 260},
+              "y": {"value": 100},
+              "align": {"value": "right"},
+              "baseline": {"value": "middle"},
+              "fontSize": {"value": 18},
+              "fontWeight": {"value": 600},
+              "fill": {"signal": "parent.scoreColor"}
+            },
+            "update": {"text": {"signal": "parent.Total"}}
+          }
+        }
+      ]
+    },
+    {
+      "description": "legend",
+      "type": "group",
+      "from": {"data": "glyphLegend"},
+      "encode": {"enter": {"x": {"value": 0}, "y": {"value": 960}}},
+      "marks": [
+        {
+          "type": "path",
+          "encode": {
+            "enter": {
+              "path": {"signal": "parent.pathString"},
+              "x": {"signal": "parent.x -70"},
+              "stroke": {"signal": "parent.color"},
+              "strokeWidth": {"value": 2},
+              "fill": {"value": null},
+              "strokeCap": {"value": "butt"},
+              "strokeJoin": {"value": "miter"},
+              "opacity": {"signal": "parent.kind === 'layer' ? 1 : 0"}
+            }
+          }
+        },
+        {
+          "type": "rect",
+          "encode": {
+            "enter": {
+              "x": {"signal": "parent.x"},
+              "width": {"value": 8},
+              "height": {"value": 8},
+              "opacity": {"signal": "parent.kind === 'item' ? 1 : 0"}
+            },
+            "update": {
+              "fill": {
+                "signal": "parent.label == 'Neutral / 0'? '#5f526b' : '#c9bdd8'"
+              }
+            }
+          }
+        },
+        {
+          "type": "text",
+          "encode": {
+            "enter": {
+              "x": {"value": 15},
+              "y": {"value": 35},
+              "text": {
+                "value": "Each stroke = 1 point /Grey shows range; Color shows actual score"
+              },
+              "align": {"value": "left"},
+              "baseline": {"value": "middle"},
+              "lineBreak": {"value": "/"},
+              "font": {"value": "Arial, Helvetica, sans-serif"},
+              "fontSize": {"value": 12},
+              "fill": {"value": "#6f627a"},
+              "opacity": {"signal": "parent.x === 35 ? 1 : 0"}
+            }
+          }
+        },
+        {
+          "type": "text",
+          "encode": {
+            "enter": {
+              "x": {"signal": "parent.x+5"},
+              "y": {"value": -30},
+              "text": {"signal": "parent.label"},
+              "align": {"value": "center"},
+              "baseline": {"value": "middle"},
+              "fontSize": {"value": 11},
+              "fontWeight": {"value": "bold"},
+              "fill": {"value": "#6f627a"},
+              "opacity": {"signal": "parent.kind === 'item' ? 1 : 0"}
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "config": {
+    "view": {"stroke": "transparent"},
+    "text": {"font": "Montserrat, 'Segoe UI', Roboto, sans-serif"},
+    "title": {
+      "fontSize": 35,
+      "font": "Montserrat, 'Segoe UI', Roboto, sans-serif",
+      "color": "#1b1026",
+      "dx": -450
+    }
+  }
+}
