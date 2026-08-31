@@ -1,0 +1,841 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "Designed and created by Ying Fu (Flynnxx1). A data art exploration of weekly solar generation and grid energy use, visualized as 53 small landscape-like panels across the year.LinkedIn: https://www.linkedin.com/in/yingfu-nl",
+  "padding": 20,
+  "height": 850,
+  "width": 800,
+  "background": "#fafafa",
+  "signals": [
+    {"name": "cellWd", "value": 120},
+    {"name": "cellHeight", "value": 100},
+    {"name": "cellPad", "value": 10},
+    {"name": "cellPadTop", "value": 10},
+    {"name": "cellGap", "value": 25},
+    {"name": "solarColor", "value": "#F5A21A"},
+    {"name": "gridColor", "value": "#07384B"},
+    {"name": "sunColor", "value": "#F46A00"},
+    {"name": "solarSoldColor", "value": "#ffea00"},
+    {"name": "totalUsageColor", "value": "#4d9078"},
+    {"name": "chartTop", "value": 140},
+    {"name": "sankeyWidth", "update": "420"},
+    {"name": "sankeyHeight", "value": 180},
+    {"name": "sankeyPlotTop", "value": 50},
+    {"name": "sankeyBottom", "value": 40},
+    {"name": "sankeyLeft", "value": 20},
+    {"name": "sankeyRight", "value": 70},
+    {
+      "name": "activeWeek",
+      "on": [
+        {"events": "@skyBackground:pointerover", "update": "datum.week"},
+        {"events": "@skyBackground:pointerout", "update": "null"}
+      ]
+    }
+  ],
+  "data": [
+    {
+      "name": "dataset",
+      "url": "https://raw.githubusercontent.com/Flynnxx1/datasets/refs/heads/main/solar.csv?2",
+      "format": {"type": "dsv", "delimiter": ";"},
+      "transform": [
+        {
+          "type": "formula",
+          "as": "solarGeneratedKwh",
+          "expr": "toNumber(datum.solar_generated_kwh)"
+        },
+        {
+          "type": "formula",
+          "as": "solarSoldKwh",
+          "expr": "toNumber(datum.solar_sold_kwh)"
+        },
+        {
+          "type": "formula",
+          "as": "solarUsedKwh",
+          "expr": "toNumber(datum.solar_used_kwh)"
+        },
+        {
+          "type": "formula",
+          "as": "gridConsumedKwh",
+          "expr": "toNumber(datum.grid_consumed_kwh)"
+        },
+        {
+          "type": "formula",
+          "as": "totalEnergyUsedKwh",
+          "expr": "toNumber(datum.total_energy_used_kwh)"
+        },
+        {"type": "formula", "as": "week", "expr": "toNumber(datum.week)"},
+        {"type": "formula", "as": "weekday", "expr": "toNumber(datum.weekday)"}
+      ]
+    },
+    {
+      "name": "plotData",
+      "source": "dataset",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.solarUsedKwh > 0 && datum.gridConsumedKwh > 0"
+        },
+        {
+          "type": "formula",
+          "as": "totalKwh",
+          "expr": "datum.solarUsedKwh + datum.gridConsumedKwh"
+        }
+      ]
+    },
+    {
+      "name": "weeklySunTotals",
+      "source": "plotData",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": ["week"],
+          "fields": ["solarGeneratedKwh"],
+          "ops": ["sum"],
+          "as": ["solarGeneratedTotal"]
+        }
+      ]
+    },
+    {
+      "name": "activeWeekData",
+      "source": "plotData",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "activeWeek != null && datum.week == activeWeek"
+        },
+        {
+          "type": "fold",
+          "fields": ["solarUsedKwh", "gridConsumedKwh"],
+          "as": ["energyType", "kwh"]
+        },
+        {
+          "type": "formula",
+          "as": "stackOrder",
+          "expr": "datum.energyType === 'solarUsedKwh' ? 1 : 0"
+        },
+        {
+          "type": "stack",
+          "groupby": ["weekday"],
+          "sort": {"field": "stackOrder", "order": "ascending"},
+          "field": "kwh",
+          "as": ["y0", "y1"]
+        }
+      ]
+    },
+    {
+      "name": "activeWeekDailySummary",
+      "source": "plotData",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "activeWeek != null && datum.week == activeWeek"
+        }
+      ]
+    },
+    {
+      "name": "activeWeekSummary",
+      "source": "plotData",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "activeWeek != null && datum.week == activeWeek"
+        },
+        {
+          "type": "aggregate",
+          "fields": [
+            "solarGeneratedKwh",
+            "solarUsedKwh",
+            "solarSoldKwh",
+            "gridConsumedKwh"
+          ],
+          "ops": ["sum", "sum", "sum", "sum"],
+          "as": ["solarGenerated", "solarUsed", "solarSold", "gridUsed"]
+        },
+        {
+          "type": "formula",
+          "as": "totalUsage",
+          "expr": "datum.solarUsed + datum.gridUsed"
+        }
+      ]
+    },
+    {
+      "name": "sankeyNodes",
+      "source": "activeWeekSummary",
+      "transform": [
+        {
+          "type": "fold",
+          "fields": [
+            "solarGenerated",
+            "solarUsed",
+            "solarSold",
+            "gridUsed",
+            "totalUsage"
+          ],
+          "as": ["node", "value"]
+        },
+        {
+          "type": "formula",
+          "as": "label",
+          "expr": "datum.node === 'solarGenerated' ? 'Solar|Generated' : datum.node === 'solarUsed' ? 'Solar Used' : datum.node === 'solarSold' ? 'Solar Sold' : datum.node === 'gridUsed' ? 'Grid Used' : 'Total|Usage'"
+        },
+        {
+          "type": "formula",
+          "as": "layer",
+          "expr": "datum.node === 'solarSold' ? 0 : datum.node === 'solarGenerated' ? 1 : datum.node === 'totalUsage' ? 3 : 2"
+        },
+        {
+          "type": "formula",
+          "as": "order",
+          "expr": "datum.node === 'gridUsed' || datum.node === 'solarSold' ? 1 :0"
+        },
+        {
+          "type": "formula",
+          "as": "flowValue",
+          "expr": "datum.node === 'solarGenerated' ? max(datum.solarGenerated, datum.solarUsed + datum.solarSold) : datum.value"
+        },
+        {
+          "type": "joinaggregate",
+          "groupby": ["layer"],
+          "fields": ["flowValue", "flowValue"],
+          "ops": ["sum", "count"],
+          "as": ["layerFlow", "layerCount"]
+        },
+        {
+          "type": "joinaggregate",
+          "fields": ["layerFlow"],
+          "ops": ["max"],
+          "as": ["maxLayerFlow"]
+        },
+        {
+          "type": "formula",
+          "as": "gapValue",
+          "expr": "datum.maxLayerFlow * 0.5"
+        },
+        {
+          "type": "formula",
+          "as": "stackValue",
+          "expr": "datum.flowValue + (datum.order < datum.layerCount - 1 ? datum.gapValue : 0)"
+        },
+        {
+          "type": "stack",
+          "groupby": ["layer"],
+          "sort": {"field": "order", "order": "ascending"},
+          "field": "stackValue",
+          "as": ["stackY0", "stackY1"]
+        },
+        {
+          "type": "joinaggregate",
+          "groupby": ["layer"],
+          "fields": ["stackY1"],
+          "ops": ["max"],
+          "as": ["layerStackTotal"]
+        },
+        {
+          "type": "joinaggregate",
+          "fields": ["layerStackTotal"],
+          "ops": ["max"],
+          "as": ["maxStackTotal"]
+        },
+        {
+          "type": "formula",
+          "as": "y0",
+          "expr": "datum.stackY0 + (datum.maxStackTotal - datum.layerStackTotal) / 2"
+        },
+        {"type": "formula", "as": "y1", "expr": "datum.y0 + datum.flowValue"},
+        {"type": "formula", "as": "yc", "expr": "(datum.y0 + datum.y1) / 2"},
+        {
+          "type": "formula",
+          "as": "nodeColor",
+          "expr": "scale('color', datum.label)"
+        }
+      ]
+    },
+    {
+      "name": "linkTable",
+      "source": "activeWeekSummary",
+      "transform": [
+        {"type": "formula", "as": "genToUsed", "expr": "datum.solarUsed"},
+        {"type": "formula", "as": "genToSold", "expr": "datum.solarSold"},
+        {"type": "formula", "as": "usedToTotal", "expr": "datum.solarUsed"},
+        {"type": "formula", "as": "gridToTotal", "expr": "datum.gridUsed"},
+        {
+          "type": "fold",
+          "fields": ["genToUsed", "genToSold", "usedToTotal", "gridToTotal"],
+          "as": ["flow", "value"]
+        },
+        {"type": "filter", "expr": "datum.value > 0"},
+        {
+          "type": "formula",
+          "as": "source",
+          "expr": "datum.flow === 'genToUsed' || datum.flow === 'genToSold' ? 'Solar|Generated' : datum.flow === 'usedToTotal' ? 'Solar Used' : 'Grid Used'"
+        },
+        {
+          "type": "formula",
+          "as": "destination",
+          "expr": "datum.flow === 'genToUsed' ? 'Solar Used' : datum.flow === 'genToSold' ? 'Solar Sold' : 'Total|Usage'"
+        },
+        {
+          "type": "lookup",
+          "from": "sankeyNodes",
+          "key": "label",
+          "fields": ["source"],
+          "as": ["sourceNode"]
+        },
+        {
+          "type": "lookup",
+          "from": "sankeyNodes",
+          "key": "label",
+          "fields": ["destination"],
+          "as": ["targetNode"]
+        },
+        {
+          "type": "stack",
+          "groupby": ["source"],
+          "sort": {
+            "field": ["targetNode.layer", "targetNode.order"],
+            "order": ["descending", "ascending"]
+          },
+          "field": "value",
+          "as": ["sourceY0", "sourceY1"]
+        },
+        {
+          "type": "stack",
+          "groupby": ["destination"],
+          "sort": {
+            "field": ["sourceNode.order", "sourceNode.layer"],
+            "order": ["ascending", "descending"]
+          },
+          "field": "value",
+          "as": ["targetY0", "targetY1"]
+        },
+        {
+          "type": "linkpath",
+          "orient": "horizontal",
+          "shape": "diagonal",
+          "sourceX": {
+            "expr": "scale('sankeyX', datum.sourceNode.layer) + bandwidth('sankeyX')"
+          },
+          "sourceY": {
+            "expr": "scale('sankeyY', datum.sourceNode.y0 + datum.sourceY0 + datum.value/2)"
+          },
+          "targetX": {"expr": "scale('sankeyX', datum.targetNode.layer)"},
+          "targetY": {
+            "expr": "scale('sankeyY', datum.targetNode.y0 + datum.targetY0 + datum.value/2)"
+          }
+        },
+        {
+          "type": "formula",
+          "as": "strokeWidth",
+          "expr": "abs(scale('sankeyY', datum.value) - scale('sankeyY', 0))"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "point",
+      "domain": [1, 2, 3, 4, 5, 6, 7],
+      "range": [{"signal": "cellPad"}, {"signal": "cellWd - cellPad"}]
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "domain": {"data": "plotData", "field": "totalKwh"},
+      "range": [{"signal": "cellHeight - cellPad"}, {"signal": "cellPadTop"}],
+      "zero": true,
+      "nice": true
+    },
+    {
+      "name": "sunRadius",
+      "type": "sqrt",
+      "domain": {"data": "weeklySunTotals", "field": "solarGeneratedTotal"},
+      "range": [2, 8],
+      "zero": true
+    },
+    {
+      "name": "skyColor",
+      "type": "linear",
+      "domain": {"data": "weeklySunTotals", "field": "solarGeneratedTotal"},
+      "range": ["#eeeff3", "#f3f8ff", "#D7E8FF"]
+    },
+    {
+      "name": "xActive",
+      "type": "point",
+      "domain": {
+        "data": "plotData",
+        "field": "weekday",
+        "sort": {"op": "min", "field": "weekday", "order": "descending"}
+      },
+      "range": [{"signal": "width-160"}, {"signal": "440"}]
+    },
+    {
+      "name": "yActive",
+      "type": "linear",
+      "domain": {"data": "activeWeekData", "field": "kwh"},
+      "range": [{"signal": "chartTop"}, {"signal": "90"}]
+    },
+    {
+      "name": "barColor",
+      "type": "ordinal",
+      "domain": ["solarUsedKwh", "gridConsumedKwh"],
+      "range": [{"signal": "solarColor"}, {"signal": "gridColor"}]
+    },
+    {
+      "name": "size",
+      "type": "linear",
+      "domain": {"data": "plotData", "field": "solarGeneratedKwh"},
+      "range": [0, 700],
+      "zero": true
+    },
+    {
+      "name": "sankeyX",
+      "type": "band",
+      "domain": {"data": "sankeyNodes", "field": "layer", "sort": true},
+      "range": [
+        {"signal": "sankeyLeft"},
+        {"signal": "sankeyWidth - sankeyRight"}
+      ],
+      "paddingOuter": 0.05,
+      "paddingInner": 0.92
+    },
+    {
+      "name": "sankeyY",
+      "type": "linear",
+      "domain": [
+        0,
+        {
+          "signal": "data('sankeyNodes').length > 0 ? data('sankeyNodes')[0].maxStackTotal : 1"
+        }
+      ],
+      "range": [
+        {"signal": "sankeyPlotTop"},
+        {"signal": "sankeyHeight - sankeyBottom"}
+      ],
+      "zero": true,
+      "nice": false
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": [
+        "Solar|Generated",
+        "Solar Used",
+        "Solar Sold",
+        "Grid Used",
+        "Total|Usage"
+      ],
+      "range": [
+        {"signal": "sunColor"},
+        {"signal": "solarColor"},
+        {"signal": "solarSoldColor"},
+        {"signal": "gridColor"},
+        {"signal": "totalUsageColor"}
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "name": "chartContainer",
+      "type": "group",
+      "encode": {"update": {"x": {"value": 0}, "y": {"signal": "chartTop"}}},
+      "layout": {
+        "padding": {
+          "row": {"signal": "cellGap"},
+          "column": {"signal": "cellGap"}
+        },
+        "bounds": "flush",
+        "align": "all",
+        "columns": 9
+      },
+      "marks": [
+        {
+          "name": "lineCells",
+          "type": "group",
+          "from": {
+            "facet": {
+              "name": "cellFacet",
+              "data": "plotData",
+              "groupby": ["week"]
+            }
+          },
+          "sort": {"field": "datum.week", "order": "ascending"},
+          "data": [
+            {
+              "name": "cellLineData",
+              "source": "cellFacet",
+              "transform": [
+                {
+                  "type": "fold",
+                  "fields": ["solarUsedKwh", "gridConsumedKwh"],
+                  "as": ["energyType", "kwh"]
+                },
+                {
+                  "type": "formula",
+                  "as": "stackOrder",
+                  "expr": "datum.energyType === 'solarUsedKwh' ? 1 : 0"
+                },
+                {
+                  "type": "stack",
+                  "groupby": ["weekday"],
+                  "sort": {"field": "stackOrder", "order": "ascending"},
+                  "field": "kwh",
+                  "as": ["y0", "y1"]
+                }
+              ]
+            },
+            {
+              "name": "solarAreaData",
+              "source": "cellLineData",
+              "transform": [
+                {
+                  "type": "filter",
+                  "expr": "datum.energyType === 'solarUsedKwh'"
+                },
+                {
+                  "type": "collect",
+                  "sort": {"field": "weekday", "order": "ascending"}
+                }
+              ]
+            },
+            {
+              "name": "gridAreaData",
+              "source": "cellLineData",
+              "transform": [
+                {
+                  "type": "filter",
+                  "expr": "datum.energyType === 'gridConsumedKwh'"
+                },
+                {
+                  "type": "collect",
+                  "sort": {"field": "weekday", "order": "ascending"}
+                }
+              ]
+            },
+            {
+              "name": "sunGrouped",
+              "source": "cellFacet",
+              "transform": [
+                {
+                  "type": "aggregate",
+                  "groupby": ["week"],
+                  "fields": ["solarGeneratedKwh"],
+                  "ops": ["sum"],
+                  "as": ["solarGeneratedTotal"]
+                }
+              ]
+            }
+          ],
+          "encode": {
+            "update": {
+              "width": {"signal": "cellWd"},
+              "height": {"signal": "cellHeight"},
+              "fill": {"value": "transparent"},
+              "stroke": {"value": "#D9D9D9"},
+              "strokeWidth": {"value": 1}
+            }
+          },
+          "marks": [
+            {
+              "name": "skyBackground",
+              "type": "rect",
+              "from": {"data": "sunGrouped"},
+              "encode": {
+                "update": {
+                  "x": {"value": 0},
+                  "y": {"value": 0},
+                  "width": {"signal": "cellWd"},
+                  "height": {"signal": "cellHeight"},
+                  "fill": {"scale": "skyColor", "field": "solarGeneratedTotal"},
+                  "cursor": {"value": "pointer"}
+                }
+              }
+            },
+            {
+              "interactive": false,
+              "description": "weekLabel",
+              "type": "text",
+              "encode": {
+                "update": {
+                  "text": {"signal": "parent.week"},
+                  "x": {"value": 20},
+                  "y": {"value": 20},
+                  "align": {"value": "center"},
+                  "baseline": {"value": "middle"},
+                  "fontSize": {"value": 14},
+                  "fontWeight": {"value": "600"},
+                  "fill": {
+                    "signal": "parent.week == activeWeek ? '#4f4338' : '#8796a8'"
+                  }
+                }
+              }
+            },
+            {
+              "interactive": false,
+              "description": "cellAreaMarkSolar",
+              "type": "area",
+              "from": {"data": "solarAreaData"},
+              "sort": {"field": "weekday"},
+              "encode": {
+                "update": {
+                  "fill": {"signal": "solarColor"},
+                  "fillOpacity": {"value": 1},
+                  "strokeWidth": {"value": 1.5},
+                  "x": {"scale": "x", "field": "weekday"},
+                  "y": {"scale": "y", "field": "y1"},
+                  "y2": {"scale": "y", "field": "y0"},
+                  "interpolate": {"value": "monotone"}
+                }
+              }
+            },
+            {
+              "interactive": false,
+              "description": "cellAreaMarkGrid",
+              "type": "area",
+              "from": {"data": "gridAreaData"},
+              "sort": {"field": "weekday"},
+              "encode": {
+                "update": {
+                  "fill": {"signal": "gridColor"},
+                  "fillOpacity": {"value": 1},
+                  "strokeWidth": {"value": 1.5},
+                  "x": {"scale": "x", "field": "weekday"},
+                  "y": {"scale": "y", "field": "y1"},
+                  "y2": {"scale": "y", "field": "y0"},
+                  "interpolate": {"value": "monotone"}
+                }
+              }
+            },
+            {
+              "interactive": false,
+              "description": "sun",
+              "type": "symbol",
+              "from": {"data": "sunGrouped"},
+              "encode": {
+                "update": {
+                  "x": {"signal": "cellWd - 20"},
+                  "y": {"value": 20},
+                  "shape": {"value": "circle"},
+                  "size": {
+                    "signal": "pow(scale('sunRadius', datum.solarGeneratedTotal), 2) * 3.14159"
+                  },
+                  "fill": {"signal": "sunColor"}
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "encode": {
+        "enter": {
+          "x": {"signal": "0"},
+          "y": {"signal": "10"},
+          "text": {"value": "Energy Under Changing Skies"},
+          "fill": {"value": "#243746"},
+          "fontSize": {"value": 40},
+          "fontWeight": {"value": "bold"}
+        },
+        "update": {"opacity": {"value": 1}}
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "encode": {
+        "enter": {
+          "x": {"signal": "0"},
+          "y": {"signal": "60"},
+          "text": {"value": "A Weekly Portrait of Solar and Grid Energy Use"},
+          "fill": {"value": "#8796A8"},
+          "fontSize": {"value": 24},
+          "fontWeight": {"value": 400}
+        },
+        "update": {"opacity": {"value": 1}}
+      }
+    },
+    {
+      "name": "activeWeekInfo",
+      "type": "group",
+      "encode": {
+        "update": {
+          "x": {"signal": "580"},
+          "y": {"value": -60},
+          "width": {"signal": "width-100"},
+          "height": {"signal": "chartTop+35"},
+          "opacity": {"value": 1},
+          "fill": {"signal": ""},
+          "stroke": {
+            "signal": "activeWeek != null && data('activeWeekData').length > 0 ? '#d9d9d7' : 'transparent'"
+          }
+        }
+      },
+      "axes": [
+        {
+          "orient": "right",
+          "scale": "yActive",
+          "labels": false,
+          "domain": false,
+          "ticks": false,
+          "tickCount": 2,
+          "grid": false
+        },
+        {
+          "orient": "bottom",
+          "scale": "xActive",
+          "labels": true,
+          "domain": false,
+          "ticks": false,
+          "labelColor": {"value": "#686963"},
+          "labelOffset": 10,
+          "encode": {
+            "labels": {
+              "update": {
+                "opacity": {
+                  "signal": "activeWeek != null && data('activeWeekData').length > 0 ? 1 : 0"
+                },
+                "y": {"value": -25},
+                "text": {
+                  "signal": "['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][datum.value - 1]"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "marks": [
+        {
+          "type": "text",
+          "encode": {
+            "update": {
+              "x": {"signal": "sankeyLeft"},
+              "y": {"value": 35},
+              "text": {
+                "signal": "activeWeek != null && data('activeWeekData').length > 0 ? 'WEEK ' + activeWeek  : ''"
+              },
+              "fill": {"signal": "gridColor"},
+              "fontSize": {"value": 18},
+              "fontWeight": {"value": "bold"},
+              "opacity": {
+                "signal": "activeWeek != null && data('activeWeekData').length > 0 ? 1 : 0"
+              }
+            }
+          }
+        },
+        {
+          "type": "path",
+          "name": "links",
+          "from": {"data": "linkTable"},
+          "clip": true,
+          "encode": {
+            "update": {
+              "strokeWidth": {"field": "strokeWidth"},
+              "path": {"field": "path"},
+              "strokeOpacity": {"value": 0.4},
+              "stroke": {
+                "signal": "datum.sourceNode.layer < datum.targetNode.layer ? {'gradient': 'linear', 'stops': [{'offset': 0, 'color': scale('color', datum.source)}, {'offset': 1, 'color': scale('color', datum.destination)}]} : {'gradient': 'linear', 'stops': [{'offset': 0, 'color': scale('color', datum.destination)}, {'offset': 1, 'color': scale('color', datum.source)}]}"
+              },
+              "fill": {"value": null}
+            }
+          }
+        },
+        {
+          "name": "sankeyNodeRects",
+          "type": "rect",
+          "from": {"data": "sankeyNodes"},
+          "encode": {
+            "update": {
+              "x": {"scale": "sankeyX", "field": "layer"},
+              "width": {"scale": "sankeyX", "band": 1},
+              "y": {"scale": "sankeyY", "field": "y0"},
+              "y2": {"scale": "sankeyY", "field": "y1"},
+              "fill": {"field": "nodeColor"},
+              "fillOpacity": {"value": 0.9},
+              "cornerRadius": {"value": 2}
+            }
+          }
+        },
+        {
+          "name": "sankeyNodeLabels",
+          "type": "text",
+          "from": {"data": "sankeyNodes"},
+          "encode": {
+            "update": {
+              "x": {
+                "signal": "scale('sankeyX', datum.layer) + bandwidth('sankeyX') + 6"
+              },
+              "y": {"scale": "sankeyY", "field": "yc"},
+              "text": {"signal": "datum.label "},
+              "lineBreak": {"value": "|"},
+              "baseline": {"value": "middle"},
+              "align": {"value": "left"},
+              "fill": {"value": "#686963"},
+              "fontSize": {"value": 14},
+              "fontWeight": {"value": 400}
+            }
+          }
+        },
+        {
+          "type": "rect",
+          "from": {"data": "activeWeekData"},
+          "encode": {
+            "update": {
+              "width": {"value": 20},
+              "x": {"scale": "xActive", "field": "weekday"},
+              "y": {"signal": "scale('yActive', datum.y0)"},
+              "y2": {"signal": "scale('yActive', datum.y1)"},
+              "fill": {"scale": "barColor", "field": "energyType"}
+            }
+          }
+        },
+        {
+          "description": "generated sun",
+          "type": "symbol",
+          "from": {"data": "activeWeekDailySummary"},
+          "encode": {
+            "update": {
+              "x": {"scale": "xActive", "field": "weekday", "offset": 10},
+              "y": {"value": 30},
+              "shape": {"value": "circle"},
+              "size": {"signal": "scale('size', datum.solarGeneratedKwh)"},
+              "fill": {"signal": "sunColor"}
+            }
+          }
+        },
+        {
+          "description": "solar sold",
+          "type": "symbol",
+          "from": {"data": "activeWeekDailySummary"},
+          "encode": {
+            "update": {
+              "x": {"scale": "xActive", "field": "weekday", "offset": 10},
+              "y": {"value": 30},
+              "shape": {"value": "circle"},
+              "size": {"signal": "scale('size', datum.solarSoldKwh)"},
+              "fill": {"signal": "solarSoldColor"}
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "config": {
+    "axis": {
+      "domainColor": "white",
+      "gridColor": "#334155",
+      "tickColor": "white",
+      "labelColor": "white",
+      "titleColor": "white",
+      "labelFontSize": 11,
+      "titleFontSize": 12,
+      "domainWidth": 0
+    },
+    "text": {
+      "font": "Montserrat, 'Segoe UI', Roboto, sans-serif",
+      "fill": "#CBD5E1"
+    },
+    "view": {"stroke": "transparent"}
+  }
+}

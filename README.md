@@ -3,27 +3,38 @@
 Documenting my journey into learning [Vega](https://vega.github.io/vega/) and using [Deneb](https://deneb-viz.github.io/) for Power BI.
 
 
-1. [Where LGBTQ+ Travelers Are Most Welcome in 2026](#where-lgbtq-travelers-are-most-welcome-in-2026)
-2. [Sleep data - From Dusk to Dawn](#sleep-data---from-dusk-to-dawn)
-3. [Our Festive Favorites](#our-festive-favorites)
-4. [Rotatable Globe](#rotatable-globe)
-5. [US Election Map 2024](#us-election-map-2024)
-6. [Cycling Distance Map Netherlands](#cycling-distance-map-netherlands)
-7. [KPI Cards](#kpi-cards)
-8. [WOW 2025-W3 Voronoi](#wow-2025-w3-voronoi)
-9. [Love Songs](#Love-Songs)
-10. [Du Bois Challenge 2025](#du-bois-challenge-2025)
-11. [Doomsday Clock](#doomsday-clock)
-12. [Pet Ownership](#pet-ownership)
-13. [Trump Approval Rating](#trump-approval-rating)
-14. [Dutch Street Foods](#dutch-street-foods)
+1. [Energy Under Changing Skies](#energy-under-changing-skies)
+2. [Where LGBTQ+ Travelers Are Most Welcome in 2026](#where-lgbtq-travelers-are-most-welcome-in-2026)
+3. [Sleep data - From Dusk to Dawn](#sleep-data---from-dusk-to-dawn)
+4. [Our Festive Favorites](#our-festive-favorites)
+5. [Rotatable Globe](#rotatable-globe)
+6. [Dutch Street Foods](#dutch-street-foods)
+7. [US Election Map 2024](#us-election-map-2024)
+8. [Cycling Distance Map Netherlands](#cycling-distance-map-netherlands)
+9. [KPI Cards](#kpi-cards)
+10. [WOW 2025-W3 Voronoi](#wow-2025-w3-voronoi)
+11. [Love Songs](#Love-Songs)
+12. [Du Bois Challenge 2025](#du-bois-challenge-2025)
+13. [Doomsday Clock](#doomsday-clock)
+14. [Pet Ownership](#pet-ownership)
+15. [Trump Approval Rating](#trump-approval-rating)
+
+## Energy Under Changing Skies
+
+A data art exploration of weekly solar generation and grid energy use, visualized as 53 small landscape-like panels across the year.
+
+[View in Vega Editor](https://seealso.link/flynnxx1/EnergyUnderChangingSkies)
+
+[View in Power BI](https://seealso.link/flynnxx1/EnergyUnderChangingSkiesPBI)
+
+[View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Energy%20Under%20Changing%20Skies)
+
+![Energy Under Changing Skies](Energy%20Under%20Changing%20Skies/Energy.gif)
 
 ## Where LGBTQ+ Travelers Are Most Welcome in 2026
 Data from [Spartacus International Gay Guide](https://spartacus.gayguide.travel/blog/spartacus-gay-travel-index-2026/), legend inspiration from https://colors.italodoliva.com.br/
 
-[Open in Vega Editor](https://seealso.link/flynnxx1/TravelIndex2026)
-
-[Open in Power BI](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Travel%20Index/Travel%20Index%202026.pbix)
+[View in Vega Editor](https://seealso.link/flynnxx1/TravelIndex2026)
 
 [View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Travel%20Index)
 
@@ -33,9 +44,9 @@ Data from [Spartacus International Gay Guide](https://spartacus.gayguide.travel/
 ## Sleep data - From Dusk to Dawn
 This visualization is based on my personal sleep data tracked via my Apple Watch.
 
-[Open in Vega Editor](https://seealso.link/flynnxx1/SleepData)
+[View in Vega Editor](https://seealso.link/flynnxx1/SleepData)
 
-[Open in Power BI](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Sleep/Sleep.pbix)
+[View in Power BI](https://seealso.link/flynnxx1/SleepDataPBI)
 
 [View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Sleep)
 
@@ -47,7 +58,7 @@ Top 10 festive favorite stongs. Data from [Billboard](https://www.billboard.com/
 
 [View musical interactive version](https://flynnxx1.github.io/Deneb-Vega-Showcase/Our%20Festive%20Favorites/)
 
-[Open in Vega Editor](https://seealso.link/flynnxx1/OurFestiveFavorites)
+[View In Vega Editor](https://seealso.link/flynnxx1/OurFestiveFavorites)
 
 [View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Our%20Festive%20Favorites)
 
@@ -56,17 +67,27 @@ Top 10 festive favorite stongs. Data from [Billboard](https://www.billboard.com/
 ## Rotatable Globe
 Data from U.N. Department of Economic and Social Affairs, via https://apnews.com/projects/china-migration-thailand-mexico-japan-map/. Original visualization by [Caleb Diehl](https://www.linkedin.com/in/caleb-diehl-a93a6984) using D3.js.
 
-[Open in Vega Editor](https://tinyurl.com/VegaRotatableGlobe)
+[View In Vega Editor](https://tinyurl.com/VegaRotatableGlobe)
 
 [View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Rotatable%20Globe)
 
 ![Rotatable Globe](Rotatable%20Globe/Rotatable%20Globe.png)
 
+## Dutch Street Foods
+
+Nutrient breakdown of popular Dutch street foods in a ternary diagram.
+
+[View In Vega Editor](https://seealso.link/flynnxx1/DutchStreetFoods)
+
+[View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Dutch%20Street%20Foods)
+
+![Dutch Street Foods](Dutch%20Street%20Foods/Dutch%20Street%20Foods.gif)
+
 ## US Election Map 2024
 Interactive election map, featuring zoom and click effects. Scroll to zoom and click on a state to see the result on county level.
 Data from CNN election results. 
 
-[Open in Vega Editor](https://tinyurl.com/VegaUSElectionMap2024)
+[View In Vega Editor](https://tinyurl.com/VegaUSElectionMap2024)
 
 [View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/US%20Election%20Map%202024)
 
@@ -76,7 +97,7 @@ Data from CNN election results.
 How far is school by bike? Interactive map showing the average cycling distance to the nearest secondary school (_middelbare school_) in the Netherlands.
 Data from CBS, DUO and Fietsersbond.
 
-[Open in Vega Editor](https://tinyurl.com/VegaCyclingDistance)
+[View In Vega Editor](https://tinyurl.com/VegaCyclingDistance)
 
 [View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/NL%20Map%20Cycling%20Distance)
 
@@ -85,7 +106,7 @@ Data from CBS, DUO and Fietsersbond.
 ## KPI Cards
 KPI cards inspired by Andy Kriebel.
 
-[Open in Power BI](https://tinyurl.com/kpicards)
+[View In Power BI](https://tinyurl.com/kpicards)
 
 [View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/KPI%20Cards)
 
@@ -105,7 +126,7 @@ Workout Wednesday 2025 Week 3 challenge: Can you build a Voronoi?
 ## Love Songs
 No matter where your heart stands this Valentine's Day, there is always a song for you.
 
-[Open in Power BI](https://tinyurl.com/5n8bxeaj)
+[View In Power BI](https://tinyurl.com/5n8bxeaj)
 
 [View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Love%20Songs)
 
@@ -121,7 +142,7 @@ There are 10 different visualizations.
 
 [Explore my submissions in Vega](Du%20Bois%20Challenge%202025/)
 
-[Open in Power BI](https://tinyurl.com/VegaDB25)
+[View In Power BI](https://tinyurl.com/VegaDB25)
 
 [View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Du%20Bois%20Challenge%202025)
 
@@ -133,7 +154,7 @@ This visualization is part of the [Makeover Monday challenge](https://makeovermo
 
 Scrolling logic based on https://vega.github.io/vega/examples/table-scrollbar/
 
-[Open in Vega Editor](https://seealso.link/flynnxx1/DoomsdayClock)
+[View In Vega Editor](https://seealso.link/flynnxx1/DoomsdayClock)
 
 [View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Doomsday%20Clock)
 
@@ -143,9 +164,9 @@ Scrolling logic based on https://vega.github.io/vega/examples/table-scrollbar/
 
 This visualization is part of the [Makeover Monday challenge](https://makeovermonday.co.uk/) (2025 Week 16).
 
-[Open in Power BI](https://seealso.link/flynnxx1/PBI_PetOwnership)
+[View In Power BI](https://seealso.link/flynnxx1/PBI_PetOwnership)
 
-[Open in Vega Editor](https://seealso.link/flynnxx1/PetOwnership)
+[View In Vega Editor](https://seealso.link/flynnxx1/PetOwnership)
 
 [View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Pet%20Ownership)
 
@@ -155,21 +176,9 @@ This visualization is part of the [Makeover Monday challenge](https://makeovermo
 
 This visualization is part of the [Makeover Monday challenge](https://makeovermonday.co.uk/) (2025 Week 18).
 
-[Open in Vega Editor](https://seealso.link/flynnxx1/TrumpApprovalRating)
+[View In Vega Editor](https://seealso.link/flynnxx1/TrumpApprovalRating)
 
 [View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Trump%20Approval%20Rating)
 
 ![Trump Approval Rating](Trump%20Approval%20Rating/Trump%20Approval%20Rating.png)
-
-## Dutch Street Foods
-
-Nutrient breakdown of popular Dutch street foods in a ternary diagram.
-
-[Open in Vega Editor](https://seealso.link/flynnxx1/DutchStreetFoods)
-
-[View source in my GitHub repo](https://github.com/Flynnxx1/Deneb-Vega-Showcase/tree/main/Dutch%20Street%20Foods)
-
-![Dutch Street Foods](Dutch%20Street%20Foods/Dutch%20Street%20Foods.gif)
-
-
 
